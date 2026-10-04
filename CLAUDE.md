@@ -1,6 +1,6 @@
 # CLC Vocab Quiz: working notes for Claude
 
-A static PWA (no build step) deployed on Vercel from `main` of github.com/Orythm/clc-mandarin-app. Every push to `main` redeploys within about a minute.
+A static PWA (no build step) deployed on Vercel from `master` of github.com/Orythm/clc-mandarin-app. Every push to `master` redeploys within about a minute.
 
 ## Where the vocabulary lives
 
@@ -39,7 +39,7 @@ When the user sends a photo of a vocabulary list:
 3. Check against `lessons.json`: whether that lesson already exists (then you're adding to it or replacing it, so ask which), and flag words that already appear in other lessons (keep them; the user just likes to know).
 4. **Show the user the full list as a table and wait for their OK before committing.** Point out anything you were unsure about (blurry characters, ambiguous tones).
 5. Edit `lessons.json`, keeping its formatting: one word per line, lessons sorted by `n`. Check it's valid JSON afterwards (`node -e "JSON.parse(require('fs').readFileSync('lessons.json','utf8'))"`, or `python -m json.tool lessons.json`).
-6. Commit with a message like `Add lesson 4 (第四課, 38 words)` and push to `main`.
+6. Commit with a message like `Add lesson 4 (第四課, 38 words)` and push to `master`.
 7. Tell the user it'll be live in about a minute; the installed app picks up new lessons the next time it opens online.
 
 Fixing a typo works the same way: edit the word in `lessons.json`, confirm with the user, commit, push.

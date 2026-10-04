@@ -26,7 +26,7 @@ Then open the URL it prints (usually http://localhost:3000). Service workers nee
 
 1. Import this repository in Vercel.
 2. Framework preset: **Other**. Leave the build command empty and the output directory as the repo root.
-3. Deploy. Every push to `main` redeploys.
+3. Deploy. Every push to `master` redeploys.
 
 ## Install on your phone
 
@@ -37,4 +37,4 @@ Once installed, the quiz opens full screen and works offline after the first vis
 
 ## Adding vocabulary
 
-Edit `lessons.json` (format and rules in `CLAUDE.md`), commit and push to `main`. Or send Claude a photo of the vocab list in a conversation that has access to this repo and ask it to add the lesson.
+Edit `lessons.json` (format and rules in `CLAUDE.md`), commit and push to `master`. Or send Claude a photo of the vocab list in a conversation that has access to this repo and ask it to add the lesson.
