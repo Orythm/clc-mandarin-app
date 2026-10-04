@@ -6,10 +6,12 @@ A Traditional Chinese vocabulary quiz, packaged as a static, installable Progres
 
 | File | What it is |
 | --- | --- |
-| `index.html` | The app: the quiz page plus PWA tags (manifest, icons, theme colour) and service worker registration. |
+| `index.html` | The app: the quiz page plus PWA tags (manifest, icons, theme colour) and service worker registration. Loads the vocab from `lessons.json`. |
+| `lessons.json` | All vocabulary, one entry per lesson. This is the only file to edit when adding words. |
+| `CLAUDE.md` | Rules and steps for Claude when adding a lesson (e.g. from a photo of the textbook). |
 | `clc-vocab-quiz.html` | The original single-file quiz, kept unchanged as a backup. |
 | `manifest.webmanifest` | Web app manifest: name, colours, start URL, standalone display, icons. |
-| `sw.js` | Service worker. Precaches the app shell; pages are network-first with offline fallback, other assets cache-first with background refresh. Bump `VERSION` to force a cache refresh. |
+| `sw.js` | Service worker. Precaches the app shell; pages and `lessons.json` are network-first with offline fallback, other assets cache-first with background refresh. Bump `VERSION` to force a cache refresh. |
 | `icons/` | App icons: `icon-192.png`, `icon-512.png`, `icon-maskable-512.png` (Android adaptive) and `apple-touch-icon.png` (iOS, 180×180). |
 
 ## Run locally
@@ -32,3 +34,7 @@ Then open the URL it prints (usually http://localhost:3000). Service workers nee
 - **Android (Chrome):** open the site, tap the ⋮ menu, then **Install app** (or accept the install prompt).
 
 Once installed, the quiz opens full screen and works offline after the first visit.
+
+## Adding vocabulary
+
+Edit `lessons.json` (format and rules in `CLAUDE.md`), commit and push to `main`. Or send Claude a photo of the vocab list in a conversation that has access to this repo and ask it to add the lesson.

@@ -1,7 +1,8 @@
-const VERSION = 'v1';
+const VERSION = 'v2';
 const CACHE = `clc-vocab-${VERSION}`;
 const PRECACHE = [
   '/',
+  '/lessons.json',
   '/manifest.webmanifest',
   '/icons/icon-192.png',
   '/icons/icon-512.png',
@@ -33,18 +34,21 @@ self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
 
-  // Navigations: network-first, keep the latest page under '/', fall back to cache offline.
-  if (req.mode === 'navigate') {
+  // Navigations and lesson data: network-first so updates show up right away,
+  // keep the latest copy in the cache, fall back to it offline.
+  const isLessons = new URL(req.url).pathname === '/lessons.json';
+  if (req.mode === 'navigate' || isLessons) {
+    const key = isLessons ? '/lessons.json' : '/';
     event.respondWith(
       fetch(req)
         .then((response) => {
           if (cacheable(response)) {
             const copy = response.clone();
-            caches.open(CACHE).then((cache) => cache.put('/', copy));
+            caches.open(CACHE).then((cache) => cache.put(key, copy));
           }
           return response;
         })
-        .catch(() => caches.match('/'))
+        .catch(() => caches.match(key))
     );
     return;
   }

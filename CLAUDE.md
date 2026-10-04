@@ -1,0 +1,51 @@
+# CLC Vocab Quiz: working notes for Claude
+
+A static PWA (no build step) deployed on Vercel from `main` of github.com/Orythm/clc-mandarin-app. Every push to `main` redeploys within about a minute.
+
+## Where the vocabulary lives
+
+All lessons are in **`lessons.json`**. Adding or fixing vocab only ever touches this file. Do not edit the word data in `index.html` (it has none any more) or `clc-vocab-quiz.html` (an old backup; leave it alone).
+
+```json
+[
+  {
+    "n": 4,
+    "zh": "第四課",
+    "words": [
+      ["週末","zhōu mò","weekend"],
+      ["打","dǎ","to play (ball games)"]
+    ]
+  }
+]
+```
+
+- `n`: lesson number (integer). Lessons are kept sorted by `n`, no duplicates.
+- `zh`: lesson title as 第N課, with N in Chinese numerals (第四課, 第十課, 第十一課).
+- `words`: list of `[characters, pinyin, english]`, in the order they appear in the textbook.
+
+## Word format rules
+
+- **Characters:** Traditional Chinese (週, 說, 學), never Simplified. Match the textbook exactly, including 妳 vs 你.
+- **Pinyin:** tone marks, not numbers (`xiǎo jiě`, not `xiao3 jie3`). Lowercase. One space between syllables. Neutral tone has no mark (`ma`, `de`). Write tone sandhi as the textbook prints it (e.g. 一起 `yì qǐ`, 不是 `bú shì`).
+- **English:** short gloss, a few words. For multiple senses separate with commas (`to feel, to think`). Use brackets for grammar hints (`question particle`, `particle (suggestion)`, `to play (ball games)`).
+- The quiz shows one word per row, so phrases from the textbook stay as one entry (e.g. 好不好, 怎麼樣).
+
+## Adding a lesson from a photo
+
+When the user sends a photo of a vocabulary list:
+
+1. Read every word from the photo: characters, pinyin and English. If the page shows no pinyin or English, fill them in using the rules above and say which ones you supplied.
+2. Work out the lesson number from the page or the user's message. If it's unclear, ask.
+3. Check against `lessons.json`: whether that lesson already exists (then you're adding to it or replacing it, so ask which), and flag words that already appear in other lessons (keep them; the user just likes to know).
+4. **Show the user the full list as a table and wait for their OK before committing.** Point out anything you were unsure about (blurry characters, ambiguous tones).
+5. Edit `lessons.json`, keeping its formatting: one word per line, lessons sorted by `n`. Check it's valid JSON afterwards (`node -e "JSON.parse(require('fs').readFileSync('lessons.json','utf8'))"`, or `python -m json.tool lessons.json`).
+6. Commit with a message like `Add lesson 4 (第四課, 38 words)` and push to `main`.
+7. Tell the user it'll be live in about a minute; the installed app picks up new lessons the next time it opens online.
+
+Fixing a typo works the same way: edit the word in `lessons.json`, confirm with the user, commit, push.
+
+## Other files
+
+- `index.html`: the quiz app (about 260 KB because of embedded fonts; edit it with a script, not by hand). It fetches `/lessons.json` at startup.
+- `sw.js`: service worker. Pages and `lessons.json` are network-first; other files are cache-first. Bump `VERSION` only when changing `index.html`, `sw.js`, the manifest or the icons; vocab changes don't need it.
+- `manifest.webmanifest`, `icons/`: PWA install metadata.
