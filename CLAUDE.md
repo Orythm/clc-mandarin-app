@@ -50,7 +50,7 @@ Fixing a typo works the same way: edit the word in `lessons.json`, confirm with 
 
 ## Other files
 
-- `index.html`: the quiz app. It fetches `/lessons.json` at startup. Chinese text uses the full LXGW WenKai TC font (Taiwan-standard glyphs) from Google Fonts, so any new character is covered automatically; don't embed font subsets.
+- `index.html`: the quiz app. It fetches `/lessons.json` at startup. Chinese text uses the full Noto Serif TC font from Google Fonts (Taiwan-standard glyphs; LXGW WenKai TC was dropped because some characters, e.g. 教, didn't match Taiwan forms), so any new character is covered automatically; don't embed font subsets.
 - `sw.js`: service worker. Pages and `lessons.json` are network-first; other files are cache-first. Bump `VERSION` only when changing `index.html`, `sw.js`, the manifest or the icons; vocab changes don't need it.
 - `vercel.json`: sends any path that isn't a real file to `index.html`. The app routes with the History API: `/` is the lesson list, `/lesson-<n>-py-zh` and `/lesson-<n>-zh-py` open a quiz, so the phone's back gesture works. Run locally with `npx serve -s .` so lesson URLs resolve.
 - `manifest.webmanifest`, `icons/`: PWA install metadata.
