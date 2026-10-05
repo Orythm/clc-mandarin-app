@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/lesson/:path*", "destination": "/index.html" }
+  ]
+}

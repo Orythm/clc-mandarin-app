@@ -10,6 +10,7 @@ A Traditional Chinese vocabulary quiz, packaged as a static, installable Progres
 | `lessons.json` | All vocabulary, one entry per lesson. This is the only file to edit when adding words. |
 | `CLAUDE.md` | Rules and steps for Claude when adding a lesson (e.g. from a photo of the textbook). |
 | `clc-vocab-quiz.html` | The original single-file quiz, kept unchanged as a backup. |
+| `vercel.json` | Sends lesson URLs (`/lesson/4/py-zh`) to `index.html` so they work when opened or refreshed directly. |
 | `manifest.webmanifest` | Web app manifest: name, colours, start URL, standalone display, icons. |
 | `sw.js` | Service worker. Precaches the app shell; pages and `lessons.json` are network-first with offline fallback, other assets cache-first with background refresh. Bump `VERSION` to force a cache refresh. |
 | `icons/` | App icons: `icon-192.png`, `icon-512.png`, `icon-maskable-512.png` (Android adaptive) and `apple-touch-icon.png` (iOS, 180×180). |
@@ -17,7 +18,7 @@ A Traditional Chinese vocabulary quiz, packaged as a static, installable Progres
 ## Run locally
 
 ```sh
-npx serve .
+npx serve -s .
 ```
 
 Then open the URL it prints (usually http://localhost:3000). Service workers need `localhost` or HTTPS, so opening the file directly from disk won't enable offline mode.
