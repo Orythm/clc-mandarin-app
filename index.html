@@ -314,12 +314,12 @@ $('hintBtn').addEventListener('click', () => { showEn = !showEn; save(); applyAi
 $('lenBtn').addEventListener('click', () => { showLen = !showLen; save(); applyAids(); });
 $('retryBtn').addEventListener('click', () => start(misses));
 $('restartBtn').addEventListener('click', () => start(WORDS));
-// URLs: "/" is the lesson list, "/lesson/<n>/py-zh" and "/lesson/<n>/zh-py" open a quiz,
+// URLs: "/" is the lesson list, "/lesson-<n>-py-zh" and "/lesson-<n>-zh-py" open a quiz,
 // so the phone's back gesture moves between screens instead of closing the app.
 const SLUG = { py2zh: 'py-zh', zh2py: 'zh-py' };
-function lessonPath(n, m){ return '/lesson/' + n + '/' + SLUG[m]; }
+function lessonPath(n, m){ return '/lesson-' + n + '-' + SLUG[m]; }
 function route(){
-  const r = location.pathname.match(/^\/lesson\/(\d+)\/(py-zh|zh-py)\/?$/);
+  const r = location.pathname.match(/^\/lesson-(\d+)-(py-zh|zh-py)\/?$/);
   const L = r && LESSONS.find(x => x.n === +r[1]);
   if (!L) { if (location.pathname !== '/') history.replaceState(null, '', '/'); showMenu(); return; }
   lesson = L; WORDS = L.words; mode = r[2] === 'zh-py' ? 'zh2py' : 'py2zh'; start(WORDS);

@@ -52,5 +52,5 @@ Fixing a typo works the same way: edit the word in `lessons.json`, confirm with 
 
 - `index.html`: the quiz app (about 260 KB because of embedded fonts; edit it with a script, not by hand). It fetches `/lessons.json` at startup.
 - `sw.js`: service worker. Pages and `lessons.json` are network-first; other files are cache-first. Bump `VERSION` only when changing `index.html`, `sw.js`, the manifest or the icons; vocab changes don't need it.
-- `vercel.json`: rewrites `/lesson/...` URLs to `index.html`. The app routes with the History API: `/` is the lesson list, `/lesson/<n>/py-zh` and `/lesson/<n>/zh-py` open a quiz, so the phone's back gesture works. Run locally with `npx serve -s .` so lesson URLs resolve.
+- `vercel.json`: sends any path that isn't a real file to `index.html`. The app routes with the History API: `/` is the lesson list, `/lesson-<n>-py-zh` and `/lesson-<n>-zh-py` open a quiz, so the phone's back gesture works. Run locally with `npx serve -s .` so lesson URLs resolve.
 - `manifest.webmanifest`, `icons/`: PWA install metadata.
