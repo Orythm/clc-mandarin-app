@@ -1,0 +1,12 @@
+TW-Kai 全字庫正楷體
+(c) Ministry of Digital Affairs, Taiwan (數位發展部), 全字庫 CNS11643 (https://www.cns11643.gov.tw)
+Source: https://www.cns11643.gov.tw/opendata/Fonts_Kai.zip (data.gov.tw dataset 5961), version 11508.01
+
+Used under the Open Government Data License, version 1.0 (政府資料開放授權條款-第一版):
+https://data.gov.tw/en/license
+(The font is also offered under the SIL Open Font License 1.1, https://openfontlicense.org)
+
+Attribution: 本應用使用數位發展部「全字庫正楷體」(2026)，依政府資料開放授權條款-第一版釋出。
+
+The files in this folder are subsets of TW-Kai-98_1.ttf split into small pieces by
+scripts/build_tw_kai.py. The glyph outlines are unmodified.
