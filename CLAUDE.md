@@ -2,6 +2,10 @@
 
 A static PWA (no build step) deployed on Vercel from `master` of github.com/Orythm/clc-mandarin-app. Every push to `master` redeploys within about a minute.
 
+## Before changing anything
+
+Run `git pull origin master` first. Several sessions (on the user's PC and in the cloud) push to this repo, so the local copy may be behind. If the pull conflicts or there are uncommitted changes you didn't make, stop and ask the user.
+
 ## Where the vocabulary lives
 
 All lessons are in **`lessons.json`**. Adding or fixing vocab only ever touches this file. Do not edit the word data in `index.html` (it has none any more) or `clc-vocab-quiz.html` (an old backup; leave it alone).
