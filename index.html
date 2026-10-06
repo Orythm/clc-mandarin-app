@@ -112,6 +112,12 @@ button.card:hover{border-color:var(--accent)}
 .cs{padding:0 1px;line-height:1.3}
 .sep{color:var(--muted);padding:0 2px}
 .dict .sub{color:var(--muted);font-size:.95rem}
+.mwq{font-family:var(--f-hand);font-size:clamp(2.6rem,9vw,3.8rem);font-weight:700;display:flex;justify-content:center;align-items:baseline;gap:.15em}
+.mwq .gap{display:inline-block;min-width:1.2em;border-bottom:3px solid var(--accent);color:var(--accent)}
+.board.mwb{grid-template-columns:repeat(auto-fill,minmax(110px,1fr))}
+.board.mwb .tile{display:grid;gap:2px;justify-items:center}
+.board.mwb .tile small{font-family:var(--f-py);font-size:.95rem;color:var(--muted)}
+@media (max-width:560px){.board.mwb{grid-template-columns:repeat(3,1fr)} .board.mwb .tile{font-size:1.9rem}}
 @media (prefers-reduced-motion: reduce){.rail i,.tile{transition:none}}
 </style>
 
@@ -131,6 +137,11 @@ button.card:hover{border-color:var(--accent)}
       <span class="ic">聽寫</span>
       <span class="lbl">Pinyin dictation</span>
       <span class="sub">Hear a word, type its pinyin, add the tone marks</span>
+    </button>
+    <button class="card" id="mwCard" type="button" hidden>
+      <span class="ic">量詞</span>
+      <span class="lbl">Measure words</span>
+      <span class="sub">Pick the right one: 三 __ 書</span>
     </button>
     <div class="card soon">
       <span class="ic">更多</span>
@@ -172,6 +183,12 @@ button.card:hover{border-color:var(--accent)}
       <button class="btn primary" id="dGo" type="button">Add tones</button>
       <button class="btn" id="dEnd" type="button" hidden>End</button>
     </div>
+  </section>
+
+  <section class="prompt" id="mwBox" aria-live="polite" hidden>
+    <div class="mwq" id="mwQ"></div>
+    <div class="hint" id="mwHint"></div>
+    <div class="fb" id="mwFb"></div>
   </section>
 
   <section class="results" id="results" hidden>
@@ -223,7 +240,7 @@ function buildMenu(){
 }
 function hideAll(){
   stopClock(); if (window.speechSynthesis) speechSynthesis.cancel();
-  ['home','menu','tmenu','meta','rail','promptBox','results','board','dict'].forEach(id => $(id).hidden = true);
+  ['home','menu','tmenu','meta','rail','promptBox','results','board','dict','mwBox'].forEach(id => $(id).hidden = true);
 }
 function showHome(){
   hideAll(); $('modeBtn').hidden = true;
@@ -306,8 +323,8 @@ function finish(){
 }
 $('hintBtn').addEventListener('click', () => { showEn = !showEn; save(); applyAids(); });
 $('lenBtn').addEventListener('click', () => { showLen = !showLen; save(); applyAids(); });
-$('retryBtn').addEventListener('click', () => ex === 'tones' ? startTones(misses) : start(misses));
-$('restartBtn').addEventListener('click', () => ex === 'tones' ? startTones(WORDS) : start(WORDS));
+$('retryBtn').addEventListener('click', () => ex === 'tones' ? startTones(misses) : ex === 'mw' ? startMw(mwMisses) : start(misses));
+$('restartBtn').addEventListener('click', () => ex === 'tones' ? startTones(WORDS) : ex === 'mw' ? startMw(MW_ITEMS) : start(WORDS));
 
 // ---- Pinyin dictation: hear a word, type its pinyin, then tap vowels to add tone marks ----
 
@@ -504,19 +521,85 @@ document.addEventListener('keydown', e => {
 });
 $('playBtn').addEventListener('click', () => playWord(queue[idx]));
 $('slowBtn').addEventListener('click', () => playWord(queue[idx], true));
+// ---- Measure words (量詞): "三 __ 書", tap the right measure word ----
+// Data is measure-words.json: [{ "mw": "本", "py": "běn", "en": "books", "nouns": [["書","shū","book"], ...] }, ...]
+let MW = [], MW_ITEMS = [], mwMisses = [];
+const NUMS = [['一','yī'],['兩','liǎng'],['三','sān'],['四','sì'],['五','wǔ'],['六','liù'],['七','qī'],['八','bā'],['九','jiǔ'],['十','shí']];
+// 一 changes tone before the measure word: yí before a 4th tone (and 個), yì before the others.
+function numPy(n, m){
+  if (n[0] !== '一') return n[1];
+  return /[àèìòùǜ]/.test(m.py) || m.mw === '個' ? 'yí' : 'yì';
+}
+function mwItems(){ return MW.flatMap(m => m.nouns.map(w => ({ m, w }))); }
+function buildMwBoard(){
+  const b = $('board'); b.textContent = ''; b.className = 'board mwb';
+  MW.forEach(m => {
+    const t = el('button','tile'); t.type = 'button'; t.dataset.key = m.mw;
+    t.append(m.mw, el('small', null, m.py));
+    t.addEventListener('click', () => pickMw(t));
+    b.append(t);
+  });
+}
+function startMw(list){
+  ex = 'mw'; endless = false; queue = shuffle(list).map(it => ({ ...it, n: NUMS[Math.floor(Math.random() * NUMS.length)] }));
+  idx = 0; score = 0; mwMisses = []; misses = [];
+  hideAll();
+  $('title').textContent = '量詞 · Measure Words';
+  $('modeBtn').textContent = '← Home';
+  ['meta','rail','mwBox','board','modeBtn'].forEach(id => $(id).hidden = false);
+  $('qt').textContent = queue.length;
+  t0 = Date.now(); $('clock').textContent = '0:00';
+  tick = setInterval(() => { $('clock').textContent = fmt(Date.now() - t0); }, 250);
+  buildMwBoard(); showMw(); window.scrollTo(0,0);
+}
+function showMw(){
+  const q = queue[idx]; answered = false; firstTry = true;
+  const box = $('mwQ'); box.textContent = '';
+  box.append(q.n[0], el('span','gap','\u00a0'), q.w[0]);
+  $('mwHint').textContent = q.w[1] + ' · ' + q.w[2];
+  $('mwFb').textContent = ''; $('mwFb').className = 'fb';
+  $('qn').textContent = idx + 1; $('sc').textContent = score;
+  $('bar').style.width = (idx / queue.length * 100) + '%';
+  document.querySelectorAll('#board .tile').forEach(t => { t.className = 'tile'; t.disabled = false; });
+}
+function pickMw(t){
+  if (answered) return;
+  const q = queue[idx];
+  if (t.dataset.key === q.m.mw) {
+    answered = true; t.classList.add('ok');
+    if (firstTry) score++;
+    $('sc').textContent = score;
+    $('mwQ').querySelector('.gap').textContent = q.m.mw;
+    $('mwHint').textContent = numPy(q.n, q.m) + ' ' + q.m.py + ' ' + q.w[1] + ' · ' + q.w[2];
+    $('mwFb').className = 'fb ok'; $('mwFb').textContent = '對！ ' + q.m.mw + ' is for ' + q.m.en;
+    setTimeout(() => { idx++; if (idx >= queue.length) finishMw(); else showMw(); }, 1100);
+  } else {
+    if (firstTry) { mwMisses.push({ m: q.m, w: q.w }); firstTry = false; }
+    t.classList.add('bad');
+    setTimeout(() => t.classList.remove('bad'), 450);
+  }
+}
+function finishMw(){
+  // The results screen lists misses as [characters, pinyin, english]: show the phrase with 一.
+  misses = mwMisses.map(({ m, w }) => [ '一' + m.mw + w[0], numPy(NUMS[0], m) + ' ' + m.py + ' ' + w[1], m.en ]);
+  $('mwBox').hidden = true;
+  finish();
+}
+
 // URLs: "/" is the home menu, "/vocab" the lesson list, "/vocab/lesson-<n>-py-zh" and
 // "/vocab/lesson-<n>-zh-py" open a quiz, "/tones" and "/tones/lesson-<n>" are the pinyin dictation, so the phone's back gesture moves between screens
 // instead of closing the app. Old "/lesson-..." links are redirected to "/vocab/lesson-...".
 const SLUG = { py2zh: 'py-zh', zh2py: 'zh-py' };
 function lessonPath(n, m){ return '/vocab/lesson-' + n + '-' + SLUG[m]; }
 function parentOf(path){
-  if (path === '/vocab' || path === '/tones') return '/';
+  if (path === '/vocab' || path === '/tones' || path === '/measure') return '/';
   return path.startsWith('/vocab/') ? '/vocab' : path.startsWith('/tones/') ? '/tones' : null;
 }
 function route(){
   const path = location.pathname.replace(/\/+$/, '') || '/';
   if (path === '/vocab') return showMenu();
   if (path === '/tones') return showTonesMenu();
+  if (path === '/measure' && MW_ITEMS.length) return startMw(MW_ITEMS);
   if (path === '/tones/endless') { lesson = { zh: '全部 ∞', endless: true, words: allWords() }; WORDS = lesson.words; return startTones(WORDS); }
   const t = path.match(/^\/tones\/lesson-(\d+)$/);
   const TL = t && LESSONS.find(x => x.n === +t[1]);
@@ -538,8 +621,13 @@ $('menuBtn').addEventListener('click', goUp);
 $('modeBtn').addEventListener('click', goUp);
 $('vocabCard').addEventListener('click', () => go('/vocab'));
 $('tonesCard').addEventListener('click', () => go('/tones'));
-fetch('/lessons.json', {cache: 'no-cache'})
-  .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+$('mwCard').addEventListener('click', () => go('/measure'));
+// Measure words are optional: the home card only shows once measure-words.json has some.
+const mwLoad = fetch('/measure-words.json', {cache: 'no-cache'})
+  .then(r => r.ok ? r.json() : []).catch(() => [])
+  .then(data => { MW = Array.isArray(data) ? data.filter(m => m.nouns && m.nouns.length) : []; MW_ITEMS = mwItems(); $('mwCard').hidden = !MW_ITEMS.length; });
+Promise.all([fetch('/lessons.json', {cache: 'no-cache'}), mwLoad])
+  .then(([r]) => { if (!r.ok) throw new Error(r.status); return r.json(); })
   .then(data => {
     LESSONS = data; buildMenu(); buildTonesMenu();
     $('vocabSub').textContent = LESSONS.length + ' lessons · match pinyin and characters';

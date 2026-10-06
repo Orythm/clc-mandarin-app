@@ -48,6 +48,10 @@ When the user sends a photo of a vocabulary list:
 
 Fixing a typo works the same way: edit the word in `lessons.json`, confirm with the user, commit, push.
 
+## Measure words
+
+The 量詞 exercise (`/measure`) reads **`measure-words.json`**: a list of `{"mw": "本", "py": "běn", "en": "books", "nouns": [["書","shū","book"]]}`. Same word format rules as above. milo chooses which measure words go in; pick nouns that clearly take only that measure word, preferring ones from the lessons, and show milo the table before pushing. The home card stays hidden while the file is empty.
+
 ## Other files
 
 - `index.html`: the quiz app. It fetches `/lessons.json` at startup. Chinese text uses TW-Kai (全字庫正楷體, Taiwan's MOE standard Kai, the free equivalent of 標楷體 DFKai-SB), self-hosted in `fonts/` as ~100 small slices covering 16k common characters, with Noto Serif TC from Google Fonts as fallback. Latin text uses Source Serif 4. LXGW WenKai TC was dropped because some characters (e.g. 教) don't match Taiwan forms, so any new character is covered automatically; don't embed font subsets.
