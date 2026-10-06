@@ -359,7 +359,7 @@ const letterOf = (ch, tone) => tone && TONED[ch] ? TONED[ch][tone - 1] : ch;
 // Spelling check ignores tones, spaces and punctuation; "v" or "u" may stand for "ü".
 const spelling = s => parsePy(s.replace(/v/gi, 'ü')).filter(x => x.letter || x.ch === 'ü').map(x => x.ch === 'ü' ? 'u' : x.ch).join('');
 
-let stage = 'type', target = [], marks = [], spelledOk = true, tipOpen = false;
+let stage = 'type', target = [], marks = [], spelledOk = true, typed = '', tipOpen = false;
 const TONE_TIP = 'Tap a vowel to cycle its tone: ā á ǎ à, then none.';
 
 // Endless mode: every word from every lesson (each distinct word once), reshuffled each round.
@@ -449,14 +449,14 @@ function renderLetters(){
 }
 function toTones(){
   const w = queue[idx];
-  const typed = $('pyIn').value;
+  typed = $('pyIn').value.trim();
   if (!spelling(typed)) { $('pyIn').focus(); return; }
   spelledOk = spelling(typed) === spelling(w[1]);
   stage = 'tone'; tipOpen = false;
   $('pyIn').hidden = true; $('pyIn').blur(); $('letters').hidden = false;
   renderLetters();
   if (spelledOk) { $('dFb').textContent = ''; }
-  else { $('dFb').className = 'fb bad'; $('dFb').textContent = 'Not quite: you typed “' + typed.trim() + '”. Here is the right spelling.'; }
+  else { $('dFb').className = 'fb bad'; $('dFb').textContent = 'Not quite: you typed “' + typed + '”. Here is the right spelling.'; }
   $('dSub').textContent = idx === 0 ? TONE_TIP : '';
   $('dGo').textContent = 'Check';
 }
@@ -481,7 +481,10 @@ function check(){
   if (right) fb.textContent = '對！ ' + w[1];
   else {
     const tonesRight = syllableTones(marks) === syllableTones(target.map(x => x.tone));
-    const why = !exact && tonesRight ? 'Right tones, but a mark is on the wrong letter. ' : (!spelledOk && exact ? 'Tones right, spelling was off. ' : '');
+    // Spelling mistakes repeat what was typed; "tones right" is only said when the word has tones to get right.
+    const hasTones = target.some(x => x.tone);
+    const why = !spelledOk ? 'You typed “' + typed + '”' + (exact && hasTones ? ', tones right. ' : '. ')
+      : (tonesRight ? 'Right tones, but a mark is on the wrong letter. ' : '');
     fb.textContent = why + 'Answer: ' + w[1];
   }
   $('dSub').textContent = '';
