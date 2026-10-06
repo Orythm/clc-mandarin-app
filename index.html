@@ -95,6 +95,23 @@ button.card:hover{border-color:var(--accent)}
 .card .sub{color:var(--muted);font-size:.95rem}
 .card.soon{background:none;border-style:dashed;color:var(--muted)}
 .card.soon .ic{color:var(--muted)}
+.dict{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:20px 16px;display:grid;gap:14px;justify-items:center;text-align:center}
+.play{font-size:1.15rem;padding:12px 22px;border-radius:999px}
+.dict .hint{min-height:0}
+.dict .hint .zh{font-family:var(--f-hand);font-style:normal;font-size:2rem;color:var(--fg)}
+.pyin{font:inherit;font-size:1.6rem;width:min(100%,360px);box-sizing:border-box;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--fg);text-align:center}
+.pyin:focus{outline:2px solid var(--accent);outline-offset:1px}
+.letters{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 22px;font-family:var(--f-py);font-size:clamp(2.2rem,8vw,3rem);font-weight:600}
+.syl{display:inline-flex;align-items:baseline}
+.lt{background:none;border:0;border-bottom:2px dotted var(--accent);border-radius:4px 4px 0 0;color:var(--fg);font:inherit;padding:0 3px;margin:0 1px;min-width:1.1ch;line-height:1.3}
+.lt:hover{background:var(--bg)}
+.lt.set{border-bottom-style:solid}
+.lt:disabled{cursor:default;border-bottom-color:transparent}
+.lt.ok{color:var(--ok);background:var(--ok-soft)}
+.lt.bad{color:var(--bad);background:var(--bad-soft)}
+.cs{padding:0 1px;line-height:1.3}
+.sep{color:var(--muted);padding:0 2px}
+.dict .sub{color:var(--muted);font-size:.95rem}
 @media (prefers-reduced-motion: reduce){.rail i,.tile{transition:none}}
 </style>
 
@@ -110,6 +127,11 @@ button.card:hover{border-color:var(--accent)}
       <span class="lbl">Vocab quiz</span>
       <span class="sub" id="vocabSub">Match pinyin and characters, lesson by lesson</span>
     </button>
+    <button class="card" id="tonesCard" type="button">
+      <span class="ic">聽寫</span>
+      <span class="lbl">Pinyin dictation</span>
+      <span class="sub">Hear a word, type its pinyin, add the tone marks</span>
+    </button>
     <div class="card soon">
       <span class="ic">更多</span>
       <span class="lbl">More exercises</span>
@@ -121,6 +143,10 @@ button.card:hover{border-color:var(--accent)}
     <div class="lessons" id="lessons"></div>
   </section>
 
+  <section class="menu" id="tmenu" hidden>
+    <div class="modes" id="tlessons"></div>
+  </section>
+
   <div class="rail" id="rail" hidden><i id="bar"></i></div>
 
   <section class="prompt" id="promptBox" aria-live="polite" hidden>
@@ -129,6 +155,23 @@ button.card:hover{border-color:var(--accent)}
     <div class="tools">
       <button class="btn toggle" id="hintBtn" type="button" aria-pressed="false">English</button>
       <button class="btn toggle" id="lenBtn" type="button" aria-pressed="false">Same length</button>
+    </div>
+  </section>
+
+  <section class="dict" id="dict" aria-live="polite" hidden>
+    <div class="tools">
+      <button class="btn primary play" id="playBtn" type="button">▶ Play</button>
+      <button class="btn" id="slowBtn" type="button">Slow</button>
+    </div>
+    <div class="hint" id="dHint"></div>
+    <input class="pyin" id="pyIn" type="text" placeholder="Type the pinyin" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" aria-label="Pinyin">
+    <div class="letters" id="letters" hidden></div>
+    <div class="sub" id="dSub"></div>
+    <div class="fb" id="dFb"></div>
+    <button class="btn primary" id="dGo" type="button">Add tones</button>
+    <div class="tools">
+      <button class="btn toggle" id="zhBtn" type="button" aria-pressed="false">Characters</button>
+      <button class="btn toggle" id="enBtn" type="button" aria-pressed="false">English</button>
     </div>
   </section>
 
@@ -154,7 +197,7 @@ try { showEn = localStorage.getItem('q_en') === '1'; showLen = localStorage.getI
 let t0 = 0, tick = null;
 function fmt(ms){ const t = Math.floor(ms/1000); return Math.floor(t/60) + ':' + String(t%60).padStart(2,'0'); }
 function stopClock(){ clearInterval(tick); tick = null; }
-let WORDS = [], lesson = null, mode = 'py2zh', queue = [], idx = 0, score = 0, misses = [], answered = false, firstTry = true;
+let ex = 'vocab', WORDS = [], lesson = null, mode = 'py2zh', queue = [], idx = 0, score = 0, misses = [], answered = false, firstTry = true;
 
 function shuffle(a){ a = a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]} return a; }
 function el(tag, cls, text){ const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
@@ -180,8 +223,8 @@ function buildMenu(){
   });
 }
 function hideAll(){
-  stopClock();
-  ['home','menu','meta','rail','promptBox','results','board'].forEach(id => $(id).hidden = true);
+  stopClock(); if (window.speechSynthesis) speechSynthesis.cancel();
+  ['home','menu','tmenu','meta','rail','promptBox','results','board','dict'].forEach(id => $(id).hidden = true);
 }
 function showHome(){
   hideAll(); $('modeBtn').hidden = true;
@@ -202,7 +245,7 @@ function buildBoard(){
   });
 }
 function start(list){
-  queue = shuffle(list); idx = 0; score = 0; misses = [];
+  ex = 'vocab'; queue = shuffle(list); idx = 0; score = 0; misses = [];
   $('title').textContent = lesson.zh + ' · Lesson ' + lesson.n;
   $('home').hidden = true; $('menu').hidden = true; $('results').hidden = true;
   $('modeBtn').textContent = '← Lessons';
@@ -264,17 +307,204 @@ function finish(){
 }
 $('hintBtn').addEventListener('click', () => { showEn = !showEn; save(); applyAids(); });
 $('lenBtn').addEventListener('click', () => { showLen = !showLen; save(); applyAids(); });
-$('retryBtn').addEventListener('click', () => start(misses));
-$('restartBtn').addEventListener('click', () => start(WORDS));
+$('retryBtn').addEventListener('click', () => ex === 'tones' ? startTones(misses) : start(misses));
+$('restartBtn').addEventListener('click', () => ex === 'tones' ? startTones(WORDS) : start(WORDS));
+
+// ---- Pinyin dictation: hear a word, type its pinyin, then tap vowels to add tone marks ----
+
+// Audio. recordingFor() is where recorded files plug in later: return a URL for the word
+// (e.g. '/audio/' + w[0] + '.mp3') and it is played instead of the browser's speech voice.
+function recordingFor(w){ return null; }
+let zhVoice = null;
+function pickVoice(){
+  if (!window.speechSynthesis) return;
+  const vs = speechSynthesis.getVoices();
+  const find = re => vs.find(v => re.test(v.lang.replace('_','-')));
+  // Taiwan Mandarin first, then any other Mandarin voice (never Cantonese).
+  zhVoice = find(/^(zh|cmn)-(TW|Hant)/i) || find(/^(zh|cmn)-(CN|Hans)/i) || find(/^cmn/i) || find(/^zh$/i) || null;
+}
+if (window.speechSynthesis) { pickVoice(); speechSynthesis.addEventListener('voiceschanged', pickVoice); }
+let player = null;
+function playWord(w, slow){
+  const src = recordingFor(w);
+  if (src) {
+    if (player) player.pause();
+    player = new Audio(src); player.playbackRate = slow ? 0.7 : 1; player.play().catch(() => {});
+    return;
+  }
+  if (!window.speechSynthesis) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(w[0].replace(/[…。，、\s]/g, ''));
+  u.lang = zhVoice ? zhVoice.lang : 'zh-TW'; if (zhVoice) u.voice = zhVoice;
+  u.rate = slow ? 0.55 : 0.85;
+  speechSynthesis.speak(u);
+}
+const canSpeak = () => !!window.speechSynthesis;
+
+// Pinyin as letters with tones: [{ch:'x',tone:0},{ch:'i',tone:0},{ch:'ǎ'...}] -> base letter + tone 0-4.
+const MARKS = { '\u0304':1, '\u0301':2, '\u030c':3, '\u0300':4 };
+const TONED = { a:'āáǎà', e:'ēéěè', i:'īíǐì', o:'ōóǒò', u:'ūúǔù', 'ü':'ǖǘǚǜ' };
+function parsePy(s){
+  const out = [];
+  for (const c of s.toLowerCase().normalize('NFD')) {
+    const last = out[out.length - 1];
+    if (MARKS[c]) { if (last) last.tone = MARKS[c]; }
+    else if (c === '\u0308') { if (last && last.ch === 'u') last.ch = 'ü'; }
+    else out.push({ ch: c, tone: 0, letter: /[a-z]/.test(c) });
+  }
+  return out;
+}
+const letterOf = (ch, tone) => tone && TONED[ch] ? TONED[ch][tone - 1] : ch;
+// Spelling check ignores tones, spaces and punctuation; "v" or "u" may stand for "ü".
+const spelling = s => parsePy(s.replace(/v/gi, 'ü')).filter(x => x.letter || x.ch === 'ü').map(x => x.ch === 'ü' ? 'u' : x.ch).join('');
+
+let stage = 'type', target = [], marks = [], spelledOk = true;
+let showZh = false, showEn2 = false;
+try { showZh = localStorage.getItem('d_zh') === '1'; showEn2 = localStorage.getItem('d_en') === '1'; } catch(e) {}
+
+function buildTonesMenu(){
+  const box = $('tlessons');
+  LESSONS.forEach(L => {
+    const b = el('button','mode'); b.type = 'button';
+    const e = el('span','ex'); e.append(el('span','h',L.zh));
+    b.append(e, el('span','lbl','Lesson ' + L.n), el('span','sub', L.words.length + ' words'));
+    b.addEventListener('click', () => go('/tones/lesson-' + L.n));
+    box.append(b);
+  });
+}
+function showTonesMenu(){
+  hideAll(); $('modeBtn').hidden = false; $('modeBtn').textContent = '← Home';
+  $('tmenu').hidden = false; $('title').textContent = '聽寫 · Pinyin Dictation';
+}
+function startTones(list){
+  ex = 'tones'; queue = shuffle(list); idx = 0; score = 0; misses = [];
+  hideAll();
+  $('title').textContent = '聽寫 · ' + lesson.zh;
+  $('modeBtn').textContent = '← Lessons';
+  ['meta','rail','dict','modeBtn'].forEach(id => $(id).hidden = false);
+  $('qt').textContent = queue.length;
+  t0 = Date.now(); $('clock').textContent = '0:00';
+  tick = setInterval(() => { $('clock').textContent = fmt(Date.now() - t0); }, 250);
+  showWord(); window.scrollTo(0,0);
+}
+function dictAids(){
+  const w = queue[idx]; if (!w) return;
+  const reveal = stage === 'done' || !canSpeak();
+  const h = $('dHint'); h.textContent = '';
+  if (showZh || reveal) h.append(el('span','zh',w[0]));
+  if ((showZh || reveal) && (showEn2 || reveal)) h.append(' ');
+  if (showEn2 || reveal) h.append(w[2]);
+  $('zhBtn').setAttribute('aria-pressed', showZh); $('enBtn').setAttribute('aria-pressed', showEn2);
+}
+function showWord(){
+  const w = queue[idx];
+  stage = 'type'; spelledOk = true; target = parsePy(w[1]); marks = target.map(() => 0);
+  $('qn').textContent = idx + 1; $('sc').textContent = score;
+  $('bar').style.width = (idx / queue.length * 100) + '%';
+  $('pyIn').value = ''; $('pyIn').hidden = false; $('letters').hidden = true;
+  $('dFb').textContent = ''; $('dFb').className = 'fb';
+  $('dSub').textContent = canSpeak() ? 'Type what you hear, without tones.' : "This browser can't play audio, so here are the characters.";
+  $('dGo').textContent = 'Add tones';
+  dictAids();
+  $('pyIn').focus({ preventScroll: true });
+  playWord(w);
+}
+function renderLetters(){
+  const box = $('letters'); box.textContent = '';
+  let syl = el('span','syl');
+  target.forEach((x, i) => {
+    if (!x.letter && x.ch !== 'ü') {
+      if (syl.childNodes.length) box.append(syl);
+      syl = el('span','syl');
+      if (x.ch.trim()) box.append(el('span','sep',x.ch));
+      return;
+    }
+    if (TONED[x.ch]) {
+      const b = el('button','lt', letterOf(x.ch, marks[i])); b.type = 'button';
+      b.classList.toggle('set', marks[i] > 0);
+      b.setAttribute('aria-label', x.ch + (marks[i] ? ' tone ' + marks[i] : ' no tone'));
+      b.dataset.i = i;
+      b.addEventListener('click', () => { if (stage !== 'tone') return; marks[i] = (marks[i] + 1) % 5; renderLetters(); box.querySelector('[data-i="' + i + '"]').focus(); });
+      if (stage === 'done') { b.disabled = true; b.classList.add(marks[i] === x.tone ? (x.tone ? 'ok' : 'x') : 'bad'); }
+      syl.append(b);
+    } else syl.append(el('span','cs',x.ch));
+  });
+  if (syl.childNodes.length) box.append(syl);
+}
+function toTones(){
+  const w = queue[idx];
+  const typed = $('pyIn').value;
+  if (!spelling(typed)) { $('pyIn').focus(); return; }
+  spelledOk = spelling(typed) === spelling(w[1]);
+  stage = 'tone';
+  $('pyIn').hidden = true; $('pyIn').blur(); $('letters').hidden = false;
+  renderLetters();
+  if (spelledOk) { $('dFb').textContent = ''; }
+  else { $('dFb').className = 'fb bad'; $('dFb').textContent = 'Not quite: you typed “' + typed.trim() + '”. Here is the right spelling.'; }
+  $('dSub').textContent = 'Tap a vowel to cycle its tone: ā á ǎ à, then none.';
+  $('dGo').textContent = 'Check';
+}
+function syllableTones(ts){
+  const out = []; let cur = [];
+  target.forEach((x, i) => {
+    if (!x.letter && x.ch !== 'ü') { if (cur.length) out.push(cur.sort().join()); cur = []; return; }
+    if (ts[i]) cur.push(ts[i]);
+  });
+  if (cur.length) out.push(cur.sort().join());
+  return out.join('|');
+}
+function check(){
+  const w = queue[idx];
+  const exact = target.every((x, i) => marks[i] === x.tone);
+  const right = exact && spelledOk;
+  stage = 'done';
+  if (right) score++; else misses.push(w);
+  $('sc').textContent = score;
+  renderLetters();
+  const fb = $('dFb'); fb.textContent = ''; fb.className = 'fb ' + (right ? 'ok' : 'bad');
+  if (right) fb.textContent = '對！ ' + w[1];
+  else {
+    const tonesRight = syllableTones(marks) === syllableTones(target.map(x => x.tone));
+    const why = !exact && tonesRight ? 'Right tones, but a mark is on the wrong letter. ' : (!spelledOk && exact ? 'Tones right, spelling was off. ' : '');
+    fb.textContent = why + 'Answer: ' + w[1];
+  }
+  $('dSub').textContent = '';
+  $('dGo').textContent = idx + 1 < queue.length ? 'Next word' : 'See results';
+  dictAids();
+  $('dGo').focus({ preventScroll: true });
+}
+function advance(){
+  if (stage === 'type') return toTones();
+  if (stage === 'tone') return check();
+  idx++; if (idx >= queue.length) { $('dict').hidden = true; return finish(); }
+  showWord();
+}
+$('dGo').addEventListener('click', advance);
+$('pyIn').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); advance(); } });
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter' || $('dict').hidden || stage === 'type' || e.target === $('pyIn')) return;
+  e.preventDefault(); advance();
+});
+$('playBtn').addEventListener('click', () => playWord(queue[idx]));
+$('slowBtn').addEventListener('click', () => playWord(queue[idx], true));
+$('zhBtn').addEventListener('click', () => { showZh = !showZh; try { localStorage.setItem('d_zh', showZh ? '1' : '0'); } catch(e) {} dictAids(); });
+$('enBtn').addEventListener('click', () => { showEn2 = !showEn2; try { localStorage.setItem('d_en', showEn2 ? '1' : '0'); } catch(e) {} dictAids(); });
 // URLs: "/" is the home menu, "/vocab" the lesson list, "/vocab/lesson-<n>-py-zh" and
-// "/vocab/lesson-<n>-zh-py" open a quiz, so the phone's back gesture moves between screens
+// "/vocab/lesson-<n>-zh-py" open a quiz, "/tones" and "/tones/lesson-<n>" are the pinyin dictation, so the phone's back gesture moves between screens
 // instead of closing the app. Old "/lesson-..." links are redirected to "/vocab/lesson-...".
 const SLUG = { py2zh: 'py-zh', zh2py: 'zh-py' };
 function lessonPath(n, m){ return '/vocab/lesson-' + n + '-' + SLUG[m]; }
-function parentOf(path){ return path === '/vocab' ? '/' : path.startsWith('/vocab/') ? '/vocab' : null; }
+function parentOf(path){
+  if (path === '/vocab' || path === '/tones') return '/';
+  return path.startsWith('/vocab/') ? '/vocab' : path.startsWith('/tones/') ? '/tones' : null;
+}
 function route(){
   const path = location.pathname.replace(/\/+$/, '') || '/';
   if (path === '/vocab') return showMenu();
+  if (path === '/tones') return showTonesMenu();
+  const t = path.match(/^\/tones\/lesson-(\d+)$/);
+  const TL = t && LESSONS.find(x => x.n === +t[1]);
+  if (TL) { lesson = TL; WORDS = TL.words; return startTones(WORDS); }
   const r = path.match(/^\/vocab\/lesson-(\d+)-(py-zh|zh-py)$/);
   const L = r && LESSONS.find(x => x.n === +r[1]);
   if (!L) { if (location.pathname !== '/') history.replaceState(null, '', '/'); showHome(); return; }
@@ -291,10 +521,11 @@ window.addEventListener('popstate', route);
 $('menuBtn').addEventListener('click', goUp);
 $('modeBtn').addEventListener('click', goUp);
 $('vocabCard').addEventListener('click', () => go('/vocab'));
+$('tonesCard').addEventListener('click', () => go('/tones'));
 fetch('/lessons.json', {cache: 'no-cache'})
   .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
   .then(data => {
-    LESSONS = data; buildMenu();
+    LESSONS = data; buildMenu(); buildTonesMenu();
     $('vocabSub').textContent = LESSONS.length + ' lessons · match pinyin and characters';
     let path = location.pathname.replace(/\/+$/, '') || '/';
     if (path === '/index.html') path = '/';
