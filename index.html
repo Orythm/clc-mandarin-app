@@ -336,7 +336,15 @@ $('restartBtn').addEventListener('click', () => ex === 'tones' ? startTones(WORD
 // or the definition, so index.json gives the span to play: { "我們": { "f": file id, "s": start, "e": end } }.
 // Files are never edited; the player seeks to s and stops at e.
 let CLIPS = {};
-const recordingFor = w => CLIPS[w[0]] || null;
+// A word the dictionary lacks can be joined from recordings of its parts:
+// { "好喝": { "join": ["好", "喝"], "gap": -0.04 } } plays 好 then 喝, overlapping by 40 ms.
+function recordingFor(w){
+  const c = CLIPS[w[0]];
+  if (!c) return null;
+  if (!c.join) return [c];
+  const parts = c.join.map(k => CLIPS[k]);
+  return parts.every(x => x && x.f) ? parts.map((x, i) => i ? Object.assign({ gap: c.gap || 0 }, x) : x) : null;
+}
 const clipUrls = {};
 function clipUrl(c){
   // Fetched once (the service worker keeps it for offline use) and played from a blob URL,
@@ -346,20 +354,23 @@ function clipUrl(c){
     .then(b => URL.createObjectURL(b))
     .catch(e => { delete clipUrls[c.f]; throw e; });
 }
-const player = new Audio();
+// Two players, so the next part of a joined word can start while the previous one finishes.
+const players = [new Audio(), new Audio()];
 let playId = 0;
-function stopAudio(){ playId++; player.pause(); if (window.speechSynthesis) speechSynthesis.cancel(); }
-function playClip(c, slow, id){
-  return clipUrl(c).then(url => new Promise((ok, fail) => {
+function stopAudio(){ playId++; players.forEach(p => p.pause()); if (window.speechSynthesis) speechSynthesis.cancel(); }
+function playSegment(player, c, url, slow, id, onNear){
+  return new Promise((ok, fail) => {
     if (id !== playId) return ok();
     const begin = () => {
       player.currentTime = c.s;
       player.playbackRate = slow ? 0.7 : 1; player.preservesPitch = true;
       player.play().then(() => {
         // Stop at the end of the word (a timer rather than animation frames, which pause
-        // when the page isn't being drawn).
+        // when the page isn't being drawn). onNear(t) is called once the next part is due.
+        let told = false;
         const watch = () => {
           if (id !== playId || player.paused) return;
+          if (onNear && !told && player.currentTime >= onNear.at) { told = true; onNear.go(); }
           if (player.currentTime >= c.e) player.pause(); else setTimeout(watch, 10);
         };
         watch(); ok();
@@ -367,6 +378,17 @@ function playClip(c, slow, id){
     };
     if (player.src !== url) { player.src = url; player.addEventListener('loadedmetadata', begin, { once: true }); player.load(); }
     else begin();
+  });
+}
+function playClips(cs, slow, id){
+  // Load every part first, so a joined word never stops halfway.
+  return Promise.all(cs.map(clipUrl)).then(urls => new Promise((ok, fail) => {
+    const step = i => {
+      const next = i + 1 < cs.length
+        ? { at: cs[i].e + (cs[i + 1].gap || 0), go: () => step(i + 1) } : null;
+      playSegment(players[i % 2], cs[i], urls[i], slow, id, next).then(i ? null : ok, fail);
+    };
+    step(0);
   }));
 }
 let zhVoice = null;
@@ -382,7 +404,7 @@ function playWord(w, slow){
   stopAudio();
   const c = recordingFor(w), id = playId;
   // No recording, or it can't be loaded (offline before it was ever played): speak it instead.
-  if (c) { playClip(c, slow, id).catch(() => { if (id === playId) speak(w, slow); }); return; }
+  if (c) { playClips(c, slow, id).catch(() => { if (id === playId) speak(w, slow); }); return; }
   speak(w, slow);
 }
 function speak(w, slow){
