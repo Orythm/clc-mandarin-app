@@ -412,7 +412,7 @@ function showWord(){
   $('bar').style.width = (idx / queue.length * 100) + '%';
   $('pyIn').value = ''; $('pyIn').hidden = false; $('letters').hidden = true;
   $('dFb').textContent = ''; $('dFb').className = 'fb';
-  $('dSub').textContent = canSpeak() ? 'Type what you hear, without tones.' : "This browser can't play audio, so here are the characters.";
+  $('dSub').textContent = canSpeak() ? '' : "This browser can't play audio, so here are the characters.";
   $('dGo').textContent = 'Add tones';
   dictAids();
   $('pyIn').focus({ preventScroll: true });
