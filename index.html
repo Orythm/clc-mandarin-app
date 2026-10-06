@@ -174,10 +174,6 @@ button.card:hover{border-color:var(--accent)}
       <button class="btn primary" id="dGo" type="button">Add tones</button>
       <button class="btn" id="dEnd" type="button" hidden>End</button>
     </div>
-    <div class="tools">
-      <button class="btn toggle" id="zhBtn" type="button" aria-pressed="false">Characters</button>
-      <button class="btn toggle" id="enBtn" type="button" aria-pressed="false">English</button>
-    </div>
   </section>
 
   <section class="results" id="results" hidden>
@@ -365,8 +361,6 @@ const spelling = s => parsePy(s.replace(/v/gi, 'ü')).filter(x => x.letter || x.
 
 let stage = 'type', target = [], marks = [], spelledOk = true, tipOpen = false;
 const TONE_TIP = 'Tap a vowel to cycle its tone: ā á ǎ à, then none.';
-let showZh = false, showEn2 = false;
-try { showZh = localStorage.getItem('d_zh') === '1'; showEn2 = localStorage.getItem('d_en') === '1'; } catch(e) {}
 
 // Endless mode: every word from every lesson (each distinct word once), reshuffled each round.
 function allWords(){
@@ -405,14 +399,11 @@ function startTones(list){
   tick = setInterval(() => { $('clock').textContent = fmt(Date.now() - t0); }, 250);
   showWord(); window.scrollTo(0,0);
 }
+// Characters and English stay hidden until the word is checked (or when there is no audio).
 function dictAids(){
   const w = queue[idx]; if (!w) return;
-  const reveal = stage === 'done' || !canSpeak();
   const h = $('dHint'); h.textContent = '';
-  if (showZh || reveal) h.append(el('span','zh',w[0]));
-  if ((showZh || reveal) && (showEn2 || reveal)) h.append(' ');
-  if (showEn2 || reveal) h.append(w[2]);
-  $('zhBtn').setAttribute('aria-pressed', showZh); $('enBtn').setAttribute('aria-pressed', showEn2);
+  if (stage === 'done' || !canSpeak()) h.append(el('span','zh',w[0]), ' ', w[2]);
 }
 function showWord(){
   const w = queue[idx];
@@ -520,8 +511,6 @@ document.addEventListener('keydown', e => {
 });
 $('playBtn').addEventListener('click', () => playWord(queue[idx]));
 $('slowBtn').addEventListener('click', () => playWord(queue[idx], true));
-$('zhBtn').addEventListener('click', () => { showZh = !showZh; try { localStorage.setItem('d_zh', showZh ? '1' : '0'); } catch(e) {} dictAids(); });
-$('enBtn').addEventListener('click', () => { showEn2 = !showEn2; try { localStorage.setItem('d_en', showEn2 ? '1' : '0'); } catch(e) {} dictAids(); });
 // URLs: "/" is the home menu, "/vocab" the lesson list, "/vocab/lesson-<n>-py-zh" and
 // "/vocab/lesson-<n>-zh-py" open a quiz, "/tones" and "/tones/lesson-<n>" are the pinyin dictation, so the phone's back gesture moves between screens
 // instead of closing the app. Old "/lesson-..." links are redirected to "/vocab/lesson-...".
