@@ -170,7 +170,10 @@ button.card:hover{border-color:var(--accent)}
     <div class="letters" id="letters" hidden></div>
     <div class="sub" id="dSub"></div>
     <div class="fb" id="dFb"></div>
-    <button class="btn primary" id="dGo" type="button">Add tones</button>
+    <div class="tools">
+      <button class="btn primary" id="dGo" type="button">Add tones</button>
+      <button class="btn" id="dEnd" type="button" hidden>End</button>
+    </div>
     <div class="tools">
       <button class="btn toggle" id="zhBtn" type="button" aria-pressed="false">Characters</button>
       <button class="btn toggle" id="enBtn" type="button" aria-pressed="false">English</button>
@@ -199,7 +202,7 @@ try { showEn = localStorage.getItem('q_en') === '1'; showLen = localStorage.getI
 let t0 = 0, tick = null;
 function fmt(ms){ const t = Math.floor(ms/1000); return Math.floor(t/60) + ':' + String(t%60).padStart(2,'0'); }
 function stopClock(){ clearInterval(tick); tick = null; }
-let ex = 'vocab', WORDS = [], lesson = null, mode = 'py2zh', queue = [], idx = 0, score = 0, misses = [], answered = false, firstTry = true;
+let ex = 'vocab', endless = false, WORDS = [], lesson = null, mode = 'py2zh', queue = [], idx = 0, score = 0, misses = [], answered = false, firstTry = true;
 
 function shuffle(a){ a = a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]} return a; }
 function el(tag, cls, text){ const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
@@ -247,7 +250,7 @@ function buildBoard(){
   });
 }
 function start(list){
-  ex = 'vocab'; queue = shuffle(list); idx = 0; score = 0; misses = [];
+  ex = 'vocab'; endless = false; queue = shuffle(list); idx = 0; score = 0; misses = [];
   $('title').textContent = lesson.zh + ' · Lesson ' + lesson.n;
   $('home').hidden = true; $('menu').hidden = true; $('results').hidden = true;
   $('modeBtn').textContent = '← Lessons';
@@ -296,7 +299,7 @@ function next(){ idx++; if (idx >= queue.length) return finish(); show(); }
 function finish(){
   $('bar').style.width = '100%'; $('promptBox').hidden = true; $('board').hidden = true; $('results').hidden = false;
   stopClock(); const took = fmt(Date.now() - t0); $('clock').textContent = took;
-  $('final').textContent = score + ' / ' + queue.length + '  ·  ' + took;
+  $('final').textContent = score + ' / ' + (endless ? idx : queue.length) + '  ·  ' + took;
   const m = $('missWrap'); m.textContent = '';
   if (!misses.length) { m.textContent = 'No mistakes. 太棒了！'; $('retryBtn').hidden = true; }
   else {
@@ -365,8 +368,19 @@ const TONE_TIP = 'Tap a vowel to cycle its tone: ā á ǎ à, then none.';
 let showZh = false, showEn2 = false;
 try { showZh = localStorage.getItem('d_zh') === '1'; showEn2 = localStorage.getItem('d_en') === '1'; } catch(e) {}
 
+// Endless mode: every word from every lesson (each distinct word once), reshuffled each round.
+function allWords(){
+  const seen = new Set(), out = [];
+  LESSONS.forEach(L => L.words.forEach(w => { const k = w[0] + '|' + w[1]; if (!seen.has(k)) { seen.add(k); out.push(w); } }));
+  return out;
+}
 function buildTonesMenu(){
   const box = $('tlessons');
+  const all = el('button','mode'); all.type = 'button';
+  const ae = el('span','ex'); ae.append(el('span','h','全部'), el('span','arr','∞'));
+  all.append(ae, el('span','lbl','Endless · all lessons'), el('span','sub', allWords().length + ' words, shuffled, until you stop'));
+  all.addEventListener('click', () => go('/tones/endless'));
+  box.append(all);
   LESSONS.forEach(L => {
     const b = el('button','mode'); b.type = 'button';
     const e = el('span','ex'); e.append(el('span','h',L.zh));
@@ -380,12 +394,13 @@ function showTonesMenu(){
   $('tmenu').hidden = false; $('title').textContent = '聽寫 · Pinyin Dictation';
 }
 function startTones(list){
-  ex = 'tones'; queue = shuffle(list); idx = 0; score = 0; misses = [];
+  ex = 'tones'; endless = !!lesson.endless && list === WORDS; queue = shuffle(list); idx = 0; score = 0; misses = [];
   hideAll();
   $('title').textContent = '聽寫 · ' + lesson.zh;
   $('modeBtn').textContent = '← Lessons';
-  ['meta','rail','dict','modeBtn'].forEach(id => $(id).hidden = false);
-  $('qt').textContent = queue.length;
+  ['meta','dict','modeBtn'].forEach(id => $(id).hidden = false);
+  $('rail').hidden = endless; $('dEnd').hidden = !endless;
+  $('qt').textContent = endless ? '∞' : queue.length;
   t0 = Date.now(); $('clock').textContent = '0:00';
   tick = setInterval(() => { $('clock').textContent = fmt(Date.now() - t0); }, 250);
   showWord(); window.scrollTo(0,0);
@@ -468,7 +483,7 @@ function check(){
   const exact = target.every((x, i) => marks[i] === x.tone);
   const right = exact && spelledOk;
   stage = 'done';
-  if (right) score++; else misses.push(w);
+  if (right) score++; else if (!misses.includes(w)) misses.push(w);
   $('sc').textContent = score;
   renderLetters();
   const fb = $('dFb'); fb.textContent = ''; fb.className = 'fb ' + (right ? 'ok' : 'bad');
@@ -479,16 +494,24 @@ function check(){
     fb.textContent = why + 'Answer: ' + w[1];
   }
   $('dSub').textContent = '';
-  $('dGo').textContent = idx + 1 < queue.length ? 'Next word' : 'See results';
+  $('dGo').textContent = endless || idx + 1 < queue.length ? 'Next word' : 'See results';
   dictAids();
   $('dGo').focus({ preventScroll: true });
 }
 function advance(){
   if (stage === 'type') return toTones();
   if (stage === 'tone') return check();
-  idx++; if (idx >= queue.length) { $('dict').hidden = true; return finish(); }
+  idx++;
+  if (idx >= queue.length) {
+    if (endless) queue = queue.concat(shuffle(WORDS));
+    else { $('dict').hidden = true; return finish(); }
+  }
   showWord();
 }
+$('dEnd').addEventListener('click', () => {
+  if (stage === 'done') idx++;   // count the word just checked
+  $('dict').hidden = true; finish();
+});
 $('dGo').addEventListener('click', advance);
 $('pyIn').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); advance(); } });
 document.addEventListener('keydown', e => {
@@ -512,6 +535,7 @@ function route(){
   const path = location.pathname.replace(/\/+$/, '') || '/';
   if (path === '/vocab') return showMenu();
   if (path === '/tones') return showTonesMenu();
+  if (path === '/tones/endless') { lesson = { zh: '全部 ∞', endless: true, words: allWords() }; WORDS = lesson.words; return startTones(WORDS); }
   const t = path.match(/^\/tones\/lesson-(\d+)$/);
   const TL = t && LESSONS.find(x => x.n === +t[1]);
   if (TL) { lesson = TL; WORDS = TL.words; return startTones(WORDS); }
