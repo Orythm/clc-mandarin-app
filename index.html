@@ -112,6 +112,8 @@ button.card:hover{border-color:var(--accent)}
 .cs{padding:0 1px;line-height:1.3}
 .sep{color:var(--muted);padding:0 2px}
 .dict .sub{color:var(--muted);font-size:.95rem}
+.info{align-self:center;width:1.6rem;height:1.6rem;border-radius:50%;border:1px solid var(--muted);background:none;color:var(--muted);font:italic 600 1rem/1 var(--f-py);padding:0;margin-left:4px}
+.info[aria-expanded="true"]{background:var(--fg);border-color:var(--fg);color:var(--paper)}
 @media (prefers-reduced-motion: reduce){.rail i,.tile{transition:none}}
 </style>
 
@@ -358,7 +360,8 @@ const letterOf = (ch, tone) => tone && TONED[ch] ? TONED[ch][tone - 1] : ch;
 // Spelling check ignores tones, spaces and punctuation; "v" or "u" may stand for "ü".
 const spelling = s => parsePy(s.replace(/v/gi, 'ü')).filter(x => x.letter || x.ch === 'ü').map(x => x.ch === 'ü' ? 'u' : x.ch).join('');
 
-let stage = 'type', target = [], marks = [], spelledOk = true;
+let stage = 'type', target = [], marks = [], spelledOk = true, tipOpen = false;
+const TONE_TIP = 'Tap a vowel to cycle its tone: ā á ǎ à, then none.';
 let showZh = false, showEn2 = false;
 try { showZh = localStorage.getItem('d_zh') === '1'; showEn2 = localStorage.getItem('d_en') === '1'; } catch(e) {}
 
@@ -430,18 +433,25 @@ function renderLetters(){
     } else syl.append(el('span','cs',x.ch));
   });
   if (syl.childNodes.length) box.append(syl);
+  // The tip shows by itself on the first word; after that it sits behind a small "i" button.
+  if (stage === 'tone' && idx > 0) {
+    const i = el('button','info','i'); i.type = 'button';
+    i.setAttribute('aria-label', 'How to add tones'); i.setAttribute('aria-expanded', tipOpen);
+    i.addEventListener('click', () => { tipOpen = !tipOpen; $('dSub').textContent = tipOpen ? TONE_TIP : ''; i.setAttribute('aria-expanded', tipOpen); });
+    box.append(i);
+  }
 }
 function toTones(){
   const w = queue[idx];
   const typed = $('pyIn').value;
   if (!spelling(typed)) { $('pyIn').focus(); return; }
   spelledOk = spelling(typed) === spelling(w[1]);
-  stage = 'tone';
+  stage = 'tone'; tipOpen = false;
   $('pyIn').hidden = true; $('pyIn').blur(); $('letters').hidden = false;
   renderLetters();
   if (spelledOk) { $('dFb').textContent = ''; }
   else { $('dFb').className = 'fb bad'; $('dFb').textContent = 'Not quite: you typed “' + typed.trim() + '”. Here is the right spelling.'; }
-  $('dSub').textContent = 'Tap a vowel to cycle its tone: ā á ǎ à, then none.';
+  $('dSub').textContent = idx === 0 ? TONE_TIP : '';
   $('dGo').textContent = 'Check';
 }
 function syllableTones(ts){
