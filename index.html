@@ -95,6 +95,8 @@ button.card:hover{border-color:var(--accent)}
 .card .sub{color:var(--muted);font-size:.95rem}
 .card.soon{background:none;border-style:dashed;color:var(--muted)}
 .card.soon .ic{color:var(--muted)}
+.credit{grid-column:1/-1;color:var(--muted);font-size:.8rem;line-height:1.5;margin:12px 0 0}
+.credit a{color:inherit}
 .dict{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:20px 16px;display:grid;gap:14px;justify-items:center;text-align:center}
 .play{font-size:1.15rem;padding:12px 22px;border-radius:999px}
 .dict .hint{min-height:0}
@@ -148,6 +150,7 @@ button.card:hover{border-color:var(--accent)}
       <span class="lbl">More exercises</span>
       <span class="sub">Coming soon</span>
     </div>
+    <p class="credit">Recordings: 中華民國教育部（Ministry of Education, R.O.C.）。《國語辭典簡編本》（版本編號：2014_20260929）網址：<a href="https://dict.concised.moe.edu.tw/" target="_blank" rel="noopener">https://dict.concised.moe.edu.tw/</a>. Converted to MP3, otherwise unmodified, under <a href="https://creativecommons.org/licenses/by-nd/3.0/tw/" target="_blank" rel="noopener">CC BY-ND 3.0 TW</a> (<a href="/audio/moe-usage-notice.pdf" target="_blank">使用說明</a>); five come from an earlier MOE release via <a href="https://www.moedict.tw/" target="_blank" rel="noopener">萌典 moedict.tw</a>.</p>
   </section>
 
   <section class="menu" id="menu" hidden>
@@ -239,7 +242,7 @@ function buildMenu(){
   });
 }
 function hideAll(){
-  stopClock(); if (window.speechSynthesis) speechSynthesis.cancel();
+  stopClock(); stopAudio();
   ['home','menu','tmenu','meta','rail','promptBox','results','board','dict','mwBox'].forEach(id => $(id).hidden = true);
 }
 function showHome(){
@@ -328,9 +331,44 @@ $('restartBtn').addEventListener('click', () => ex === 'tones' ? startTones(WORD
 
 // ---- Pinyin dictation: hear a word, type its pinyin, then tap vowels to add tone marks ----
 
-// Audio. recordingFor() is where recorded files plug in later: return a URL for the word
-// (e.g. '/audio/' + w[0] + '.mp3') and it is played instead of the browser's speech voice.
-function recordingFor(w){ return null; }
+// Audio. Words with a recording in audio/index.json (MOE dictionary recordings) play that;
+// everything else uses the browser's speech voice. The recordings go on to read example words
+// or the definition, so index.json gives the span to play: { "我們": { "f": file id, "s": start, "e": end } }.
+// Files are never edited; the player seeks to s and stops at e.
+let CLIPS = {};
+const recordingFor = w => CLIPS[w[0]] || null;
+const clipUrls = {};
+function clipUrl(c){
+  // Fetched once (the service worker keeps it for offline use) and played from a blob URL,
+  // which avoids range-request trouble between audio elements and the service worker.
+  return clipUrls[c.f] = clipUrls[c.f] || fetch('/audio/' + c.f + '.mp3')
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.blob(); })
+    .then(b => URL.createObjectURL(b))
+    .catch(e => { delete clipUrls[c.f]; throw e; });
+}
+const player = new Audio();
+let playId = 0;
+function stopAudio(){ playId++; player.pause(); if (window.speechSynthesis) speechSynthesis.cancel(); }
+function playClip(c, slow, id){
+  return clipUrl(c).then(url => new Promise((ok, fail) => {
+    if (id !== playId) return ok();
+    const begin = () => {
+      player.currentTime = c.s;
+      player.playbackRate = slow ? 0.7 : 1; player.preservesPitch = true;
+      player.play().then(() => {
+        // Stop at the end of the word (a timer rather than animation frames, which pause
+        // when the page isn't being drawn).
+        const watch = () => {
+          if (id !== playId || player.paused) return;
+          if (player.currentTime >= c.e) player.pause(); else setTimeout(watch, 10);
+        };
+        watch(); ok();
+      }, fail);
+    };
+    if (player.src !== url) { player.src = url; player.addEventListener('loadedmetadata', begin, { once: true }); player.load(); }
+    else begin();
+  }));
+}
 let zhVoice = null;
 function pickVoice(){
   if (!window.speechSynthesis) return;
@@ -340,14 +378,14 @@ function pickVoice(){
   zhVoice = find(/^(zh|cmn)-(TW|Hant)/i) || find(/^(zh|cmn)-(CN|Hans)/i) || find(/^cmn/i) || find(/^zh$/i) || null;
 }
 if (window.speechSynthesis) { pickVoice(); speechSynthesis.addEventListener('voiceschanged', pickVoice); }
-let player = null;
 function playWord(w, slow){
-  const src = recordingFor(w);
-  if (src) {
-    if (player) player.pause();
-    player = new Audio(src); player.playbackRate = slow ? 0.7 : 1; player.play().catch(() => {});
-    return;
-  }
+  stopAudio();
+  const c = recordingFor(w), id = playId;
+  // No recording, or it can't be loaded (offline before it was ever played): speak it instead.
+  if (c) { playClip(c, slow, id).catch(() => { if (id === playId) speak(w, slow); }); return; }
+  speak(w, slow);
+}
+function speak(w, slow){
   if (!window.speechSynthesis) return;
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(w[0].replace(/[…。，、\s]/g, ''));
@@ -626,7 +664,11 @@ $('mwCard').addEventListener('click', () => go('/measure'));
 const mwLoad = fetch('/measure-words.json', {cache: 'no-cache'})
   .then(r => r.ok ? r.json() : []).catch(() => [])
   .then(data => { MW = Array.isArray(data) ? data.filter(m => m.nouns && m.nouns.length) : []; MW_ITEMS = mwItems(); $('mwCard').hidden = !MW_ITEMS.length; });
-Promise.all([fetch('/lessons.json', {cache: 'no-cache'}), mwLoad])
+// Recordings are optional too: without audio/index.json every word uses the speech voice.
+const clipsLoad = fetch('/audio/index.json', {cache: 'no-cache'})
+  .then(r => r.ok ? r.json() : {}).catch(() => ({}))
+  .then(data => { CLIPS = data && typeof data === 'object' ? data : {}; });
+Promise.all([fetch('/lessons.json', {cache: 'no-cache'}), mwLoad, clipsLoad])
   .then(([r]) => { if (!r.ok) throw new Error(r.status); return r.json(); })
   .then(data => {
     LESSONS = data; buildMenu(); buildTonesMenu();

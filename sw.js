@@ -1,5 +1,8 @@
-const VERSION = 'v17';
+const VERSION = 'v18';
 const CACHE = `clc-vocab-${VERSION}`;
+// Recordings get their own cache that survives version bumps: each file is downloaded the
+// first time it is played and then kept for offline use. Bump AUDIO_CACHE only if files change.
+const AUDIO_CACHE = 'clc-audio-v1';
 const PRECACHE = [
   '/',
   '/lessons.json',
@@ -22,7 +25,7 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
+      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE && k !== AUDIO_CACHE).map((k) => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
@@ -38,7 +41,7 @@ self.addEventListener('fetch', (event) => {
   // Navigations and lesson / measure-word data: network-first so updates show up right away,
   // keep the latest copy in the cache, fall back to it offline.
   const path = new URL(req.url).pathname;
-  const isData = path === '/lessons.json' || path === '/measure-words.json';
+  const isData = path === '/lessons.json' || path === '/measure-words.json' || path === '/audio/index.json';
   if (req.mode === 'navigate' || isData) {
     const key = isData ? path : '/';
     event.respondWith(
@@ -51,6 +54,19 @@ self.addEventListener('fetch', (event) => {
           return response;
         })
         .catch(() => caches.match(key))
+    );
+    return;
+  }
+
+  // Recordings: cache-only once fetched, never refreshed (they don't change).
+  if (path.startsWith('/audio/') && path.endsWith('.mp3')) {
+    event.respondWith(
+      caches.open(AUDIO_CACHE).then((cache) =>
+        cache.match(path).then((cached) => cached || fetch(path).then((response) => {
+          if (response.ok && response.status === 200) cache.put(path, response.clone());
+          return response;
+        }))
+      )
     );
     return;
   }
