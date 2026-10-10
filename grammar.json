@@ -10,9 +10,191 @@
       ["陳小姐", "喝啤酒 💔", "喝咖啡 ❤️"],
       ["王小姐", "看書 ❤️", "看電影 ❤️"],
       ["李先生", "踢足球 💔", "打籃球 💔"]
+    ] },
+    "prices": { "head": ["", "塊錢"], "rows": [
+      ["一杯咖啡", "55"],
+      ["一張照片", "20"],
+      ["一本書", "900"],
+      ["一支手機", "23,800"],
+      ["一瓶可樂", "35"]
     ] }
   },
   "points": [
+    {
+      "id": "bu",
+      "zh": "不 bù / bú",
+      "en": "不 changes its tone",
+      "card": {
+        "patterns": [
+          "{k:不} bù + 1st / 2nd / 3rd tone",
+          "{k:不} bú + 4th tone"
+        ],
+        "examples": [
+          ["{k:不}{v:吃}", "bù chī", "not eat"],
+          ["{k:不}{v:喜歡}", "bù xǐ huān", "not like"],
+          ["{k:不}{v:是}", "bú shì", "not be"],
+          ["{k:不}{v:要}", "bú yào", "not want"],
+          ["{k:不}客氣", "bú kè qì", "you're welcome"]
+        ],
+        "tip": "不 is bù, but it becomes bú when the next syllable is 4th tone (是 shì, 要 yào, 客 kè, 姓 xìng, 叫 jiào, 看 kàn)."
+      },
+      "items": [
+        {"type": "pick", "q": "不是 = ＿ shì", "opts": ["bú", "bù"], "en": "not be"},
+        {"type": "pick", "q": "不要 = ＿ yào", "opts": ["bú", "bù"], "en": "not want"},
+        {"type": "pick", "q": "不客氣 = ＿ kè qì", "opts": ["bú", "bù"], "en": "you're welcome"},
+        {"type": "pick", "q": "不姓 = ＿ xìng", "opts": ["bú", "bù"], "en": "not be surnamed"},
+        {"type": "pick", "q": "不叫 = ＿ jiào", "opts": ["bú", "bù"], "en": "not be called"},
+        {"type": "pick", "q": "不看 = ＿ kàn", "opts": ["bú", "bù"], "en": "not look, not read"},
+        {"type": "pick", "q": "不吃 = ＿ chī", "opts": ["bù", "bú"], "en": "not eat"},
+        {"type": "pick", "q": "不喝 = ＿ hē", "opts": ["bù", "bú"], "en": "not drink"},
+        {"type": "pick", "q": "不來 = ＿ lái", "opts": ["bù", "bú"], "en": "not come"},
+        {"type": "pick", "q": "不喜歡 = ＿ xǐ huān", "opts": ["bù", "bú"], "en": "not like"},
+        {"type": "pick", "q": "不覺得 = ＿ jué de", "opts": ["bù", "bú"], "en": "not think"},
+        {"type": "pick", "q": "不好 = ＿ hǎo", "opts": ["bù", "bú"], "en": "not good"}
+      ]
+    },
+    {
+      "id": "xihuan",
+      "zh": "喜歡 · 喝 / 吃",
+      "en": "What do you like to eat and drink?",
+      "card": {
+        "patterns": [
+          "Q：{s:你}{k:喜歡}{v:喝 / 吃}{o:什麼}？",
+          "A：{s:我}{k:喜歡}{v:喝 / 吃}{o:＿}。",
+          "A：{s:我}{k:不喜歡}{v:喝 / 吃}{o:＿}。"
+        ],
+        "examples": [
+          ["{s:你}{k:喜歡}{v:喝}{o:什麼}？", "nǐ xǐ huān hē shén me?", "What do you like to drink?"],
+          ["{s:我}{k:喜歡}{v:喝}{o:珍珠奶茶}。", "wǒ xǐ huān hē zhēn zhū nǎi chá.", "I like bubble tea."],
+          ["{s:我}{k:不喜歡}{v:吃}{o:漢堡}。", "wǒ bù xǐ huān chī hàn bǎo.", "I don't like hamburgers."]
+        ],
+        "tip": "喝 is for drinks, 吃 for food. The answer keeps the question's word order: just put the thing where 什麼 was."
+      },
+      "items": [
+        {"type": "pick", "q": "我喜歡＿牛肉麵。", "opts": ["吃", "喝"], "en": "I like beef noodles."},
+        {"type": "pick", "q": "我喜歡＿果汁。", "opts": ["喝", "吃"], "en": "I like juice."},
+        {"type": "pick", "q": "我不喜歡＿可樂。", "opts": ["喝", "吃"], "en": "I don't like cola."},
+        {"type": "pick", "q": "我喜歡＿小籠包。", "opts": ["吃", "喝"], "en": "I like soup dumplings."},
+        {"type": "pick", "q": "我不喜歡＿巧克力。", "opts": ["吃", "喝"], "en": "I don't like chocolate."},
+        {"type": "pick", "q": "她喜歡＿珍珠奶茶。", "opts": ["喝", "吃"], "en": "She likes bubble tea."},
+        {"type": "pick", "ctx": "Q：你喜歡喝什麼？", "q": "Which answer fits?", "opts": ["我喜歡喝牛奶。", "我喜歡吃牛奶。", "我喝什麼喜歡牛奶。"], "en": "I like milk."},
+        {"type": "order", "tiles": ["我", "不", "喜歡", "吃", "壽司", "。"], "en": "I don't like eating sushi."},
+        {"type": "order", "tiles": ["你", "不", "喜歡", "吃", "什麼", "？"], "en": "What do you not like to eat?"},
+        {"type": "order", "tiles": ["他", "喜歡", "吃", "炒飯", "。"], "en": "He likes fried rice."}
+      ]
+    },
+    {
+      "id": "yao",
+      "zh": "要 / 不要",
+      "en": "Want, don't want",
+      "card": {
+        "patterns": [
+          "Q：{s:你}{k:要}{v:喝}{o:什麼}？",
+          "A：{s:我}{k:要}{v:喝}{o:＿}。",
+          "A：{s:我}{k:不要}{v:喝}{o:＿}。"
+        ],
+        "examples": [
+          ["{s:你}{k:要}{v:喝}{o:什麼}？", "nǐ yào hē shén me?", "What would you like to drink?"],
+          ["{s:我}{k:要}{v:喝}{o:果汁}。", "wǒ yào hē guǒ zhī.", "I'd like a juice."],
+          ["{s:我}{k:不要}{v:喝}{o:可樂}。", "wǒ bú yào hē kě lè.", "I don't want cola."]
+        ],
+        "tip": "要 = to want, right now (ordering, choosing). 喜歡 = to like, in general. Before 要, 不 is said bú: 不要 bú yào."
+      },
+      "items": [
+        {"type": "pick", "ctx": "A：你要喝什麼？", "q": "B：我＿喝牛奶。", "opts": ["要", "是", "很"], "en": "I'd like milk."},
+        {"type": "pick", "ctx": "A：你要喝咖啡嗎？", "q": "B：不，我＿喝咖啡，我要喝茶。", "opts": ["不要", "要", "很"], "en": "No, I don't want coffee, I want tea."},
+        {"type": "pick", "ctx": "A：你要吃漢堡嗎？", "q": "B：我不要吃漢堡，我＿吃沙拉。", "opts": ["要", "不要", "是"], "en": "I don't want a hamburger, I want a salad."},
+        {"type": "pick", "q": "Which question is right?", "opts": ["你要吃什麼？", "你要什麼吃？", "你吃要什麼？"], "en": "What would you like to eat?"},
+        {"type": "order", "tiles": ["我", "不", "要", "喝", "可樂", "。"], "en": "I don't want cola."},
+        {"type": "order", "tiles": ["你", "要", "喝", "什麼", "？"], "en": "What would you like to drink?"},
+        {"type": "order", "tiles": ["我", "要", "吃", "小籠包", "。"], "en": "I want to eat soup dumplings."}
+      ]
+    },
+    {
+      "id": "juede",
+      "zh": "覺得",
+      "en": "To think, to feel (an opinion)",
+      "card": {
+        "patterns": [
+          "Q：{s:你}{k:覺得}{o:什麼}很好喝？",
+          "A：{s:我}{k:覺得}{o:＿}很好喝。",
+          "A：{s:我}{k:覺得}{o:＿}不好喝。"
+        ],
+        "examples": [
+          ["{s:你}{k:覺得}{o:什麼}很好喝？", "nǐ jué de shén me hěn hǎo hē?", "What do you think tastes good?"],
+          ["{s:我}{k:覺得}{o:烏龍茶}很好喝。", "wǒ jué de wū lóng chá hěn hǎo hē.", "I think oolong tea tastes good."],
+          ["{s:我}{k:覺得}{o:啤酒}不好喝。", "wǒ jué de pí jiǔ bù hǎo hē.", "I don't think beer tastes good."]
+        ],
+        "tip": "After 覺得 comes a whole little sentence: the thing + 很 / 不 + 好喝 (drinks), 好看 (looks), 好玩 (fun)."
+      },
+      "items": [
+        {"type": "pick", "q": "我覺得紅酒很＿。", "opts": ["好喝", "好看", "好玩"], "en": "I think red wine tastes good."},
+        {"type": "pick", "q": "我覺得打網球不＿。", "opts": ["好玩", "好喝", "好看"], "en": "I don't think tennis is fun."},
+        {"type": "pick", "q": "我覺得這張照片很＿。", "opts": ["好看", "好喝", "好玩"], "en": "I think this photo is pretty."},
+        {"type": "pick", "q": "我＿牛奶很好喝。", "opts": ["覺得", "要", "是"], "en": "I think milk tastes good."},
+        {"type": "pick", "ctx": "Q：你覺得什麼很好喝？", "q": "Which answer fits?", "opts": ["我覺得珍珠奶茶很好喝。", "我覺得很好喝珍珠奶茶。", "珍珠奶茶覺得我很好喝。"], "en": "I think bubble tea tastes good."},
+        {"type": "order", "tiles": ["我", "覺得", "可樂", "不", "好喝", "。"], "en": "I don't think cola tastes good."},
+        {"type": "order", "tiles": ["你", "覺得", "什麼", "很", "好喝", "？"], "en": "What do you think tastes good?"},
+        {"type": "order", "tiles": ["我", "覺得", "打籃球", "很", "好玩", "。"], "en": "I think playing basketball is fun."}
+      ]
+    },
+    {
+      "id": "ji",
+      "zh": "幾 + MW + N",
+      "en": "How many? (small numbers)",
+      "card": {
+        "patterns": [
+          "Q：{s:S.} + 有 + {k:幾} + MW + {o:N.}？",
+          "A：{s:S.} + 有 + Number + MW + {o:N.}。"
+        ],
+        "examples": [
+          ["{s:老師}有{k:幾}張{o:照片}？", "lǎo shī yǒu jǐ zhāng zhào piàn?", "How many photos does the teacher have?"],
+          ["{s:老師}有{k:三}張{o:照片}。", "lǎo shī yǒu sān zhāng zhào piàn.", "The teacher has three photos."],
+          ["{s:你}有{k:幾}個{o:哥哥}？", "nǐ yǒu jǐ ge gē ge?", "How many older brothers do you have?"]
+        ],
+        "tip": "幾 asks \"how many\" when you expect a small number. Keep the measure word: 幾張照片, 幾個人, 幾本書. In the answer, put the number where 幾 was; 2 is 兩, not 二."
+      },
+      "items": [
+        {"type": "pick", "ctx": "A：老師有幾張照片？", "q": "B：老師有＿照片。", "opts": ["三張", "三個", "三"], "en": "The teacher has three photos."},
+        {"type": "pick", "ctx": "A：你有幾個姐姐？", "q": "B：我有＿姐姐。", "opts": ["兩個", "二個", "兩張"], "en": "I have two older sisters."},
+        {"type": "pick", "q": "你有＿本書？", "opts": ["幾", "什麼", "哪"], "en": "How many books do you have?"},
+        {"type": "pick", "q": "他家有幾＿人？", "opts": ["個", "張", "本"], "en": "How many people are in his family?"},
+        {"type": "pick", "q": "你有幾＿照片？", "opts": ["張", "個", "本"], "en": "How many photos do you have?"},
+        {"type": "order", "tiles": ["你", "有", "幾", "個", "弟弟", "？"], "en": "How many younger brothers do you have?"},
+        {"type": "order", "tiles": ["我", "有", "兩", "個", "哥哥", "。"], "en": "I have two older brothers."},
+        {"type": "order", "tiles": ["老師", "有", "幾", "本", "書", "？"], "en": "How many books does the teacher have?"}
+      ]
+    },
+    {
+      "id": "de",
+      "zh": "Pronoun + (的)",
+      "en": "When you can drop 的",
+      "card": {
+        "patterns": [
+          "{s:Pronoun} + ({k:的}) + {o:family, 家, 學校, 班, 公司}",
+          "{s:Name / Pronoun} + {k:的} + {o:thing}"
+        ],
+        "examples": [
+          ["{s:我}{o:姐姐}", "wǒ jiě jie", "my older sister"],
+          ["{s:我們}{o:學校}", "wǒ men xué xiào", "our school"],
+          ["{s:我}{k:的}{o:書}", "wǒ de shū", "my book"],
+          ["{s:張先生}{k:的}{o:太太}", "zhāng xiān shēng de tài tai", "Mr. Zhang's wife"]
+        ],
+        "tip": "的 means \"'s / of\". After a pronoun (我, 你們, 他們…) you can drop it before family and before groups you belong to (家, 學校, 班, 公司). Keep it before things (書, 房子, 車) and after names (張先生的…)."
+      },
+      "items": [
+        {"type": "pick", "q": "我＿爸爸", "opts": ["的 or nothing", "的 only"], "en": "my dad", "fill": "（的）"},
+        {"type": "pick", "q": "你＿哥哥", "opts": ["的 or nothing", "的 only"], "en": "your older brother", "fill": "（的）"},
+        {"type": "pick", "q": "你們＿老師", "opts": ["的 or nothing", "的 only"], "en": "your teacher", "fill": "（的）"},
+        {"type": "pick", "q": "我們＿學校", "opts": ["的 or nothing", "的 only"], "en": "our school", "fill": "（的）"},
+        {"type": "pick", "q": "我們＿班", "opts": ["的 or nothing", "的 only"], "en": "our class", "fill": "（的）"},
+        {"type": "pick", "q": "李小姐＿朋友", "opts": ["的 only", "的 or nothing"], "en": "Miss Li's friend", "fill": "的"},
+        {"type": "pick", "q": "你們＿車", "opts": ["的 only", "的 or nothing"], "en": "your car", "fill": "的"},
+        {"type": "pick", "q": "我＿書", "opts": ["的 only", "的 or nothing"], "en": "my book", "fill": "的"},
+        {"type": "pick", "q": "他們＿房子", "opts": ["的 only", "的 or nothing"], "en": "their house", "fill": "的"},
+        {"type": "pick", "q": "王伯母＿女兒", "opts": ["的 only", "的 or nothing"], "en": "Mrs. Wang's daughter", "fill": "的"}
+      ]
+    },
     {
       "id": "time-words",
       "zh": "時間詞",
@@ -29,12 +211,12 @@
         "tip": "The time word (今天晚上, 明天早上, 星期一, 週末) goes right after the subject, before the verb. Putting it first (今天晚上我們…) is also heard, but the handout teaches S + TW + VO."
       },
       "items": [
-        {"type": "order", "ctx": "We're going to see a movie tonight.", "tiles": ["我們", "今天晚上", "要", "去", "看電影。"], "alts": [["今天晚上", "我們", "要", "去", "看電影。"]]},
-        {"type": "order", "ctx": "I'm going swimming tomorrow morning.", "tiles": ["我", "明天早上", "要", "去", "游泳。"], "alts": [["明天早上", "我", "要", "去", "游泳。"]]},
-        {"type": "order", "ctx": "He often plays basketball on weekends.", "tiles": ["他", "週末", "常", "打籃球。"], "alts": [["週末", "他", "常", "打籃球。"]]},
-        {"type": "order", "ctx": "What are you doing this evening?", "tiles": ["你", "今天晚上", "要", "做什麼？"], "alts": [["今天晚上", "你", "要", "做什麼？"]]},
-        {"type": "order", "ctx": "Tomorrow evening we'll eat Vietnamese food together.", "tiles": ["我們", "明天晚上", "一起", "吃", "越南菜。"], "alts": [["明天晚上", "我們", "一起", "吃", "越南菜。"]]},
-        {"type": "order", "ctx": "He takes photos on Tuesday evenings.", "tiles": ["他", "星期二", "晚上", "照相。"], "alts": [["星期二", "晚上", "他", "照相。"]]},
+        {"type": "order", "tiles": ["我們", "今天晚上", "要", "去", "看電影", "。"], "alts": [["今天晚上", "我們", "要", "去", "看電影", "。"]], "en": "We're going to see a movie tonight."},
+        {"type": "order", "tiles": ["我", "明天早上", "要", "去", "游泳", "。"], "alts": [["明天早上", "我", "要", "去", "游泳", "。"]], "en": "I'm going swimming tomorrow morning."},
+        {"type": "order", "tiles": ["他", "週末", "常", "打籃球", "。"], "alts": [["週末", "他", "常", "打籃球", "。"]], "en": "He often plays basketball on weekends."},
+        {"type": "order", "tiles": ["你", "今天晚上", "要", "做什麼", "？"], "alts": [["今天晚上", "你", "要", "做什麼", "？"]], "en": "What are you doing this evening?"},
+        {"type": "order", "tiles": ["我們", "明天晚上", "一起", "吃", "越南菜", "。"], "alts": [["明天晚上", "我們", "一起", "吃", "越南菜", "。"]], "en": "Tomorrow evening we'll eat Vietnamese food together."},
+        {"type": "order", "tiles": ["他", "星期二", "晚上", "照相", "。"], "alts": [["星期二", "晚上", "他", "照相", "。"]], "en": "He takes photos on Tuesday evenings."},
         {"type": "pick", "table": "week", "q": "他星期二早上做什麼？", "opts": ["他星期二早上打棒球。", "他星期二早上照相。", "他星期三早上踢足球。"], "en": "He plays baseball on Tuesday mornings."},
         {"type": "pick", "table": "week", "q": "他星期三晚上做什麼？", "opts": ["他星期三晚上做晚飯。", "他做晚飯星期三晚上。", "他星期三早上做晚飯。"], "en": "He makes dinner on Wednesday evenings."},
         {"type": "pick", "table": "week", "q": "他星期四早上做什麼？", "opts": ["他星期四早上看書。", "星期四早上看書他。", "他星期四晚上看書。"], "en": "He reads on Thursday mornings."},
@@ -68,8 +250,8 @@
         {"type": "pick", "ctx": "A：你爸爸媽媽是美國人嗎？", "q": "B：是，他們＿是美國人。", "opts": ["都", "常", "不"], "en": "Yes, they're both American."},
         {"type": "pick", "ctx": "A：我喜歡游泳。", "q": "B：我＿喜歡游泳！", "opts": ["也", "都", "常"], "en": "I like swimming too!"},
         {"type": "pick", "ctx": "A：我喜歡吃臺灣菜和越南菜。", "q": "B：臺灣菜、越南菜，我＿喜歡吃。", "opts": ["也都", "都也", "常也"], "en": "Taiwanese and Vietnamese food, I like both too."},
-        {"type": "order", "ctx": "We both often eat Vietnamese food.", "tiles": ["我們", "都", "常", "吃", "越南菜。"]},
-        {"type": "order", "ctx": "I also like listening to music.", "tiles": ["我", "也", "喜歡", "聽", "音樂。"]}
+        {"type": "order", "tiles": ["我們", "都", "常", "吃", "越南菜", "。"], "en": "We both often eat Vietnamese food."},
+        {"type": "order", "tiles": ["我", "也", "喜歡", "聽", "音樂", "。"], "en": "I also like listening to music."}
       ]
     },
     {
@@ -90,10 +272,10 @@
         "tip": "和 only joins two things (nouns or activities), never two sentences: for that use 也. With 都, the two things come first, because 都 points back to them."
       },
       "items": [
-        {"type": "order", "ctx": "Say it with 也: 我喜歡看書和看電影。", "tiles": ["我", "喜歡", "看書，", "也", "喜歡", "看電影。"]},
-        {"type": "order", "ctx": "Say it with 都: 我喜歡游泳和踢足球。", "tiles": ["游泳", "和", "踢足球，", "我", "都", "喜歡。"]},
-        {"type": "order", "ctx": "你想吃越南菜還是美國菜？ (You want both.)", "tiles": ["越南菜", "和", "美國菜，", "我", "都", "想", "吃。"]},
-        {"type": "order", "ctx": "你想看美國電影還是臺灣電影？ (You want both.)", "tiles": ["美國電影", "和", "臺灣電影，", "我", "都", "想", "看。"]},
+        {"type": "order", "ctx": "Say it with 也: 我喜歡看書和看電影。", "tiles": ["我", "喜歡", "看書", "，", "也", "喜歡", "看電影", "。"]},
+        {"type": "order", "ctx": "Say it with 都: 我喜歡游泳和踢足球。", "tiles": ["游泳", "和", "踢足球", "，", "我", "都", "喜歡", "。"], "alts": [["踢足球", "和", "游泳", "，", "我", "都", "喜歡", "。"]]},
+        {"type": "order", "ctx": "你想吃越南菜還是美國菜？ (You want both.)", "tiles": ["越南菜", "和", "美國菜", "，", "我", "都", "想", "吃", "。"], "alts": [["美國菜", "和", "越南菜", "，", "我", "都", "想", "吃", "。"]]},
+        {"type": "order", "ctx": "你想看美國電影還是臺灣電影？ (You want both.)", "tiles": ["美國電影", "和", "臺灣電影", "，", "我", "都", "想", "看", "。"], "alts": [["臺灣電影", "和", "美國電影", "，", "我", "都", "想", "看", "。"]]},
         {"type": "pick", "q": "我喜歡喝茶，＿喜歡喝咖啡。", "opts": ["也", "都", "和"], "en": "I like tea, and I also like coffee."},
         {"type": "pick", "q": "茶和咖啡，我＿喜歡喝。", "opts": ["都", "也", "和"], "en": "Tea and coffee, I like both."},
         {"type": "pick", "q": "我喜歡喝茶＿咖啡。", "opts": ["和", "也", "都"], "en": "I like tea and coffee."},
@@ -120,11 +302,11 @@
         {"type": "pick", "table": "likes", "q": "陳小姐喜歡喝啤酒還是喝咖啡？", "opts": ["她喜歡喝咖啡。", "她喜歡喝啤酒。", "喝啤酒和喝咖啡，她都喜歡。"], "en": "She likes coffee."},
         {"type": "pick", "table": "likes", "q": "王小姐喜歡看書還是看電影？", "opts": ["看書和看電影，她都喜歡。", "她喜歡看書。", "她不喜歡看電影。"], "en": "Reading and movies, she likes both."},
         {"type": "pick", "table": "likes", "q": "李先生喜歡踢足球還是打籃球？", "opts": ["踢足球和打籃球，他都不喜歡。", "他喜歡打籃球。", "踢足球和打籃球，他都喜歡。"], "en": "Football and basketball, he likes neither."},
-        {"type": "pick", "q": "Ask: does he like tea or coffee?", "opts": ["他喜歡喝茶還是喝咖啡？", "他喜歡喝茶還是喝咖啡嗎？", "他喜歡喝茶和咖啡還是？"], "en": "Does he like tea or coffee?"},
+        {"type": "pick", "q": "Which question is right?", "opts": ["他喜歡喝茶還是喝咖啡？", "他喜歡喝茶還是喝咖啡嗎？", "他喜歡喝茶和咖啡還是？"], "en": "Does he like tea or coffee?"},
         {"type": "pick", "ctx": "A：你是美國人還是日本人？", "q": "B：＿", "opts": ["我是美國人。", "是，我是美國人。", "我是美國人嗎？"], "en": "I'm American."},
-        {"type": "order", "ctx": "Do you want to eat Taiwanese or Vietnamese food?", "tiles": ["你", "想", "吃", "臺灣菜", "還是", "越南菜？"]},
-        {"type": "order", "ctx": "Do you like swimming or playing tennis?", "tiles": ["你", "喜歡", "游泳", "還是", "打網球？"]},
-        {"type": "order", "ctx": "On weekends, do you often go to the movies or read?", "tiles": ["你", "週末", "常", "看電影", "還是", "看書？"], "alts": [["週末", "你", "常", "看電影", "還是", "看書？"]]}
+        {"type": "order", "tiles": ["你", "想", "吃", "臺灣菜", "還是", "越南菜", "？"], "alts": [["你", "想", "吃", "越南菜", "還是", "臺灣菜", "？"]], "en": "Do you want to eat Taiwanese or Vietnamese food?"},
+        {"type": "order", "tiles": ["你", "喜歡", "游泳", "還是", "打網球", "？"], "alts": [["你", "喜歡", "打網球", "還是", "游泳", "？"]], "en": "Do you like swimming or playing tennis?"},
+        {"type": "order", "tiles": ["你", "週末", "常", "看電影", "還是", "看書", "？"], "alts": [["週末", "你", "常", "看電影", "還是", "看書", "？"], ["你", "週末", "常", "看書", "還是", "看電影", "？"], ["週末", "你", "常", "看書", "還是", "看電影", "？"]], "en": "On weekends, do you often go to the movies or read?"}
       ]
     },
     {
@@ -144,11 +326,11 @@
         "tip": "Put the thing you're talking about first, add a comma, then say the rest of the sentence without it. Very common when answering a question about that thing."
       },
       "items": [
-        {"type": "order", "ctx": "Topic first: 我不常吃臺灣菜。", "tiles": ["臺灣菜，", "我", "不", "常", "吃。"]},
-        {"type": "order", "ctx": "Topic first: 我很喜歡美國電影。", "tiles": ["美國電影，", "我", "很", "喜歡。"]},
-        {"type": "order", "ctx": "Topic first: 我不喜歡打棒球。", "tiles": ["棒球，", "我", "不", "喜歡", "打。"]},
-        {"type": "order", "ctx": "你喝烏龍茶嗎？ Answer topic first: you like it a lot.", "tiles": ["烏龍茶，", "我", "很", "喜歡", "喝。"]},
-        {"type": "order", "ctx": "你常看書嗎？ Answer topic first: yes, often.", "tiles": ["書，", "我", "常", "看。"]},
+        {"type": "order", "ctx": "Topic first: 我不常吃臺灣菜。", "tiles": ["臺灣菜", "，", "我", "不", "常", "吃", "。"]},
+        {"type": "order", "ctx": "Topic first: 我很喜歡美國電影。", "tiles": ["美國電影", "，", "我", "很", "喜歡", "。"]},
+        {"type": "order", "ctx": "Topic first: 我不喜歡打棒球。", "tiles": ["棒球", "，", "我", "不", "喜歡", "打", "。"]},
+        {"type": "order", "ctx": "你喝烏龍茶嗎？ Answer topic first.", "tiles": ["烏龍茶", "，", "我", "很", "喜歡", "喝", "。"]},
+        {"type": "order", "ctx": "你常看書嗎？ Answer topic first.", "tiles": ["書", "，", "我", "常", "看", "。"]},
         {"type": "pick", "ctx": "Q：你想學中文嗎？", "q": "Which answer is a topic sentence?", "opts": ["中文，我想學。", "我想學中文。", "想學，我中文。"], "en": "Chinese, I want to learn it."},
         {"type": "pick", "q": "Which word order is right?", "opts": ["足球，我不常踢。", "足球，不常我踢。", "我不常，足球踢。"], "en": "Football, I don't often play it."},
         {"type": "pick", "ctx": "Q：你喜歡越南菜嗎？", "q": "越南菜，我＿喜歡。", "opts": ["很", "和", "還是"], "en": "Vietnamese food, I like it a lot."}
@@ -176,9 +358,155 @@
         {"type": "pick", "q": "A：我們明天晚上去看電影，＿？", "opts": ["好不好", "吧", "呢"], "en": "Shall we go see a movie tomorrow evening?"},
         {"type": "pick", "ctx": "A：我們週末去吃越南菜吧！", "q": "B：＿！我很喜歡越南菜。", "opts": ["好啊", "好不好", "吧"], "en": "Sure! I really like Vietnamese food."},
         {"type": "pick", "ctx": "A：我們要看什麼電影？", "q": "B：我們看＿吧！", "opts": ["日本電影", "好不好", "什麼電影"], "en": "Let's watch a Japanese movie!"},
-        {"type": "order", "ctx": "Let's go play basketball!", "tiles": ["我們", "去", "打籃球", "吧！"]},
-        {"type": "order", "ctx": "Let's go eat Taiwanese food together tomorrow evening!", "tiles": ["我們", "明天晚上", "一起", "去", "吃", "臺灣菜", "吧！"], "alts": [["明天晚上", "我們", "一起", "去", "吃", "臺灣菜", "吧！"]]},
-        {"type": "order", "ctx": "This weekend let's go to the movies, how about it?", "tiles": ["這個週末", "我們", "去", "看電影，", "怎麼樣？"], "alts": [["我們", "這個週末", "去", "看電影，", "怎麼樣？"]]}
+        {"type": "order", "tiles": ["我們", "去", "打籃球", "吧", "！"], "en": "Let's go play basketball!"},
+        {"type": "order", "tiles": ["我們", "明天晚上", "一起", "去", "吃", "臺灣菜", "吧", "！"], "alts": [["明天晚上", "我們", "一起", "去", "吃", "臺灣菜", "吧", "！"]], "en": "Let's go eat Taiwanese food together tomorrow evening!"},
+        {"type": "order", "tiles": ["這個週末", "我們", "去", "看電影", "，", "怎麼樣", "？"], "alts": [["我們", "這個週末", "去", "看電影", "，", "怎麼樣", "？"]], "en": "This weekend let's go to the movies, how about it?"}
+      ]
+    },
+    {
+      "id": "duo",
+      "zh": "多",
+      "en": "…and more (二十多, 一千多)",
+      "card": {
+        "patterns": [
+          "{k:Number + 多} + MW + {o:N.}　(10 and up)",
+          "Number + MW + {k:多} + {o:N.}　(less than one more)"
+        ],
+        "examples": [
+          ["{k:二十多}個{o:人}", "èr shí duō ge rén", "twenty-odd people"],
+          ["{k:一千多}塊{o:錢}", "yì qiān duō kuài qián", "a thousand-odd dollars"],
+          ["{k:一千三百多}塊{o:錢}", "yì qiān sān bǎi duō kuài qián", "1,300-odd dollars"],
+          ["兩個{k:多}{o:包子}", "liǎng ge duō bāo zi", "two and a bit buns"],
+          ["一杯{k:多}{o:咖啡}", "yì bēi duō kā fēi", "a cup and a bit of coffee"]
+        ],
+        "tip": "多 goes right after the last round number you say: 1378 → 一千多 (1001–1999), 一千三百多 (1301–1399), 一千三百七十多 (1371–1379). For less than one extra unit (2.5 buns), 多 goes after the measure word: 兩個多包子."
+      },
+      "items": [
+        {"type": "pick", "q": "1378 塊 (anything from 1001 to 1999) → ＿塊錢", "opts": ["一千多", "一千三百多", "一千多三百"], "en": "a thousand-odd dollars"},
+        {"type": "pick", "q": "1378 塊 (anything from 1301 to 1399) → ＿塊錢", "opts": ["一千三百多", "一千多", "一千三百七十多"], "en": "1,300-odd dollars"},
+        {"type": "pick", "q": "21–29 → ＿個人", "opts": ["二十多", "二多十", "二十個多"], "en": "twenty-odd people"},
+        {"type": "pick", "q": "501–599 → 五百多＿手機", "opts": ["支", "本", "張"], "en": "five hundred-odd phones"},
+        {"type": "pick", "q": "201–299 → ＿張照片", "opts": ["兩百多", "兩多百", "百兩多"], "en": "two hundred-odd photos"},
+        {"type": "pick", "q": "34,001–34,999 → ＿張照片", "opts": ["三萬四千多", "三萬多四千", "四千三萬多"], "en": "34,000-odd photos"},
+        {"type": "pick", "q": "2–3 → ＿包子", "opts": ["兩個多", "兩多個", "二個多"], "en": "two and a bit buns"},
+        {"type": "pick", "q": "7–8 → ＿咖啡", "opts": ["七杯多", "七多杯", "杯七多"], "en": "seven-odd cups of coffee"},
+        {"type": "pick", "ctx": "A：你有幾杯咖啡？(1–2 杯)", "q": "B：我有＿咖啡。", "opts": ["一杯多", "一多杯", "多一杯"], "en": "I have a cup and a bit of coffee."},
+        {"type": "pick", "ctx": "A：這是多少錢？(30,001–39,999 塊)", "q": "B：這是＿塊錢。", "opts": ["三萬多", "三多萬", "三萬塊多"], "en": "This is 30,000-odd dollars."}
+      ]
+    },
+    {
+      "id": "price",
+      "zh": "多少錢？",
+      "en": "Asking the price",
+      "card": {
+        "patterns": [
+          "Q：Number + MW + {o:N.} + {k:多少錢}？",
+          "A：Number + MW + {o:N.} + ＿{k:塊錢}。"
+        ],
+        "examples": [
+          ["一杯{o:咖啡}{k:多少錢}？", "yì bēi kā fēi duō shǎo qián?", "How much is a cup of coffee?"],
+          ["一杯{o:咖啡}五十五{k:塊錢}。", "yì bēi kā fēi wǔ shí wǔ kuài qián.", "A cup of coffee is 55 dollars."],
+          ["兩本{o:書}一千八百{k:塊錢}。", "liǎng běn shū yì qiān bā bǎi kuài qián.", "Two books are 1,800 dollars."]
+        ],
+        "tip": "多少 asks how much or how many for any amount (幾 is for small numbers). 塊 is the measure word for dollars. Measure words: 杯 cups, 張 flat things (照片), 本 books, 支 phones, 瓶 bottles, 個 most other things. You can also say 一杯咖啡要多少錢？"
+      },
+      "items": [
+        {"type": "pick", "table": "prices", "q": "一杯咖啡多少錢？", "opts": ["一杯咖啡五十五塊錢。", "一杯咖啡五百五塊錢。", "一個咖啡五十五塊錢。"], "en": "A cup of coffee is 55 dollars."},
+        {"type": "pick", "table": "prices", "q": "一本書多少錢？", "opts": ["一本書九百塊錢。", "一本書九十塊錢。", "一張書九百塊錢。"], "en": "A book is 900 dollars."},
+        {"type": "pick", "table": "prices", "q": "一支手機多少錢？", "opts": ["一支手機兩萬三千八百塊錢。", "一支手機二十三千八百塊錢。", "一本手機兩萬三千八百塊錢。"], "en": "A phone is 23,800 dollars."},
+        {"type": "pick", "table": "prices", "q": "一瓶可樂多少錢？", "opts": ["一瓶可樂三十五塊錢。", "一瓶可樂三百五塊錢。", "一本可樂三十五塊錢。"], "en": "A bottle of cola is 35 dollars."},
+        {"type": "pick", "q": "兩＿照片多少錢？", "opts": ["張", "本", "支"], "en": "How much are two photos?"},
+        {"type": "pick", "q": "一＿啤酒多少錢？", "opts": ["瓶", "本", "張"], "en": "How much is a bottle of beer?"},
+        {"type": "pick", "q": "Which asks the price?", "opts": ["這支手機多少錢？", "這支手機幾錢？", "這支手機多少？錢"], "en": "How much is this phone?"},
+        {"type": "order", "tiles": ["一", "杯", "咖啡", "多少錢", "？"], "en": "How much is a cup of coffee?"},
+        {"type": "order", "tiles": ["兩", "本", "書", "一千八百", "塊錢", "。"], "en": "Two books are 1,800 dollars."}
+      ]
+    },
+    {
+      "id": "shop",
+      "zh": "買 · 賣 · 幫 · 一共",
+      "en": "At the shop",
+      "card": {
+        "patterns": [
+          "老闆：請問您要{k:買}什麼？",
+          "客人：Number + MW + {o:N.} {k:賣}多少錢？",
+          "客人：請{k:幫}我{v:微波}。",
+          "老闆：{k:一共}＿塊錢。"
+        ],
+        "examples": [
+          ["請問您要{k:買}什麼？", "qǐng wèn nín yào mǎi shén me?", "What would you like to buy?"],
+          ["一杯{o:咖啡}{k:賣}多少錢？", "yì bēi kā fēi mài duō shǎo qián?", "How much is a cup of coffee?"],
+          ["{o:包子}，請{k:幫}我{v:微波}。", "bāo zi, qǐng bāng wǒ wéi bō.", "Please microwave the bun for me."],
+          ["{k:一共}八十五塊錢。", "yí gòng bā shí wǔ kuài qián.", "That's 85 dollars altogether."],
+          ["{k:好的}。", "hǎo de.", "OK, sure."]
+        ],
+        "tip": "買 mǎi (3rd tone) = to buy, 賣 mài (4th tone) = to sell: the customer 買, the shop 賣. 幫 + person + verb = do something for someone. 一共 = altogether."
+      },
+      "items": [
+        {"type": "pick", "q": "老闆：請問您要＿什麼？", "opts": ["買", "賣", "幫"], "en": "What would you like to buy?"},
+        {"type": "pick", "q": "老闆：一杯咖啡＿八十塊錢。", "opts": ["賣", "買", "幫"], "en": "A cup of coffee sells for 80 dollars."},
+        {"type": "pick", "q": "客人：我要＿兩本書。", "opts": ["買", "賣", "幫"], "en": "I'd like to buy two books."},
+        {"type": "pick", "q": "客人：包子，請＿我微波。", "opts": ["幫", "買", "賣"], "en": "Please microwave the bun for me."},
+        {"type": "pick", "ctx": "客人：一個包子和一杯咖啡多少錢？", "q": "老闆：＿八十五塊錢。", "opts": ["一共", "多少", "一起"], "en": "That's 85 dollars altogether."},
+        {"type": "pick", "ctx": "客人：請幫我微波。", "q": "老闆：＿。", "opts": ["好的", "好喝", "不客氣"], "en": "OK, sure."},
+        {"type": "order", "tiles": ["我", "要", "買", "一", "瓶", "可樂", "。"], "en": "I'd like to buy a bottle of cola."},
+        {"type": "order", "tiles": ["一", "支", "手機", "賣", "多少錢", "？"], "en": "How much is one phone?"},
+        {"type": "order", "tiles": ["請", "幫", "我", "微波", "。"], "en": "Please microwave it for me."}
+      ]
+    },
+    {
+      "id": "size",
+      "zh": "大 / 中 / 小 · 外帶 / 內用",
+      "en": "Ordering: size, take away or eat in",
+      "card": {
+        "patterns": [
+          "{s:你}要{o:大杯}、{o:中杯}{k:還是}{o:小杯}？",
+          "{s:你}要{o:外帶}{k:還是}{o:內用}？"
+        ],
+        "examples": [
+          ["咖啡，{s:你}要{o:大杯}、{o:中杯}{k:還是}{o:小杯}？", "kā fēi, nǐ yào dà bēi, zhōng bēi hái shì xiǎo bēi?", "Coffee: large, medium or small?"],
+          ["{s:我}要{o:中杯}。", "wǒ yào zhōng bēi.", "Medium, please."],
+          ["{s:你}要{o:外帶}{k:還是}{o:內用}？", "nǐ yào wài dài hái shì nèi yòng?", "Take away or eat in?"],
+          ["{s:你}喜歡{o:大車}{k:還是}{o:小車}？", "nǐ xǐ huān dà chē hái shì xiǎo chē?", "Do you like big cars or small cars?"]
+        ],
+        "tip": "大 / 中 / 小 go before the measure word or noun: 大杯, 小車. With three choices, put 、 between the first two and 還是 before the last. 外帶 = take away, 內用 = eat in."
+      },
+      "items": [
+        {"type": "pick", "ctx": "A：咖啡，你要大杯、中杯還是小杯？", "q": "B：＿", "opts": ["我要小杯。", "我要杯小。", "我小杯要嗎？"], "en": "Small, please."},
+        {"type": "pick", "q": "你要外帶＿內用？", "opts": ["還是", "和", "也"], "en": "Take away or eat in?"},
+        {"type": "pick", "ctx": "A：一個人去吃飯，你常外帶還是內用？", "q": "B：我常＿。", "opts": ["外帶", "大杯", "很"], "en": "I usually take away."},
+        {"type": "pick", "q": "Which question is right?", "opts": ["你要大杯、中杯還是小杯？", "你要大杯、中杯還是小杯嗎？", "你要大杯還是、中杯小杯？"], "en": "Large, medium or small?"},
+        {"type": "order", "tiles": ["你", "要", "外帶", "還是", "內用", "？"], "alts": [["你", "要", "內用", "還是", "外帶", "？"]], "en": "Do you want to take away or eat in?"},
+        {"type": "order", "tiles": ["我", "要", "大杯", "珍珠奶茶", "。"], "en": "I'd like a large bubble tea."},
+        {"type": "order", "tiles": ["你", "喜歡", "大車", "還是", "小車", "？"], "alts": [["你", "喜歡", "小車", "還是", "大車", "？"]], "en": "Do you like big cars or small cars?"},
+        {"type": "order", "tiles": ["你們", "喜歡", "外帶", "還是", "內用", "？"], "alts": [["你們", "喜歡", "內用", "還是", "外帶", "？"]], "en": "Do you (plural) like to take away or eat in?"}
+      ]
+    },
+    {
+      "id": "neng",
+      "zh": "能",
+      "en": "Can: three ways to say two things",
+      "card": {
+        "patterns": [
+          "{s:S.} + {k:能} + {v:A} {k:和} {v:B}",
+          "{s:S.} + {k:能} + {v:A}，{k:也能} + {v:B}",
+          "{v:A} {k:和} {v:B}，{s:S.} + {k:都能}"
+        ],
+        "examples": [
+          ["{s:這支手機}{k:能}{v:上網}{k:和}{v:照相}。", "zhè zhī shǒu jī néng shàng wǎng hàn zhào xiàng.", "This phone can go online and take photos."],
+          ["{s:這支手機}{k:能}{v:上網}，{k:也能}{v:照相}。", "zhè zhī shǒu jī néng shàng wǎng, yě néng zhào xiàng.", "This phone can go online, and it can also take photos."],
+          ["{v:上網}{k:和}{v:照相}，{s:這支手機}{k:都能}。", "shàng wǎng hàn zhào xiàng, zhè zhī shǒu jī dōu néng.", "Going online and taking photos, this phone can do both."]
+        ],
+        "tip": "能 = can, to be able to. It works like 喜歡 A 和 B: 也 and 都 go before 能 (也能, 都能)."
+      },
+      "items": [
+        {"type": "pick", "q": "這支手機能上網，＿能照相。", "opts": ["也", "都", "和"], "en": "This phone can go online, and it can also take photos."},
+        {"type": "pick", "q": "上網和照相，這支手機＿能。", "opts": ["都", "也", "和"], "en": "Going online and taking photos, this phone can do both."},
+        {"type": "pick", "q": "這支手機能上網＿照相。", "opts": ["和", "也", "都"], "en": "This phone can go online and take photos."},
+        {"type": "pick", "q": "Which sentence is right?", "opts": ["這支手機能上網，也能照相。", "這支手機能上網，能也照相。", "這支手機也上網，能照相。"], "en": "This phone can go online, and it can also take photos."},
+        {"type": "order", "ctx": "Say it with 也: 我的手機能上網和照相。", "tiles": ["我的手機", "能", "上網", "，", "也", "能", "照相", "。"]},
+        {"type": "order", "ctx": "Say it with 都: 這支手機能上網和照相。", "tiles": ["上網", "和", "照相", "，", "這支手機", "都", "能", "。"], "alts": [["照相", "和", "上網", "，", "這支手機", "都", "能", "。"]]},
+        {"type": "order", "tiles": ["你的手機", "能", "照相", "嗎", "？"], "en": "Can your phone take photos?"}
       ]
     }
   ]

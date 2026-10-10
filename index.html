@@ -175,7 +175,7 @@ button.card:hover{border-color:var(--accent)}
 <div class="wrap">
   <header>
     <div class="hrow"><button class="btn homebtn" id="modeBtn" type="button" hidden>← Home</button><h1 id="title">華語練習 · CLC Mandarin</h1></div>
-    <div class="meta" id="meta" hidden>Question <b id="qn">1</b>/<span id="qt">40</span> · Score <b id="sc">0</b> · <b id="clock">0:00</b></div>
+    <div class="meta" id="meta" hidden>Question <b id="qn">1</b>/<span id="qt">40</span> · Score <b id="sc">0</b></div>
   </header>
 
   <section class="home" id="home" hidden>
@@ -290,9 +290,6 @@ let LESSONS = [];
 const $ = id => document.getElementById(id);
 let showEn = false, showLen = false;
 try { showEn = localStorage.getItem('q_en') === '1'; showLen = localStorage.getItem('q_len') === '1'; } catch(e) {}
-let t0 = 0, tick = null;
-function fmt(ms){ const t = Math.floor(ms/1000); return Math.floor(t/60) + ':' + String(t%60).padStart(2,'0'); }
-function stopClock(){ clearInterval(tick); tick = null; }
 let ex = 'vocab', endless = false, WORDS = [], lesson = null, mode = 'py2zh', queue = [], idx = 0, score = 0, misses = [], answered = false, firstTry = true;
 
 function shuffle(a){ a = a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]} return a; }
@@ -319,7 +316,7 @@ function buildMenu(){
   });
 }
 function hideAll(){
-  stopClock(); stopAudio(); closeCard();
+  stopAudio(); closeCard();
   $('restartBtn').textContent = 'Start over (all words)';
   ['home','menu','tmenu','gmenu','grBox','meta','rail','promptBox','results','board','dict','mwBox'].forEach(id => $(id).hidden = true);
 }
@@ -349,8 +346,6 @@ function start(list){
   ['meta','rail','promptBox','board','modeBtn'].forEach(id => $(id).hidden = false);
   $('qt').textContent = queue.length;
   $('py').className = mode === 'zh2py' ? 'py zhq' : 'py';
-  stopClock(); t0 = Date.now(); $('clock').textContent = '0:00';
-  tick = setInterval(() => { $('clock').textContent = fmt(Date.now() - t0); }, 250);
   buildBoard(); show(); window.scrollTo(0,0);
 }
 function show(){
@@ -390,8 +385,7 @@ function pick(t){
 function next(){ idx++; if (idx >= queue.length) return finish(); show(); }
 function finish(){
   $('bar').style.width = '100%'; $('promptBox').hidden = true; $('board').hidden = true; $('results').hidden = false;
-  stopClock(); const took = fmt(Date.now() - t0); $('clock').textContent = took;
-  $('final').textContent = score + ' / ' + (endless ? idx : queue.length) + '  ·  ' + took;
+  $('final').textContent = score + ' / ' + (endless ? idx : queue.length);
   const m = $('missWrap'); m.textContent = '';
   if (!misses.length) { m.textContent = 'No mistakes. 太棒了！'; $('retryBtn').hidden = true; }
   else {
@@ -547,8 +541,6 @@ function startTones(list){
   ['meta','dict','modeBtn'].forEach(id => $(id).hidden = false);
   $('rail').hidden = endless; $('dEnd').hidden = !endless;
   $('qt').textContent = endless ? '∞' : queue.length;
-  t0 = Date.now(); $('clock').textContent = '0:00';
-  tick = setInterval(() => { $('clock').textContent = fmt(Date.now() - t0); }, 250);
   showWord(); window.scrollTo(0,0);
 }
 // Characters and English stay hidden until the word is checked (or when there is no audio).
@@ -686,8 +678,6 @@ function startMw(list){
   $('modeBtn').textContent = '← Home';
   ['meta','rail','mwBox','board','modeBtn'].forEach(id => $(id).hidden = false);
   $('qt').textContent = queue.length;
-  t0 = Date.now(); $('clock').textContent = '0:00';
-  tick = setInterval(() => { $('clock').textContent = fmt(Date.now() - t0); }, 250);
   buildMwBoard(); showMw(); window.scrollTo(0,0);
 }
 function showMw(){
@@ -726,7 +716,7 @@ function finishMw(){
 
 // ---- Grammar (語法): one page with every point and rounds of mixed questions ----
 // Data is grammar.json: { "tables": {...}, "points": [{ id, zh, en, card: {patterns, examples, tip}, items }] }.
-// Items: { type: "pick", ctx?, table?, q, opts, en } (opts[0] is right; "＿" in q is the gap)
+// Items: { type: "pick", ctx?, table?, q, opts, en, fill? } (opts[0] is right; "＿" in q is the gap, filled with fill or opts[0])
 //        { type: "order", ctx, tiles, alts? } (tiles in the right order; alts are other accepted orders)
 let GR = { tables: {}, points: [] }, grItems = [], grMisses = [], grCur = null, grPeeked = false, grDone = false, grPlaced = [];
 const ROUND = 10;
@@ -786,12 +776,10 @@ function startGr(items, title){
   $('title').textContent = title;
   $('modeBtn').textContent = '← Grammar';
   ['meta','rail','grBox','modeBtn'].forEach(id => $(id).hidden = false);
-  t0 = Date.now(); $('clock').textContent = '0:00';
-  tick = setInterval(() => { $('clock').textContent = fmt(Date.now() - t0); }, 250);
   showGr(); window.scrollTo(0,0);
 }
 const isZh = s => /[㐀-鿿]/.test(s);
-const grAnswer = it => it.type === 'order' ? it.tiles.join('') : it.q.includes('＿') ? it.q.replace(/^[AB]：/, '').replace('＿', it.opts[0]) : it.opts[0];
+const grAnswer = it => it.type === 'order' ? it.tiles.join('') : it.q.includes('＿') ? it.q.replace(/^[^：]{1,3}：/, '').replace('＿', it.fill || it.opts[0]) : it.opts[0];
 function grTableEl(t){
   const tb = el('table','gtable');
   if (t.head.some(Boolean)) { const tr = el('tr'); t.head.forEach(c => tr.append(el('th', null, c))); tb.append(tr); }
@@ -850,7 +838,6 @@ function grShowDone(ok){
   grDone = true;
   const it = grCur.it, fb = $('grFb'); fb.textContent = ''; fb.className = 'fb ' + (ok ? 'ok' : 'bad');
   fb.append(ok ? '對！ ' : 'Answer: ', el('span','zh', grAnswer(it)));
-  if (it.en) fb.append(el('span','en',it.en));
   $('grUndo').hidden = true;
   $('grGo').hidden = false; $('grGo').textContent = idx + 1 < queue.length ? 'Next' : 'See results';
   $('grGo').focus({ preventScroll: true });
@@ -861,7 +848,7 @@ function pickGr(b, o){
   if (o === it.opts[0]) {
     b.classList.add('ok');
     $('grOpts').querySelectorAll('.wt').forEach(x => x.disabled = true);
-    if (it.q.includes('＿')) grGapQ(it.q, o);
+    if (it.q.includes('＿')) grGapQ(it.q, it.fill || o);
     grRight(); grShowDone(true);
   } else {
     grMiss(); b.classList.add('bad'); b.disabled = true;
@@ -894,10 +881,10 @@ $('grGo').addEventListener('click', () => {
 $('grUndo').addEventListener('click', () => { [...grPlaced].forEach(b => $('grOpts').append(b)); grPlaced = []; $('grGo').hidden = true; $('grUndo').hidden = true; });
 $('grPeek').addEventListener('click', () => { if (!grDone) grPeeked = true; openCard(grCur.p); });
 function finishGr(){
-  misses = grMisses.map(({ it }) => [grAnswer(it), '', it.en || (it.ctx && !isZh(it.ctx) ? it.ctx : '')]);
+  misses = grMisses.map(({ it }) => [grAnswer(it), '', '']);
   $('grBox').hidden = true;
   finish();
-  $('final').textContent = score + ' / ' + queue.filter(x => !x.again).length + '  ·  ' + $('clock').textContent;
+  $('final').textContent = score + ' / ' + queue.filter(x => !x.again).length;
   const g = $('missWrap').querySelector('.miss'); if (g) g.classList.add('long');
   $('restartBtn').textContent = 'Start over';
 }
