@@ -936,12 +936,39 @@ $('mFlash').addEventListener('click', () => go('/measure/flashcards'));
 
 // Flashcards: the measure word alone; hold the card to flip it (pinyin, what it counts, one example);
 // swipe left or right for the next card. The deck reshuffles after the last card.
+// A topic about several words (和 · 也 · 都) becomes one flashcard per word when it has one example per word;
+// the pattern and the tip are split the same way when they have one part per word, else the pattern is left out.
+// The whole tip stays unless it is about the other words only (買 / 賣 on the 幫 card).
+const keysOf = w => w.split(/ ?\/ ?/);
+const tipFor = (tip, w, parts) => !tip || parts.flatMap(keysOf).some(k => w.includes(k) && tip.includes(k)) || !parts.some(o => keysOf(o).some(k => tip.includes(k))) ? tip : '';
+function fcSplit(points){
+  const plain = t => t.replace(/\{\w+:([^}]*)\}/g, '$1');
+  return points.flatMap(p => {
+    const parts = p.zh.split(' · '), exs = p.card.examples;
+    if (parts.length < 2 || exs.length !== parts.length) return [p];
+    // Each word takes the example that contains it, longest words first (哪國 before 哪).
+    const pick = new Map(), free = exs.slice();
+    [...parts].sort((a, b) => b.length - a.length).forEach(w => {
+      const keys = w.split(/ ?\/ ?/);
+      const i = free.findIndex(e => keys.some(k => plain(e[0]).includes(k)));
+      pick.set(w, free.splice(i < 0 ? 0 : i, 1)[0]);
+    });
+    // A pattern listing the words ("也 / 都 / 常") gets just this word; "買 buy · 賣 sell" splits.
+    const pat = p.card.patterns.length === 1 ? p.card.patterns[0] : '', pats = pat.split(' · '), alt = parts.join(' / ');
+    const tips = (p.card.tip || '').match(/[^.]+\./g) || [];
+    const tipsFit = tips.length === parts.length && tips.every((t, i) => t.includes(parts[i].split(/ ?\/ ?/)[0]));
+    return parts.map((w, i) => ({ zh: w, en: p.en, card: {
+      patterns: pats.length === parts.length ? [pats[i]] : pat.includes(alt) ? [pat.replace(alt, w)] : [],
+      examples: [pick.get(w)],
+      tip: tipsFit ? tips[i].trim() : tipFor(p.card.tip, w, parts) } }));
+  });
+}
 // Grammar and question words have the same flashcards: the topic on the front, its card (pattern, examples, tip) on the back.
 let fcDeck = [], fcI = 0, fcAll = [];
 function startFc(gr){
   hideAll(); $('modeBtn').hidden = false; $('modeBtn').textContent = gr ? '← ' + GRS().en : '← Measure words';
   $('title').textContent = (gr ? GRS().zh : '量詞') + ' · Flashcards'; $('fcBox').hidden = false; $('credit').hidden = true;
-  fcAll = gr ? GRS().data.points : MW;
+  fcAll = gr ? fcSplit(GRS().data.points) : MW;
   $('fcCard').classList.toggle('gr', !!gr);
   fcDeck = shuffle(fcAll); fcI = 0; showFc(); window.scrollTo(0,0);
 }
