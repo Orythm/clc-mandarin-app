@@ -1,0 +1,173 @@
+{
+  "tables": {
+    "week": { "head": ["", "早上", "晚上"], "rows": [
+      ["星期一", "學中文", "打網球"],
+      ["星期二", "打棒球", "照相"],
+      ["星期三", "踢足球", "做晚飯"],
+      ["星期四", "看書", "聽音樂"]
+    ] },
+    "likes": { "head": ["", "", ""], "rows": [
+      ["陳小姐", "喝啤酒 💔", "喝咖啡 ❤️"],
+      ["王小姐", "看書 ❤️", "看電影 ❤️"],
+      ["李先生", "踢足球 💔", "打籃球 💔"]
+    ] }
+  },
+  "points": [
+    {
+      "id": "time-words",
+      "lesson": 3,
+      "zh": "時間詞",
+      "en": "Time words",
+      "card": {
+        "patterns": ["S. + TW. + VO."],
+        "examples": [
+          ["我們今天晚上要去看電影。", "wǒ men jīn tiān wǎn shàng yào qù kàn diàn yǐng.", "We're going to see a movie tonight."],
+          ["他星期一早上做什麼？", "tā xīng qí yī zǎo shàng zuò shén me?", "What does he do on Monday mornings?"],
+          ["他星期一早上學中文。", "tā xīng qí yī zǎo shàng xué zhōng wén.", "He studies Chinese on Monday mornings."]
+        ],
+        "tip": "The time word (今天晚上, 明天早上, 星期一, 週末) goes right after the subject, before the verb. Putting it first (今天晚上我們…) is also heard, but the handout teaches S + TW + VO."
+      },
+      "items": [
+        {"type": "order", "ctx": "We're going to see a movie tonight.", "tiles": ["我們", "今天晚上", "要", "去", "看電影。"], "alts": [["今天晚上", "我們", "要", "去", "看電影。"]]},
+        {"type": "order", "ctx": "I'm going swimming tomorrow morning.", "tiles": ["我", "明天早上", "要", "去", "游泳。"], "alts": [["明天早上", "我", "要", "去", "游泳。"]]},
+        {"type": "order", "ctx": "He often plays basketball on weekends.", "tiles": ["他", "週末", "常", "打籃球。"], "alts": [["週末", "他", "常", "打籃球。"]]},
+        {"type": "order", "ctx": "What are you doing this evening?", "tiles": ["你", "今天晚上", "要", "做什麼？"], "alts": [["今天晚上", "你", "要", "做什麼？"]]},
+        {"type": "order", "ctx": "Tomorrow evening we'll eat Vietnamese food together.", "tiles": ["我們", "明天晚上", "一起", "吃", "越南菜。"], "alts": [["明天晚上", "我們", "一起", "吃", "越南菜。"]]},
+        {"type": "order", "ctx": "He takes photos on Tuesday evenings.", "tiles": ["他", "星期二", "晚上", "照相。"], "alts": [["星期二", "晚上", "他", "照相。"]]},
+        {"type": "pick", "table": "week", "q": "他星期二早上做什麼？", "opts": ["他星期二早上打棒球。", "他星期二早上照相。", "他星期三早上踢足球。"], "en": "He plays baseball on Tuesday mornings."},
+        {"type": "pick", "table": "week", "q": "他星期三晚上做什麼？", "opts": ["他星期三晚上做晚飯。", "他做晚飯星期三晚上。", "他星期三早上做晚飯。"], "en": "He makes dinner on Wednesday evenings."},
+        {"type": "pick", "table": "week", "q": "他星期四早上做什麼？", "opts": ["他星期四早上看書。", "星期四早上看書他。", "他星期四晚上看書。"], "en": "He reads on Thursday mornings."},
+        {"type": "pick", "table": "week", "q": "他星期一晚上做什麼？", "opts": ["他星期一晚上打網球。", "他星期一晚上學中文。", "他打網球星期一晚上。"], "en": "He plays tennis on Monday evenings."}
+      ]
+    },
+    {
+      "id": "ye-dou-chang",
+      "lesson": 3,
+      "zh": "也 · 都 · 常",
+      "en": "also · all · often",
+      "card": {
+        "patterns": ["S. + 也 + V.", "S. + 都 + V.", "S. + 常 / 不常 + V."],
+        "examples": [
+          ["他也是日本人。", "tā yě shì rì běn rén.", "He's Japanese too."],
+          ["我們都很喜歡打籃球。", "wǒ men dōu hěn xǐ huān dǎ lán qiú.", "We all like playing basketball a lot."],
+          ["我常去看電影。", "wǒ cháng qù kàn diàn yǐng.", "I often go to the movies."],
+          ["我不常打網球。", "wǒ bù cháng dǎ wǎng qiú.", "I don't often play tennis."]
+        ],
+        "tip": "All three go after the subject and before the verb. 也 = also, too. 都 = all, both (the subject is plural: 我們, 他們, A和B). 常 = often; not often is 不常. Together: 也都, 都常."
+      },
+      "items": [
+        {"type": "pick", "ctx": "A：你是日本人，他呢？", "q": "B：他＿是日本人。", "opts": ["也", "都", "常"], "en": "He's Japanese too."},
+        {"type": "pick", "ctx": "A：你們喜歡打籃球嗎？", "q": "B：我們＿很喜歡打籃球。", "opts": ["都", "也", "常"], "en": "We all like playing basketball a lot."},
+        {"type": "pick", "ctx": "A：週末你常做什麼？", "q": "B：我＿去看電影。", "opts": ["常", "都", "也"], "en": "I often go to the movies."},
+        {"type": "pick", "ctx": "A：我想吃臺灣菜。", "q": "B：好啊！我＿想吃臺灣菜。", "opts": ["也", "都", "常"], "en": "OK! I want Taiwanese food too."},
+        {"type": "pick", "ctx": "A：我常和朋友一起打網球，你呢？", "q": "B：我＿打網球。我覺得打網球不好玩。", "opts": ["不常", "也", "都"], "en": "I don't often play tennis. I don't think tennis is fun."},
+        {"type": "pick", "ctx": "A：你爸爸媽媽是美國人嗎？", "q": "B：是，他們＿是美國人。", "opts": ["都", "常", "不"], "en": "Yes, they're both American."},
+        {"type": "pick", "ctx": "A：我喜歡游泳。", "q": "B：我＿喜歡游泳！", "opts": ["也", "都", "常"], "en": "I like swimming too!"},
+        {"type": "pick", "ctx": "A：我喜歡吃臺灣菜和越南菜。", "q": "B：臺灣菜、越南菜，我＿喜歡吃。", "opts": ["也都", "都也", "常也"], "en": "Taiwanese and Vietnamese food, I like both too."},
+        {"type": "order", "ctx": "We both often eat Vietnamese food.", "tiles": ["我們", "都", "常", "吃", "越南菜。"]},
+        {"type": "order", "ctx": "I also like listening to music.", "tiles": ["我", "也", "喜歡", "聽", "音樂。"]}
+      ]
+    },
+    {
+      "id": "he-ye-dou",
+      "lesson": 3,
+      "zh": "A 和 B · 也 · 都",
+      "en": "Liking two things, three ways",
+      "card": {
+        "patterns": ["S. + V. + A 和 B。", "S. + V. + A，也 + V. + B。", "A 和 B，S. + 都 + V。"],
+        "examples": [
+          ["我喜歡聽音樂和打籃球。", "wǒ xǐ huān tīng yīn yuè hàn dǎ lán qiú.", "I like listening to music and playing basketball."],
+          ["我喜歡聽音樂，也喜歡打籃球。", "wǒ xǐ huān tīng yīn yuè, yě xǐ huān dǎ lán qiú.", "I like listening to music, and I also like playing basketball."],
+          ["聽音樂和打籃球，我都喜歡。", "tīng yīn yuè hàn dǎ lán qiú, wǒ dōu xǐ huān.", "Music and basketball, I like both."]
+        ],
+        "tip": "和 only joins two things (nouns or activities), never two sentences: for that use 也. With 都, the two things come first, because 都 points back to them."
+      },
+      "items": [
+        {"type": "order", "ctx": "Say it with 也: 我喜歡看書和看電影。", "tiles": ["我", "喜歡", "看書，", "也", "喜歡", "看電影。"]},
+        {"type": "order", "ctx": "Say it with 都: 我喜歡游泳和踢足球。", "tiles": ["游泳", "和", "踢足球，", "我", "都", "喜歡。"]},
+        {"type": "order", "ctx": "你想吃越南菜還是美國菜？ (You want both.)", "tiles": ["越南菜", "和", "美國菜，", "我", "都", "想", "吃。"]},
+        {"type": "order", "ctx": "你想看美國電影還是臺灣電影？ (You want both.)", "tiles": ["美國電影", "和", "臺灣電影，", "我", "都", "想", "看。"]},
+        {"type": "pick", "q": "我喜歡喝茶，＿喜歡喝咖啡。", "opts": ["也", "都", "和"], "en": "I like tea, and I also like coffee."},
+        {"type": "pick", "q": "茶和咖啡，我＿喜歡喝。", "opts": ["都", "也", "和"], "en": "Tea and coffee, I like both."},
+        {"type": "pick", "q": "我喜歡喝茶＿咖啡。", "opts": ["和", "也", "都"], "en": "I like tea and coffee."},
+        {"type": "pick", "q": "Which sentence is right?", "opts": ["我喜歡打網球，也喜歡打棒球。", "我喜歡打網球，和喜歡打棒球。", "我也喜歡打網球，喜歡打棒球。"], "en": "I like tennis, and I also like baseball."},
+        {"type": "pick", "q": "Which sentence is right?", "opts": ["網球和棒球，我都喜歡打。", "網球和棒球，都我喜歡打。", "我網球和棒球，喜歡都打。"], "en": "Tennis and baseball, I like playing both."}
+      ]
+    },
+    {
+      "id": "haishi",
+      "lesson": 3,
+      "zh": "還是",
+      "en": "A or B? questions",
+      "card": {
+        "patterns": ["S. + V. + A 還是 B？"],
+        "examples": [
+          ["你喜歡喝茶還是喝咖啡？", "nǐ xǐ huān hē chá hái shì hē kā fēi?", "Do you like tea or coffee?"],
+          ["你想吃越南菜還是美國菜？", "nǐ xiǎng chī yuè nán cài hái shì měi guó cài?", "Do you want Vietnamese or American food?"],
+          ["越南菜和美國菜，我都想吃。", "yuè nán cài hàn měi guó cài, wǒ dōu xiǎng chī.", "Vietnamese and American food, I want both."]
+        ],
+        "tip": "還是 already makes it a question, so there's no 嗎 at the end. Answer with one of the two, or with 都 (both) or 都不 (neither)."
+      },
+      "items": [
+        {"type": "pick", "table": "likes", "q": "陳小姐喜歡喝啤酒還是喝咖啡？", "opts": ["她喜歡喝咖啡。", "她喜歡喝啤酒。", "喝啤酒和喝咖啡，她都喜歡。"], "en": "She likes coffee."},
+        {"type": "pick", "table": "likes", "q": "王小姐喜歡看書還是看電影？", "opts": ["看書和看電影，她都喜歡。", "她喜歡看書。", "她不喜歡看電影。"], "en": "Reading and movies, she likes both."},
+        {"type": "pick", "table": "likes", "q": "李先生喜歡踢足球還是打籃球？", "opts": ["踢足球和打籃球，他都不喜歡。", "他喜歡打籃球。", "踢足球和打籃球，他都喜歡。"], "en": "Football and basketball, he likes neither."},
+        {"type": "pick", "q": "Ask: does he like tea or coffee?", "opts": ["他喜歡喝茶還是喝咖啡？", "他喜歡喝茶還是喝咖啡嗎？", "他喜歡喝茶和咖啡還是？"], "en": "Does he like tea or coffee?"},
+        {"type": "pick", "ctx": "A：你是美國人還是日本人？", "q": "B：＿", "opts": ["我是美國人。", "是，我是美國人。", "我是美國人嗎？"], "en": "I'm American."},
+        {"type": "order", "ctx": "Do you want to eat Taiwanese or Vietnamese food?", "tiles": ["你", "想", "吃", "臺灣菜", "還是", "越南菜？"]},
+        {"type": "order", "ctx": "Do you like swimming or playing tennis?", "tiles": ["你", "喜歡", "游泳", "還是", "打網球？"]},
+        {"type": "order", "ctx": "On weekends, do you often go to the movies or read?", "tiles": ["你", "週末", "常", "看電影", "還是", "看書？"], "alts": [["週末", "你", "常", "看電影", "還是", "看書？"]]}
+      ]
+    },
+    {
+      "id": "topic",
+      "lesson": 3,
+      "zh": "主題句",
+      "en": "Topic sentences",
+      "card": {
+        "patterns": ["S. + V. + Topic。", "Topic，S. + V。"],
+        "examples": [
+          ["你常吃臺灣菜嗎？", "nǐ cháng chī tái wān cài ma?", "Do you often eat Taiwanese food?"],
+          ["我不常吃臺灣菜。", "wǒ bù cháng chī tái wān cài.", "I don't often eat Taiwanese food."],
+          ["臺灣菜，我不常吃。", "tái wān cài, wǒ bù cháng chī.", "Taiwanese food, I don't often eat it."]
+        ],
+        "tip": "Put the thing you're talking about first, add a comma, then say the rest of the sentence without it. Very common when answering a question about that thing."
+      },
+      "items": [
+        {"type": "order", "ctx": "Topic first: 我不常吃臺灣菜。", "tiles": ["臺灣菜，", "我", "不", "常", "吃。"]},
+        {"type": "order", "ctx": "Topic first: 我很喜歡美國電影。", "tiles": ["美國電影，", "我", "很", "喜歡。"]},
+        {"type": "order", "ctx": "Topic first: 我不喜歡打棒球。", "tiles": ["棒球，", "我", "不", "喜歡", "打。"]},
+        {"type": "order", "ctx": "你喝烏龍茶嗎？ Answer topic first: you like it a lot.", "tiles": ["烏龍茶，", "我", "很", "喜歡", "喝。"]},
+        {"type": "order", "ctx": "你常看書嗎？ Answer topic first: yes, often.", "tiles": ["書，", "我", "常", "看。"]},
+        {"type": "pick", "ctx": "Q：你想學中文嗎？", "q": "Which answer is a topic sentence?", "opts": ["中文，我想學。", "我想學中文。", "想學，我中文。"], "en": "Chinese, I want to learn it."},
+        {"type": "pick", "q": "Which word order is right?", "opts": ["足球，我不常踢。", "足球，不常我踢。", "我不常，足球踢。"], "en": "Football, I don't often play it."},
+        {"type": "pick", "ctx": "Q：你喜歡越南菜嗎？", "q": "越南菜，我＿喜歡。", "opts": ["很", "和", "還是"], "en": "Vietnamese food, I like it a lot."}
+      ]
+    },
+    {
+      "id": "ba",
+      "lesson": 3,
+      "zh": "吧",
+      "en": "Making suggestions",
+      "card": {
+        "patterns": ["我們 + V. + O. + 吧！", "…，好不好？ / …，怎麼樣？"],
+        "examples": [
+          ["週末我們去游泳，好不好？", "zhōu mò wǒ men qù yóu yǒng, hǎo bù hǎo?", "Shall we go swimming this weekend?"],
+          ["我不喜歡游泳，我們去打網球吧！", "wǒ bù xǐ huān yóu yǒng, wǒ men qù dǎ wǎng qiú ba!", "I don't like swimming, let's go play tennis!"],
+          ["好啊！", "hǎo a!", "OK, sure!"]
+        ],
+        "tip": "吧 at the end turns a sentence into a suggestion: \"let's…\". To ask what the other person thinks, end with 好不好？ or 怎麼樣？ Answer 好啊！ or 不好。"
+      },
+      "items": [
+        {"type": "pick", "ctx": "A：週末我們去游泳，好不好？", "q": "B：我不喜歡游泳，我們去打網球＿！", "opts": ["吧", "嗎", "呢"], "en": "I don't like swimming, let's go play tennis!"},
+        {"type": "pick", "ctx": "A：明天早上我們要做什麼？", "q": "B：我們去踢足球＿！", "opts": ["吧", "嗎", "呢"], "en": "Let's go play football!"},
+        {"type": "pick", "q": "A：我們明天晚上去看電影，＿？", "opts": ["好不好", "吧", "呢"], "en": "Shall we go see a movie tomorrow evening?"},
+        {"type": "pick", "ctx": "A：我們週末去吃越南菜吧！", "q": "B：＿！我很喜歡越南菜。", "opts": ["好啊", "好不好", "吧"], "en": "Sure! I really like Vietnamese food."},
+        {"type": "pick", "ctx": "A：我們要看什麼電影？", "q": "B：我們看＿吧！", "opts": ["日本電影", "好不好", "什麼電影"], "en": "Let's watch a Japanese movie!"},
+        {"type": "order", "ctx": "Let's go play basketball!", "tiles": ["我們", "去", "打籃球", "吧！"]},
+        {"type": "order", "ctx": "Let's go eat Taiwanese food together tomorrow evening!", "tiles": ["我們", "明天晚上", "一起", "去", "吃", "臺灣菜", "吧！"], "alts": [["明天晚上", "我們", "一起", "去", "吃", "臺灣菜", "吧！"]]},
+        {"type": "order", "ctx": "This weekend let's go to the movies, how about it?", "tiles": ["這個週末", "我們", "去", "看電影，", "怎麼樣？"], "alts": [["我們", "這個週末", "去", "看電影，", "怎麼樣？"]]}
+      ]
+    }
+  ]
+}
