@@ -122,6 +122,7 @@ button.card:hover{border-color:var(--accent)}
 .dict .sub{color:var(--muted);font-size:.95rem}
 .mwq{font-family:var(--f-hand);font-size:clamp(2.6rem,9vw,3.8rem);font-weight:400;display:flex;justify-content:center;align-items:baseline;gap:.15em}
 .mwq .gap{display:inline-block;min-width:1.2em;border-bottom:3px solid var(--accent);color:var(--accent)}
+.mwtools{justify-content:space-between}
 .board.mwb{grid-template-columns:repeat(auto-fill,minmax(110px,1fr))}
 .board.mwb .tile{display:grid;gap:2px;justify-items:center}
 .board.mwb .tile small{font-family:var(--f-py);font-size:.95rem;color:var(--muted)}
@@ -304,7 +305,7 @@ button.card:hover{border-color:var(--accent)}
   <section class="prompt" id="mwBox" aria-live="polite" hidden>
     <div class="mwq" id="mwQ"></div>
     <div class="fb" id="mwFb"></div>
-    <div class="tools"><button class="btn" id="mwPy" type="button" aria-label="Hold to show pinyin">拼音</button></div>
+    <div class="tools mwtools"><button class="btn" id="mwPy" type="button" aria-label="Hold to show pinyin">拼音</button><button class="btn primary" id="mwGo" type="button" hidden>Next</button></div>
   </section>
 
   <section class="results" id="results" hidden>
@@ -727,7 +728,7 @@ function showMw(){
   const box = $('mwQ'); box.textContent = '';
   const part = (zh, py, cls) => { const p = el('span','part'); p.append(el('span', cls || null, zh), el('span','mpy', py)); return p; };
   box.append(part(q.n[0], q.n[1]), part('\u00a0', '\u00a0', 'gap'), part(q.w[0], q.w[1]));
-  $('mwFb').textContent = ''; $('mwFb').className = 'fb'; $('mwBox').classList.remove('done');
+  $('mwFb').textContent = ''; $('mwFb').className = 'fb'; $('mwBox').classList.remove('done'); $('mwGo').hidden = true;
   $('qn').textContent = idx + 1; $('sc').textContent = score;
   $('bar').style.width = (idx / queue.length * 100) + '%';
   document.querySelectorAll('#board .tile').forEach(t => { t.className = 'tile'; t.disabled = false; });
@@ -745,7 +746,7 @@ function pickMw(t){
     $('mwQ').querySelector('.gap').textContent = m.mw;
     pys[0].textContent = numPy(q.n, m); pys[1].textContent = m.py; $('mwBox').classList.add('done');
     $('mwFb').className = 'fb ok'; $('mwFb').textContent = '對！ ' + m.mw + ' is for ' + m.en + (others.length ? ' (' + others.join(', ') + ' works too)' : '');
-    setTimeout(() => { idx++; if (idx >= queue.length) finishMw(); else showMw(); }, 1100);
+    $('mwGo').textContent = idx + 1 < queue.length ? 'Next' : 'See results'; $('mwGo').hidden = false; $('mwGo').focus({ preventScroll: true });
   } else {
     if (firstTry) { mwMisses.push({ m: q.m, w: q.w }); firstTry = false; }
     t.classList.add('bad');
@@ -1024,6 +1025,7 @@ function holdPy(btn, target, cls){
 }
 holdPy($('grPy'), $('grBox'), 'showpy');
 holdPy($('mwPy'), document.body, 'mwpy');
+$('mwGo').addEventListener('click', () => { idx++; if (idx >= queue.length) finishMw(); else showMw(); });
 $('grPeek').addEventListener('click', () => { if (!grDone) grPeeked = true; openCard(grCur.p); });
 function finishGr(){
   misses = grMisses.map(({ it }) => [grAnswer(it), '', '']);
