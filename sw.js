@@ -1,4 +1,4 @@
-const VERSION = 'v46';
+const VERSION = 'v47';
 const CACHE = `clc-vocab-${VERSION}`;
 // Recordings get their own cache that survives version bumps: each file is downloaded the
 // first time it is played and then kept for offline use. Bump AUDIO_CACHE only if files change.
