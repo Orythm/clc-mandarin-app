@@ -39,18 +39,18 @@
         "tip": "不 is bù, but it becomes bú when the next syllable is 4th tone (是 shì, 要 yào, 客 kè, 姓 xìng, 叫 jiào, 看 kàn)."
       },
       "items": [
-        {"type": "pick", "q": "不是 = ＿ shì", "opts": ["bú", "bù"], "en": "not be"},
-        {"type": "pick", "q": "不要 = ＿ yào", "opts": ["bú", "bù"], "en": "not want"},
-        {"type": "pick", "q": "不客氣 = ＿ kè qì", "opts": ["bú", "bù"], "en": "you're welcome"},
-        {"type": "pick", "q": "不姓 = ＿ xìng", "opts": ["bú", "bù"], "en": "not be surnamed"},
-        {"type": "pick", "q": "不叫 = ＿ jiào", "opts": ["bú", "bù"], "en": "not be called"},
-        {"type": "pick", "q": "不看 = ＿ kàn", "opts": ["bú", "bù"], "en": "not look, not read"},
-        {"type": "pick", "q": "不吃 = ＿ chī", "opts": ["bù", "bú"], "en": "not eat"},
-        {"type": "pick", "q": "不喝 = ＿ hē", "opts": ["bù", "bú"], "en": "not drink"},
-        {"type": "pick", "q": "不來 = ＿ lái", "opts": ["bù", "bú"], "en": "not come"},
-        {"type": "pick", "q": "不喜歡 = ＿ xǐ huān", "opts": ["bù", "bú"], "en": "not like"},
-        {"type": "pick", "q": "不覺得 = ＿ jué de", "opts": ["bù", "bú"], "en": "not think"},
-        {"type": "pick", "q": "不好 = ＿ hǎo", "opts": ["bù", "bú"], "en": "not good"}
+        {"type": "pick", "ask": "How is 不 said here?", "q": "不是 = ＿ shì", "opts": ["bú", "bù"], "en": "not be"},
+        {"type": "pick", "ask": "How is 不 said here?", "q": "不要 = ＿ yào", "opts": ["bú", "bù"], "en": "not want"},
+        {"type": "pick", "ask": "How is 不 said here?", "q": "不客氣 = ＿ kè qì", "opts": ["bú", "bù"], "en": "you're welcome"},
+        {"type": "pick", "ask": "How is 不 said here?", "q": "不姓 = ＿ xìng", "opts": ["bú", "bù"], "en": "not be surnamed"},
+        {"type": "pick", "ask": "How is 不 said here?", "q": "不叫 = ＿ jiào", "opts": ["bú", "bù"], "en": "not be called"},
+        {"type": "pick", "ask": "How is 不 said here?", "q": "不看 = ＿ kàn", "opts": ["bú", "bù"], "en": "not look, not read"},
+        {"type": "pick", "ask": "How is 不 said here?", "q": "不吃 = ＿ chī", "opts": ["bù", "bú"], "en": "not eat"},
+        {"type": "pick", "ask": "How is 不 said here?", "q": "不喝 = ＿ hē", "opts": ["bù", "bú"], "en": "not drink"},
+        {"type": "pick", "ask": "How is 不 said here?", "q": "不來 = ＿ lái", "opts": ["bù", "bú"], "en": "not come"},
+        {"type": "pick", "ask": "How is 不 said here?", "q": "不喜歡 = ＿ xǐ huān", "opts": ["bù", "bú"], "en": "not like"},
+        {"type": "pick", "ask": "How is 不 said here?", "q": "不覺得 = ＿ jué de", "opts": ["bù", "bú"], "en": "not think"},
+        {"type": "pick", "ask": "How is 不 said here?", "q": "不好 = ＿ hǎo", "opts": ["bù", "bú"], "en": "not good"}
       ]
     },
     {
@@ -183,16 +183,16 @@
         "tip": "的 means \"'s / of\". After a pronoun (我, 你們, 他們…) you can drop it before family and before groups you belong to (家, 學校, 班, 公司). Keep it before things (書, 房子, 車) and after names (張先生的…)."
       },
       "items": [
-        {"type": "pick", "q": "我＿爸爸", "opts": ["的 or nothing", "的 only"], "en": "my dad", "fill": "（的）"},
-        {"type": "pick", "q": "你＿哥哥", "opts": ["的 or nothing", "的 only"], "en": "your older brother", "fill": "（的）"},
-        {"type": "pick", "q": "你們＿老師", "opts": ["的 or nothing", "的 only"], "en": "your teacher", "fill": "（的）"},
-        {"type": "pick", "q": "我們＿學校", "opts": ["的 or nothing", "的 only"], "en": "our school", "fill": "（的）"},
-        {"type": "pick", "q": "我們＿班", "opts": ["的 or nothing", "的 only"], "en": "our class", "fill": "（的）"},
-        {"type": "pick", "q": "李小姐＿朋友", "opts": ["的 only", "的 or nothing"], "en": "Miss Li's friend", "fill": "的"},
-        {"type": "pick", "q": "你們＿車", "opts": ["的 only", "的 or nothing"], "en": "your car", "fill": "的"},
-        {"type": "pick", "q": "我＿書", "opts": ["的 only", "的 or nothing"], "en": "my book", "fill": "的"},
-        {"type": "pick", "q": "他們＿房子", "opts": ["的 only", "的 or nothing"], "en": "their house", "fill": "的"},
-        {"type": "pick", "q": "王伯母＿女兒", "opts": ["的 only", "的 or nothing"], "en": "Mrs. Wang's daughter", "fill": "的"}
+        {"type": "pick", "ask": "Can you drop 的 here?", "q": "我＿爸爸", "opts": ["Yes, 的 is optional", "No, 的 is needed"], "fill": "（的）", "en": "my dad"},
+        {"type": "pick", "ask": "Can you drop 的 here?", "q": "你＿哥哥", "opts": ["Yes, 的 is optional", "No, 的 is needed"], "fill": "（的）", "en": "your older brother"},
+        {"type": "pick", "ask": "Can you drop 的 here?", "q": "你們＿老師", "opts": ["Yes, 的 is optional", "No, 的 is needed"], "fill": "（的）", "en": "your teacher"},
+        {"type": "pick", "ask": "Can you drop 的 here?", "q": "我們＿學校", "opts": ["Yes, 的 is optional", "No, 的 is needed"], "fill": "（的）", "en": "our school"},
+        {"type": "pick", "ask": "Can you drop 的 here?", "q": "我們＿班", "opts": ["Yes, 的 is optional", "No, 的 is needed"], "fill": "（的）", "en": "our class"},
+        {"type": "pick", "ask": "Can you drop 的 here?", "q": "李小姐＿朋友", "opts": ["No, 的 is needed", "Yes, 的 is optional"], "fill": "的", "en": "Miss Li's friend"},
+        {"type": "pick", "ask": "Can you drop 的 here?", "q": "你們＿車", "opts": ["No, 的 is needed", "Yes, 的 is optional"], "fill": "的", "en": "your car"},
+        {"type": "pick", "ask": "Can you drop 的 here?", "q": "我＿書", "opts": ["No, 的 is needed", "Yes, 的 is optional"], "fill": "的", "en": "my book"},
+        {"type": "pick", "ask": "Can you drop 的 here?", "q": "他們＿房子", "opts": ["No, 的 is needed", "Yes, 的 is optional"], "fill": "的", "en": "their house"},
+        {"type": "pick", "ask": "Can you drop 的 here?", "q": "王伯母＿女兒", "opts": ["No, 的 is needed", "Yes, 的 is optional"], "fill": "的", "en": "Mrs. Wang's daughter"}
       ]
     },
     {
@@ -217,10 +217,10 @@
         {"type": "order", "tiles": ["你", "今天晚上", "要", "做什麼", "？"], "alts": [["今天晚上", "你", "要", "做什麼", "？"]], "en": "What are you doing this evening?"},
         {"type": "order", "tiles": ["我們", "明天晚上", "一起", "吃", "越南菜", "。"], "alts": [["明天晚上", "我們", "一起", "吃", "越南菜", "。"]], "en": "Tomorrow evening we'll eat Vietnamese food together."},
         {"type": "order", "tiles": ["他", "星期二", "晚上", "照相", "。"], "alts": [["星期二", "晚上", "他", "照相", "。"]], "en": "He takes photos on Tuesday evenings."},
-        {"type": "pick", "table": "week", "q": "他星期二早上做什麼？", "opts": ["他星期二早上打棒球。", "他星期二早上照相。", "他星期三早上踢足球。"], "en": "He plays baseball on Tuesday mornings."},
-        {"type": "pick", "table": "week", "q": "他星期三晚上做什麼？", "opts": ["他星期三晚上做晚飯。", "他做晚飯星期三晚上。", "他星期三早上做晚飯。"], "en": "He makes dinner on Wednesday evenings."},
-        {"type": "pick", "table": "week", "q": "他星期四早上做什麼？", "opts": ["他星期四早上看書。", "星期四早上看書他。", "他星期四晚上看書。"], "en": "He reads on Thursday mornings."},
-        {"type": "pick", "table": "week", "q": "他星期一晚上做什麼？", "opts": ["他星期一晚上打網球。", "他星期一晚上學中文。", "他打網球星期一晚上。"], "en": "He plays tennis on Monday evenings."}
+        {"type": "pick", "ask": "Answer using the table.", "table": "week", "q": "他星期二早上做什麼？", "opts": ["他星期二早上打棒球。", "他星期二早上照相。", "他星期三早上踢足球。"], "en": "He plays baseball on Tuesday mornings."},
+        {"type": "pick", "ask": "Answer using the table.", "table": "week", "q": "他星期三晚上做什麼？", "opts": ["他星期三晚上做晚飯。", "他做晚飯星期三晚上。", "他星期三早上做晚飯。"], "en": "He makes dinner on Wednesday evenings."},
+        {"type": "pick", "ask": "Answer using the table.", "table": "week", "q": "他星期四早上做什麼？", "opts": ["他星期四早上看書。", "星期四早上看書他。", "他星期四晚上看書。"], "en": "He reads on Thursday mornings."},
+        {"type": "pick", "ask": "Answer using the table.", "table": "week", "q": "他星期一晚上做什麼？", "opts": ["他星期一晚上打網球。", "他星期一晚上學中文。", "他打網球星期一晚上。"], "en": "He plays tennis on Monday evenings."}
       ]
     },
     {
@@ -272,10 +272,10 @@
         "tip": "和 only joins two things (nouns or activities), never two sentences: for that use 也. With 都, the two things come first, because 都 points back to them."
       },
       "items": [
-        {"type": "order", "ctx": "Say it with 也: 我喜歡看書和看電影。", "tiles": ["我", "喜歡", "看書", "，", "也", "喜歡", "看電影", "。"]},
-        {"type": "order", "ctx": "Say it with 都: 我喜歡游泳和踢足球。", "tiles": ["游泳", "和", "踢足球", "，", "我", "都", "喜歡", "。"], "alts": [["踢足球", "和", "游泳", "，", "我", "都", "喜歡", "。"]]},
-        {"type": "order", "ctx": "你想吃越南菜還是美國菜？ (You want both.)", "tiles": ["越南菜", "和", "美國菜", "，", "我", "都", "想", "吃", "。"], "alts": [["美國菜", "和", "越南菜", "，", "我", "都", "想", "吃", "。"]]},
-        {"type": "order", "ctx": "你想看美國電影還是臺灣電影？ (You want both.)", "tiles": ["美國電影", "和", "臺灣電影", "，", "我", "都", "想", "看", "。"], "alts": [["臺灣電影", "和", "美國電影", "，", "我", "都", "想", "看", "。"]]},
+        {"type": "order", "ask": "Rewrite it using 也.", "src": "我喜歡看書和看電影。", "tiles": ["我", "喜歡", "看書", "，", "也", "喜歡", "看電影", "。"]},
+        {"type": "order", "ask": "Rewrite it using 都, starting with the two things.", "src": "我喜歡游泳和踢足球。", "tiles": ["游泳", "和", "踢足球", "，", "我", "都", "喜歡", "。"], "alts": [["踢足球", "和", "游泳", "，", "我", "都", "喜歡", "。"]]},
+        {"type": "order", "ask": "Answer that you want both, using 都.", "src": "你想吃越南菜還是美國菜？", "tiles": ["越南菜", "和", "美國菜", "，", "我", "都", "想", "吃", "。"], "alts": [["美國菜", "和", "越南菜", "，", "我", "都", "想", "吃", "。"]]},
+        {"type": "order", "ask": "Answer that you want both, using 都.", "src": "你想看美國電影還是臺灣電影？", "tiles": ["美國電影", "和", "臺灣電影", "，", "我", "都", "想", "看", "。"], "alts": [["臺灣電影", "和", "美國電影", "，", "我", "都", "想", "看", "。"]]},
         {"type": "pick", "q": "我喜歡喝茶，＿喜歡喝咖啡。", "opts": ["也", "都", "和"], "en": "I like tea, and I also like coffee."},
         {"type": "pick", "q": "茶和咖啡，我＿喜歡喝。", "opts": ["都", "也", "和"], "en": "Tea and coffee, I like both."},
         {"type": "pick", "q": "我喜歡喝茶＿咖啡。", "opts": ["和", "也", "都"], "en": "I like tea and coffee."},
@@ -299,9 +299,9 @@
         "tip": "還是 already makes it a question, so there's no 嗎 at the end. Answer with one of the two, or with 都 (both) or 都不 (neither)."
       },
       "items": [
-        {"type": "pick", "table": "likes", "q": "陳小姐喜歡喝啤酒還是喝咖啡？", "opts": ["她喜歡喝咖啡。", "她喜歡喝啤酒。", "喝啤酒和喝咖啡，她都喜歡。"], "en": "She likes coffee."},
-        {"type": "pick", "table": "likes", "q": "王小姐喜歡看書還是看電影？", "opts": ["看書和看電影，她都喜歡。", "她喜歡看書。", "她不喜歡看電影。"], "en": "Reading and movies, she likes both."},
-        {"type": "pick", "table": "likes", "q": "李先生喜歡踢足球還是打籃球？", "opts": ["踢足球和打籃球，他都不喜歡。", "他喜歡打籃球。", "踢足球和打籃球，他都喜歡。"], "en": "Football and basketball, he likes neither."},
+        {"type": "pick", "ask": "Answer using the table.", "table": "likes", "q": "陳小姐喜歡喝啤酒還是喝咖啡？", "opts": ["她喜歡喝咖啡。", "她喜歡喝啤酒。", "喝啤酒和喝咖啡，她都喜歡。"], "en": "She likes coffee."},
+        {"type": "pick", "ask": "Answer using the table.", "table": "likes", "q": "王小姐喜歡看書還是看電影？", "opts": ["看書和看電影，她都喜歡。", "她喜歡看書。", "她不喜歡看電影。"], "en": "Reading and movies, she likes both."},
+        {"type": "pick", "ask": "Answer using the table.", "table": "likes", "q": "李先生喜歡踢足球還是打籃球？", "opts": ["踢足球和打籃球，他都不喜歡。", "他喜歡打籃球。", "踢足球和打籃球，他都喜歡。"], "en": "Football and basketball, he likes neither."},
         {"type": "pick", "q": "Which question is right?", "opts": ["他喜歡喝茶還是喝咖啡？", "他喜歡喝茶還是喝咖啡嗎？", "他喜歡喝茶和咖啡還是？"], "en": "Does he like tea or coffee?"},
         {"type": "pick", "ctx": "A：你是美國人還是日本人？", "q": "B：＿", "opts": ["我是美國人。", "是，我是美國人。", "我是美國人嗎？"], "en": "I'm American."},
         {"type": "order", "tiles": ["你", "想", "吃", "臺灣菜", "還是", "越南菜", "？"], "alts": [["你", "想", "吃", "越南菜", "還是", "臺灣菜", "？"]], "en": "Do you want to eat Taiwanese or Vietnamese food?"},
@@ -326,11 +326,11 @@
         "tip": "Put the thing you're talking about first, add a comma, then say the rest of the sentence without it. Very common when answering a question about that thing."
       },
       "items": [
-        {"type": "order", "ctx": "Topic first: 我不常吃臺灣菜。", "tiles": ["臺灣菜", "，", "我", "不", "常", "吃", "。"]},
-        {"type": "order", "ctx": "Topic first: 我很喜歡美國電影。", "tiles": ["美國電影", "，", "我", "很", "喜歡", "。"]},
-        {"type": "order", "ctx": "Topic first: 我不喜歡打棒球。", "tiles": ["棒球", "，", "我", "不", "喜歡", "打", "。"]},
-        {"type": "order", "ctx": "你喝烏龍茶嗎？ Answer topic first.", "tiles": ["烏龍茶", "，", "我", "很", "喜歡", "喝", "。"]},
-        {"type": "order", "ctx": "你常看書嗎？ Answer topic first.", "tiles": ["書", "，", "我", "常", "看", "。"]},
+        {"type": "order", "ask": "Rewrite it, starting with the topic 臺灣菜.", "src": "我不常吃臺灣菜。", "tiles": ["臺灣菜", "，", "我", "不", "常", "吃", "。"]},
+        {"type": "order", "ask": "Rewrite it, starting with the topic 美國電影.", "src": "我很喜歡美國電影。", "tiles": ["美國電影", "，", "我", "很", "喜歡", "。"]},
+        {"type": "order", "ask": "Rewrite it, starting with the topic 棒球.", "src": "我不喜歡打棒球。", "tiles": ["棒球", "，", "我", "不", "喜歡", "打", "。"]},
+        {"type": "order", "ask": "Answer yes, starting with 烏龍茶.", "src": "你喝烏龍茶嗎？", "tiles": ["烏龍茶", "，", "我", "很", "喜歡", "喝", "。"]},
+        {"type": "order", "ask": "Answer yes, starting with 書.", "src": "你常看書嗎？", "tiles": ["書", "，", "我", "常", "看", "。"]},
         {"type": "pick", "ctx": "Q：你想學中文嗎？", "q": "Which answer is a topic sentence?", "opts": ["中文，我想學。", "我想學中文。", "想學，我中文。"], "en": "Chinese, I want to learn it."},
         {"type": "pick", "q": "Which word order is right?", "opts": ["足球，我不常踢。", "足球，不常我踢。", "我不常，足球踢。"], "en": "Football, I don't often play it."},
         {"type": "pick", "ctx": "Q：你喜歡越南菜嗎？", "q": "越南菜，我＿喜歡。", "opts": ["很", "和", "還是"], "en": "Vietnamese food, I like it a lot."}
@@ -382,14 +382,14 @@
         "tip": "多 goes right after the last round number you say: 1378 → 一千多 (1001–1999), 一千三百多 (1301–1399), 一千三百七十多 (1371–1379). For less than one extra unit (2.5 buns), 多 goes after the measure word: 兩個多包子."
       },
       "items": [
-        {"type": "pick", "q": "1378 塊 (anything from 1001 to 1999) → ＿塊錢", "opts": ["一千多", "一千三百多", "一千多三百"], "en": "a thousand-odd dollars"},
-        {"type": "pick", "q": "1378 塊 (anything from 1301 to 1399) → ＿塊錢", "opts": ["一千三百多", "一千多", "一千三百七十多"], "en": "1,300-odd dollars"},
-        {"type": "pick", "q": "21–29 → ＿個人", "opts": ["二十多", "二多十", "二十個多"], "en": "twenty-odd people"},
-        {"type": "pick", "q": "501–599 → 五百多＿手機", "opts": ["支", "本", "張"], "en": "five hundred-odd phones"},
-        {"type": "pick", "q": "201–299 → ＿張照片", "opts": ["兩百多", "兩多百", "百兩多"], "en": "two hundred-odd photos"},
-        {"type": "pick", "q": "34,001–34,999 → ＿張照片", "opts": ["三萬四千多", "三萬多四千", "四千三萬多"], "en": "34,000-odd photos"},
-        {"type": "pick", "q": "2–3 → ＿包子", "opts": ["兩個多", "兩多個", "二個多"], "en": "two and a bit buns"},
-        {"type": "pick", "q": "7–8 → ＿咖啡", "opts": ["七杯多", "七多杯", "杯七多"], "en": "seven-odd cups of coffee"},
+        {"type": "pick", "ask": "Say the amount with 多.", "q": "1378 塊 (anything from 1001 to 1999) → ＿塊錢", "opts": ["一千多", "一千三百多", "一千多三百"], "en": "a thousand-odd dollars"},
+        {"type": "pick", "ask": "Say the amount with 多.", "q": "1378 塊 (anything from 1301 to 1399) → ＿塊錢", "opts": ["一千三百多", "一千多", "一千三百七十多"], "en": "1,300-odd dollars"},
+        {"type": "pick", "ask": "Say the amount with 多.", "q": "21–29 → ＿個人", "opts": ["二十多", "二多十", "二十個多"], "en": "twenty-odd people"},
+        {"type": "pick", "ask": "Say the amount with 多.", "q": "501–599 → 五百多＿手機", "opts": ["支", "本", "張"], "en": "five hundred-odd phones"},
+        {"type": "pick", "ask": "Say the amount with 多.", "q": "201–299 → ＿張照片", "opts": ["兩百多", "兩多百", "百兩多"], "en": "two hundred-odd photos"},
+        {"type": "pick", "ask": "Say the amount with 多.", "q": "34,001–34,999 → ＿張照片", "opts": ["三萬四千多", "三萬多四千", "四千三萬多"], "en": "34,000-odd photos"},
+        {"type": "pick", "ask": "Say the amount with 多.", "q": "2–3 → ＿包子", "opts": ["兩個多", "兩多個", "二個多"], "en": "two and a bit buns"},
+        {"type": "pick", "ask": "Say the amount with 多.", "q": "7–8 → ＿咖啡", "opts": ["七杯多", "七多杯", "杯七多"], "en": "seven-odd cups of coffee"},
         {"type": "pick", "ctx": "A：你有幾杯咖啡？(1–2 杯)", "q": "B：我有＿咖啡。", "opts": ["一杯多", "一多杯", "多一杯"], "en": "I have a cup and a bit of coffee."},
         {"type": "pick", "ctx": "A：這是多少錢？(30,001–39,999 塊)", "q": "B：這是＿塊錢。", "opts": ["三萬多", "三多萬", "三萬塊多"], "en": "This is 30,000-odd dollars."}
       ]
@@ -411,10 +411,10 @@
         "tip": "多少 asks how much or how many for any amount (幾 is for small numbers). 塊 is the measure word for dollars. Measure words: 杯 cups, 張 flat things (照片), 本 books, 支 phones, 瓶 bottles, 個 most other things. You can also say 一杯咖啡要多少錢？"
       },
       "items": [
-        {"type": "pick", "table": "prices", "q": "一杯咖啡多少錢？", "opts": ["一杯咖啡五十五塊錢。", "一杯咖啡五百五塊錢。", "一個咖啡五十五塊錢。"], "en": "A cup of coffee is 55 dollars."},
-        {"type": "pick", "table": "prices", "q": "一本書多少錢？", "opts": ["一本書九百塊錢。", "一本書九十塊錢。", "一張書九百塊錢。"], "en": "A book is 900 dollars."},
-        {"type": "pick", "table": "prices", "q": "一支手機多少錢？", "opts": ["一支手機兩萬三千八百塊錢。", "一支手機二十三千八百塊錢。", "一本手機兩萬三千八百塊錢。"], "en": "A phone is 23,800 dollars."},
-        {"type": "pick", "table": "prices", "q": "一瓶可樂多少錢？", "opts": ["一瓶可樂三十五塊錢。", "一瓶可樂三百五塊錢。", "一本可樂三十五塊錢。"], "en": "A bottle of cola is 35 dollars."},
+        {"type": "pick", "ask": "Answer using the table.", "table": "prices", "q": "一杯咖啡多少錢？", "opts": ["一杯咖啡五十五塊錢。", "一杯咖啡五百五塊錢。", "一個咖啡五十五塊錢。"], "en": "A cup of coffee is 55 dollars."},
+        {"type": "pick", "ask": "Answer using the table.", "table": "prices", "q": "一本書多少錢？", "opts": ["一本書九百塊錢。", "一本書九十塊錢。", "一張書九百塊錢。"], "en": "A book is 900 dollars."},
+        {"type": "pick", "ask": "Answer using the table.", "table": "prices", "q": "一支手機多少錢？", "opts": ["一支手機兩萬三千八百塊錢。", "一支手機二十三千八百塊錢。", "一本手機兩萬三千八百塊錢。"], "en": "A phone is 23,800 dollars."},
+        {"type": "pick", "ask": "Answer using the table.", "table": "prices", "q": "一瓶可樂多少錢？", "opts": ["一瓶可樂三十五塊錢。", "一瓶可樂三百五塊錢。", "一本可樂三十五塊錢。"], "en": "A bottle of cola is 35 dollars."},
         {"type": "pick", "q": "兩＿照片多少錢？", "opts": ["張", "本", "支"], "en": "How much are two photos?"},
         {"type": "pick", "q": "一＿啤酒多少錢？", "opts": ["瓶", "本", "張"], "en": "How much is a bottle of beer?"},
         {"type": "pick", "q": "Which asks the price?", "opts": ["這支手機多少錢？", "這支手機幾錢？", "這支手機多少？錢"], "en": "How much is this phone?"},
@@ -504,8 +504,8 @@
         {"type": "pick", "q": "上網和照相，這支手機＿能。", "opts": ["都", "也", "和"], "en": "Going online and taking photos, this phone can do both."},
         {"type": "pick", "q": "這支手機能上網＿照相。", "opts": ["和", "也", "都"], "en": "This phone can go online and take photos."},
         {"type": "pick", "q": "Which sentence is right?", "opts": ["這支手機能上網，也能照相。", "這支手機能上網，能也照相。", "這支手機也上網，能照相。"], "en": "This phone can go online, and it can also take photos."},
-        {"type": "order", "ctx": "Say it with 也: 我的手機能上網和照相。", "tiles": ["我的手機", "能", "上網", "，", "也", "能", "照相", "。"]},
-        {"type": "order", "ctx": "Say it with 都: 這支手機能上網和照相。", "tiles": ["上網", "和", "照相", "，", "這支手機", "都", "能", "。"], "alts": [["照相", "和", "上網", "，", "這支手機", "都", "能", "。"]]},
+        {"type": "order", "ask": "Rewrite it using 也.", "src": "我的手機能上網和照相。", "tiles": ["我的手機", "能", "上網", "，", "也", "能", "照相", "。"]},
+        {"type": "order", "ask": "Rewrite it using 都, starting with the two things.", "src": "這支手機能上網和照相。", "tiles": ["上網", "和", "照相", "，", "這支手機", "都", "能", "。"], "alts": [["照相", "和", "上網", "，", "這支手機", "都", "能", "。"]]},
         {"type": "order", "tiles": ["你的手機", "能", "照相", "嗎", "？"], "en": "Can your phone take photos?"}
       ]
     }

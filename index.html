@@ -133,6 +133,8 @@ button.card:hover{border-color:var(--accent)}
 .gpt .peek{background:none;border:0;border-left:1px solid var(--line);padding:0 16px;font-size:1.4rem}
 .empty{color:var(--muted)}
 .gq{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:18px 16px;display:grid;gap:12px}
+.gq .ask{color:var(--muted);font-size:1rem}
+.gq .src{font-family:var(--f-hand);font-size:clamp(1.4rem,4.6vw,1.8rem);background:var(--bg);border-radius:8px;padding:8px 12px}
 .gq .ctx{color:var(--muted);font-size:1.05rem}
 .gq .ctx.zh{font-family:var(--f-hand);font-size:1.35rem;color:var(--fg)}
 .gq .q{font-family:var(--f-hand);font-size:clamp(1.5rem,5vw,2rem);line-height:1.5}
@@ -223,7 +225,9 @@ button.card:hover{border-color:var(--accent)}
   <div class="rail" id="rail" hidden><i id="bar"></i></div>
 
   <section class="gq" id="grBox" aria-live="polite" hidden>
+    <div class="ask" id="grAsk"></div>
     <div class="ctx" id="grCtx"></div>
+    <div class="src" id="grSrc"></div>
     <div id="grTable"></div>
     <div class="q" id="grQ"></div>
     <div class="ans" id="grAns" hidden></div>
@@ -717,7 +721,8 @@ function finishMw(){
 // ---- Grammar (語法): one page with every point and rounds of mixed questions ----
 // Data is grammar.json: { "tables": {...}, "points": [{ id, zh, en, card: {patterns, examples, tip}, items }] }.
 // Items: { type: "pick", ctx?, table?, q, opts, en, fill? } (opts[0] is right; "＿" in q is the gap, filled with fill or opts[0])
-//        { type: "order", ctx, tiles, alts? } (tiles in the right order; alts are other accepted orders)
+//        { type: "order", ask?, src?, tiles, alts? } (tiles in the right order; alts are other accepted orders;
+//          src is a sentence to rewrite or a question to answer). ask is the instruction line on any item.
 let GR = { tables: {}, points: [] }, grItems = [], grMisses = [], grCur = null, grPeeked = false, grDone = false, grPlaced = [];
 const ROUND = 10;
 function grPool(){ return GR.points.flatMap(p => p.items.map(it => ({ p, it }))); }
@@ -796,8 +801,12 @@ function showGr(){
   const it = grCur.it;
   $('qt').textContent = queue.length; $('qn').textContent = idx + 1; $('sc').textContent = score;
   $('bar').style.width = (idx / queue.length * 100) + '%';
+  // The instruction line says what to do; questions without one get a default from their type.
+  const ask = it.ask || (it.type === 'order' ? 'Put the words in the right order.' : it.q.includes('＿') ? 'Fill the gap.' : '');
+  $('grAsk').textContent = ask; $('grAsk').hidden = !ask;
   const c = it.ctx || '';
   $('grCtx').textContent = c; $('grCtx').className = isZh(c) ? 'ctx zh' : 'ctx'; $('grCtx').hidden = !c;
+  $('grSrc').textContent = it.src || ''; $('grSrc').hidden = !it.src;
   const tw = $('grTable'); tw.textContent = ''; if (it.table && GR.tables[it.table]) tw.append(grTableEl(GR.tables[it.table]));
   $('grFb').textContent = ''; $('grFb').className = 'fb';
   $('grGo').hidden = true; $('grUndo').hidden = true;
