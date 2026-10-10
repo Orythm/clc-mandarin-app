@@ -132,12 +132,18 @@ button.card:hover{border-color:var(--accent)}
 @media (max-width:560px){.board.mwb{grid-template-columns:repeat(3,1fr)} .board.mwb .tile{font-size:1.9rem}}
 /* Grammar: one page with a Practice button and the list of points; a card popup opens over any question */
 .gpoints{display:grid;gap:8px}
-/* Measure words: one small tile per measure word; tap for its card with every noun */
-.mwgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(4.5em,1fr));gap:.5em}
-.mwgrid .mwt{background:var(--bg);border:1px solid var(--line);border-radius:.75em;color:var(--fg);padding:.6em .2em;display:grid;gap:.15em;justify-items:center}
-.mwgrid .mwt:hover{border-color:var(--accent)}
-.mwgrid .mwt .h{font-family:var(--f-hand);font-size:2em;line-height:1.1}
-.mwgrid .mwt .sub{color:var(--muted);font-size:.9em;font-style:italic}
+/* Measure words: one table row per measure word; on narrow screens only the table scrolls sideways */
+.mwtab{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:.75em}
+.mwtab table{border-collapse:collapse;width:100%;white-space:nowrap}
+.mwtab th{text-align:left;font-weight:600;font-size:.85em;color:var(--muted);padding:.5em .75em;border-bottom:1px solid var(--line);background:var(--bg)}
+.mwtab td{padding:.2em .75em;line-height:1.3;border-bottom:1px solid var(--line);vertical-align:baseline}
+.mwtab tr:last-child td{border-bottom:0}
+.mwtab .zh{font-family:var(--f-hand);font-size:1.4em;color:var(--accent)}
+.mwtab .py{font-size:1em;font-weight:400;font-style:italic;letter-spacing:0}
+.mwtab .en{color:var(--muted)}
+.mwtab .ex{font-family:var(--f-hand);font-size:1.2em}
+.mwtab .ex .dim{opacity:.45}
+.mwtab .ex small{font-family:var(--f-py);font-size:.7em;font-style:italic;color:var(--muted);margin-left:.5em}
 .gtop{display:grid;gap:14px}
 /* Flashcards: one card, hold to flip, swipe either way for the next */
 .fc{display:grid;gap:.6em;justify-items:center;grid-template-rows:auto minmax(0,1fr) auto;flex:1;min-height:0}
@@ -301,8 +307,8 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
   <section class="menu gtop" id="mmenu" hidden>
     <button class="btn primary play" id="mPractice" type="button">Practice · all measure words</button>
     <button class="btn play" id="mFlash" type="button">Flashcards</button>
-    <h2 class="gh">Cards <small>tap one for its nouns</small></h2>
-    <div class="mwgrid" id="mList"></div>
+    <h2 class="gh">All measure words</h2>
+    <div class="mwtab" id="mList"></div>
   </section>
 
   <div class="rail" id="rail" hidden><i id="bar"></i></div>
@@ -829,33 +835,17 @@ function showMwMenu(){
   hideAll(); $('modeBtn').hidden = false; $('modeBtn').textContent = '← Home';
   $('title').textContent = '量詞 · Measure Words'; $('mmenu').hidden = false;
   const list = $('mList'); list.textContent = '';
+  const t = el('table'), hr = el('tr');
+  ['', 'Pinyin', 'For', 'Example'].forEach(h => hr.append(el('th', null, h)));
+  t.append(hr);
   MW.forEach(m => {
-    const b = el('button','mwt'); b.type = 'button'; b.setAttribute('aria-label', m.mw + ' ' + m.py + ', for ' + m.en);
-    b.append(el('span','h', m.mw), el('span','sub', m.py));
-    b.addEventListener('click', () => openMwCard(m));
-    list.append(b);
+    const w = m.nouns[0], tr = el('tr'), ex = el('td','ex');
+    ex.append(el('span','dim','一'), m.mw, el('span','dim', w[0]), el('small', null, numPy(NUMS[0], m) + ' ' + m.py + ' ' + w[1]));
+    tr.append(el('td','zh', m.mw), el('td','py', m.py), el('td','en', m.en), ex);
+    t.append(tr);
   });
+  list.append(t);
   window.scrollTo(0,0);
-}
-// One measure word: the pattern, what it counts, and every noun it goes with.
-function openMwCard(m){
-  const pane = $('sheetPane'); pane.textContent = '';
-  const top = el('div','top');
-  const h = el('h2', null, m.mw + ' '); h.append(el('small', null, m.py + ' · for ' + m.en));
-  const x = el('button','btn','Close'); x.type = 'button'; x.addEventListener('click', closeCard);
-  top.append(h, x); pane.append(top);
-  pane.append(rich('pat', 'Number + {k:' + m.mw + '} + {o:noun}'));
-  const lg = el('div','legend'); lg.append(el('span','r-k','Measure word'), el('span','r-o','Noun')); pane.append(lg);
-  const exs = el('div','exs');
-  m.nouns.forEach(w => {
-    const d = el('div');
-    d.append(rich('zh', '一{k:' + m.mw + '}{o:' + w[0] + '}'), el('div','py', numPy(NUMS[0], m) + ' ' + m.py + ' ' + w[1]), el('div','en', 'one ' + w[2]));
-    exs.append(d);
-  });
-  pane.append(exs);
-  const both = MW.filter(o => o !== m && o.nouns.some(w => m.nouns.some(v => v[0] === w[0])));
-  if (both.length) pane.append(el('p','tip', both.map(o => o.nouns.filter(w => m.nouns.some(v => v[0] === w[0])).map(w => w[0]).join('、') + ' can also take ' + o.mw + ' (' + o.en + ').').join(' ')));
-  $('sheet').hidden = false; x.focus();
 }
 $('mPractice').addEventListener('click', () => go('/measure/practice'));
 $('mFlash').addEventListener('click', () => go('/measure/flashcards'));
