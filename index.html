@@ -125,6 +125,9 @@ button.card:hover{border-color:var(--accent)}
 @media (max-width:560px){.board.mwb{grid-template-columns:repeat(3,1fr)} .board.mwb .tile{font-size:1.9rem}}
 /* Grammar: one page with a Practice button and the list of points; a card popup opens over any question */
 .gpoints{display:grid;gap:8px}
+.gtop{display:grid;gap:14px}
+.gh{font-family:var(--f-py);font-size:1.05rem;margin:6px 0 0}
+.gh small{color:var(--muted);font-weight:400;font-size:.9rem}
 .gpt{display:flex;align-items:stretch;background:var(--bg);border:1px solid var(--line);border-radius:12px}
 .gpt:hover{border-color:var(--accent)}
 .gpt .go{flex:1;background:none;border:0;color:var(--fg);text-align:left;padding:12px 14px;display:grid;gap:2px}
@@ -154,9 +157,9 @@ button.card:hover{border-color:var(--accent)}
 .wt.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
 .wt:disabled{cursor:default}
 .gq .tools{justify-content:space-between}
-/* Pinyin under the Chinese, only while the 拼音 button is held */
-.pyl{display:none;font-family:var(--f-py);font-size:.8rem;font-weight:400;color:var(--muted);letter-spacing:0;line-height:1.3;font-style:normal}
-.showpy .pyl{display:block}
+/* Pinyin under the Chinese: its space is always kept, it only becomes visible while 拼音 is held, so nothing moves */
+.pyl{display:block;visibility:hidden;font-family:var(--f-py);font-size:.8rem;font-weight:400;color:var(--muted);letter-spacing:0;line-height:1.3;font-style:normal}
+.showpy .pyl{visibility:visible}
 .wt .pyl{font-size:.75rem}
 #grPy{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:none}
 #grPy.on{background:var(--fg);border-color:var(--fg);color:var(--paper)}
@@ -230,8 +233,13 @@ button.card:hover{border-color:var(--accent)}
   </section>
 
   <section class="menu" id="gmenu" hidden>
-    <button class="btn primary play" id="gPractice" type="button">Practice</button>
-    <div class="gpoints" id="gList"></div>
+    <div class="gtop" id="gTop">
+      <button class="btn primary play" id="gPractice" type="button">Practice</button>
+      <h2 class="gh">By exercise type <small>all topics mixed</small></h2>
+      <div class="modes" id="gTypes"></div>
+      <button class="mode" id="gBrowse" type="button"><span class="ex"><span class="h">📖</span></span><span class="lbl">Browse the cards</span><span class="sub" id="gBrowseSub"></span></button>
+    </div>
+    <div class="gpoints" id="gList" hidden></div>
   </section>
 
   <div class="rail" id="rail" hidden><i id="bar"></i></div>
@@ -747,23 +755,50 @@ const GRS = () => SETS[grSet];
 let grItems = [], grMisses = [], grCur = null, grPeeked = false, grDone = false, grPlaced = [];
 const ROUND = 10;
 function grPool(){ return GRS().data.points.flatMap(p => p.items.map(it => ({ p, it }))); }
+// Exercise types, worked out from each item so the data needs no extra field.
+const KINDS = [
+  ['fill', 'Fill the gap', '我們＿很喜歡打籃球。'],
+  ['answer', 'Answer the question', 'A：你要喝什麼？ → B：…'],
+  ['ask', 'Ask the question', '…？ ← 我是日本人。'],
+  ['order', 'Word order', 'Put the words in the right order'],
+];
+function grKind(it){
+  if (it.type === 'order') return 'order';
+  const a = it.ask || '', q = it.q;
+  if (a.startsWith('Complete the question') || /^Which (question|asks)/.test(q)) return 'ask';
+  if (it.table || /？$/.test((it.ctx || '').trim()) || q.startsWith('Which answer')) return 'answer';
+  if (q.includes('＿')) return 'fill';
+  return 'order';   // "Which sentence / word order is right?"
+}
 function buildGrammar(){
-  $('gPractice').textContent = 'Practice · ' + Math.min(ROUND, grPool().length) + ' mixed questions';
+  const S = GRS(), pool = grPool();
+  $('gPractice').textContent = 'Practice · ' + Math.min(ROUND, pool.length) + ' mixed questions';
+  const types = $('gTypes'); types.textContent = '';
+  KINDS.forEach(([k, label, ex]) => {
+    const n = pool.filter(x => grKind(x.it) === k).length;
+    if (!n) return;
+    const b = el('button','mode'); b.type = 'button';
+    b.append(el('span','lbl',label), el('span','sub', ex), el('span','sub', n + ' questions'));
+    b.addEventListener('click', () => go(S.base + '/type/' + k));
+    types.append(b);
+  });
+  $('gBrowseSub').textContent = S.data.points.length + ' cards: the pattern, examples and a tip for each point';
   const list = $('gList'); list.textContent = '';
-  GRS().data.points.forEach(p => {
+  S.data.points.forEach(p => {
     const row = el('div','gpt');
     const b = el('button','go'); b.type = 'button';
-    b.append(el('span','h',p.zh), el('span','sub', p.en + ' · ' + p.items.length + ' questions'));
-    b.addEventListener('click', () => go(GRS().base + '/' + p.id));
-    const k = el('button','peek','📖'); k.type = 'button'; k.setAttribute('aria-label', 'Card: ' + p.en);
-    k.addEventListener('click', () => openCard(p));
+    b.append(el('span','h',p.zh), el('span','sub', p.en));
+    b.addEventListener('click', () => openCard(p));
+    const k = el('button','peek','▶'); k.type = 'button'; k.setAttribute('aria-label', 'Practise ' + p.en); k.title = 'Practise this point';
+    k.addEventListener('click', () => go(S.base + '/cards/' + p.id));
     row.append(b, k); list.append(row);
   });
 }
-function showGrammar(){
-  hideAll(); $('modeBtn').hidden = false; $('modeBtn').textContent = '← Home';
-  $('gmenu').hidden = false; $('title').textContent = GRS().zh + ' · ' + GRS().en;
-  buildGrammar();
+function showGrammar(cards){
+  hideAll(); $('modeBtn').hidden = false; $('modeBtn').textContent = cards ? '← ' + GRS().en : '← Home';
+  $('gmenu').hidden = false; $('gTop').hidden = !!cards; $('gList').hidden = !cards;
+  $('title').textContent = GRS().zh + ' · ' + (cards ? 'Cards' : GRS().en);
+  buildGrammar(); window.scrollTo(0,0);
 }
 // Card text marks sentence parts as {s:我們}{tw:今天晚上}{v:要去看電影}: s subject, v verb, tw time word,
 // o thing or topic, k the grammar word the point is about.
@@ -800,7 +835,7 @@ function startGr(items, title){
   queue = items.map(x => ({ ...x, again: false })); idx = 0; score = 0; grMisses = []; misses = [];
   hideAll();
   $('title').textContent = title;
-  $('modeBtn').textContent = '← ' + GRS().en;
+  $('modeBtn').textContent = /\/cards$/.test(parentOf(location.pathname) || '') ? '← Cards' : '← ' + GRS().en;
   ['meta','rail','grBox','modeBtn'].forEach(id => $(id).hidden = false);
   showGr(); window.scrollTo(0,0);
 }
@@ -962,8 +997,12 @@ function finishGr(){
   $('restartBtn').textContent = 'Start over';
 }
 function grStartPoint(p){ startGr(shuffle(p.items).map(it => ({ p, it })), GRS().zh + ' · ' + p.zh); }
-function grStartPractice(){ startGr(shuffle(grPool()).slice(0, ROUND), GRS().zh + ' · Practice'); }
+function grStartPractice(kind){
+  const pool = grPool().filter(x => !kind || grKind(x.it) === kind);
+  startGr(shuffle(pool).slice(0, ROUND), GRS().zh + ' · ' + (kind ? KINDS.find(k => k[0] === kind)[1] : 'Practice'));
+}
 $('gPractice').addEventListener('click', () => go(GRS().base + '/practice'));
+$('gBrowse').addEventListener('click', () => go(GRS().base + '/cards'));
 
 // URLs: "/" is the home menu, "/vocab" the lesson list, "/vocab/lesson-<n>-py-zh" and
 // "/vocab/lesson-<n>-zh-py" open a quiz, "/tones" and "/tones/lesson-<n>" are the pinyin dictation, so the phone's back gesture moves between screens
@@ -972,6 +1011,8 @@ const SLUG = { py2zh: 'py-zh', zh2py: 'zh-py' };
 function lessonPath(n, m){ return '/vocab/lesson-' + n + '-' + SLUG[m]; }
 function parentOf(path){
   if (path === '/vocab' || path === '/tones' || path === '/measure' || path === '/grammar' || path === '/questions') return '/';
+  // Grammar and question pages nest: /grammar/cards/<id> → /grammar/cards → /grammar
+  if (/^\/(grammar|questions)\/cards\/./.test(path)) return path.replace(/\/[^/]+$/, '');
   return path.startsWith('/vocab/') ? '/vocab' : path.startsWith('/tones/') ? '/tones' : path.startsWith('/grammar/') ? '/grammar' : path.startsWith('/questions/') ? '/questions' : null;
 }
 function route(){
@@ -984,7 +1025,10 @@ function route(){
     grSet = k;
     if (path === S.base) return showGrammar();
     if (path === S.base + '/practice') return grStartPractice();
-    const gp = S.data.points.find(p => S.base + '/' + p.id === path);
+    if (path === S.base + '/cards') return showGrammar(true);
+    const ty = path.match(/\/type\/(\w+)$/);
+    if (ty && KINDS.some(k => k[0] === ty[1])) return grStartPractice(ty[1]);
+    const gp = S.data.points.find(p => path === S.base + '/' + p.id || path === S.base + '/cards/' + p.id);
     if (gp) return grStartPoint(gp);
   }
   if (path === '/tones/endless') { lesson = { zh: '全部 ∞', endless: true, words: allWords() }; WORDS = lesson.words; return startTones(WORDS); }
