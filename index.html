@@ -972,7 +972,15 @@ function fcSplit(points){
       patterns: pats.length === parts.length ? [pats[i]] : pat.includes(alt) ? [pat.replace(alt, w)] : [],
       examples: [pick.get(w)],
       tip: tipsFit ? tips[i].trim() : tipFor(p.card.tip, w, parts) } }));
-  });
+  }).reduce((deck, c) => {
+    // The same word from two topics (都 in 也 · 都 · 常 and in 和 · 也 · 都) is one card with both uses.
+    const same = deck.find(d => d.zh === c.zh && !d.id && !c.id);
+    if (!same) return deck.concat(c.id ? c : { ...c, card: { ...c.card, patterns: c.card.patterns.slice(), examples: c.card.examples.slice() } });
+    c.card.patterns.forEach(t => { if (!same.card.patterns.includes(t)) same.card.patterns.push(t); });
+    same.card.examples.push(...c.card.examples);
+    if (c.card.tip && c.card.tip !== same.card.tip) same.card.tip = [same.card.tip, c.card.tip].filter(Boolean).join(' ');
+    return deck;
+  }, []);
 }
 // Grammar and question words have the same flashcards: the topic on the front, its card (pattern, examples, tip) on the back.
 let fcDeck = [], fcI = 0, fcAll = [];

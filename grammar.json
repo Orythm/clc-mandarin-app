@@ -263,7 +263,7 @@
           ["{s:我們}{k:都}很{v:喜歡打籃球}。", "wǒ men dōu hěn xǐ huān dǎ lán qiú.", "We all like playing basketball a lot."],
           ["{s:我}{k:常}{v:去看電影}。", "wǒ cháng qù kàn diàn yǐng.", "I often go to the movies."]
         ],
-        "tip": "All three go right before the verb."
+        "tip": "也, 都 and 常 go right before the verb."
       },
       "items": [
         {"type": "pick", "ctx": "A：你是日本人，他呢？", "q": "B：他＿是日本人。", "opts": ["也", "都", "常"], "en": "He's Japanese too."},
