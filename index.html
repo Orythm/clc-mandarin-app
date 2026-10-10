@@ -252,6 +252,12 @@ button.card:hover{border-color:var(--accent)}
     <div class="gpoints" id="gList" hidden></div>
   </section>
 
+  <section class="menu gtop" id="mmenu" hidden>
+    <button class="btn primary play" id="mPractice" type="button">Practice · all measure words</button>
+    <h2 class="gh">Cards <small>what each one counts</small></h2>
+    <div class="gpoints" id="mList"></div>
+  </section>
+
   <div class="rail" id="rail" hidden><i id="bar"></i></div>
 
   <section class="gq" id="grBox" aria-live="polite" hidden>
@@ -305,7 +311,7 @@ button.card:hover{border-color:var(--accent)}
   <section class="prompt" id="mwBox" aria-live="polite" hidden>
     <div class="mwq" id="mwQ"></div>
     <div class="fb" id="mwFb"></div>
-    <div class="tools mwtools"><button class="btn" id="mwPy" type="button" aria-label="Hold to show pinyin">拼音</button><button class="btn primary" id="mwGo" type="button" hidden>Next</button></div>
+    <div class="tools mwtools"><span><button class="btn" id="mwPeek" type="button">📖 Cards</button> <button class="btn" id="mwPy" type="button" aria-label="Hold to show pinyin">拼音</button></span><button class="btn primary" id="mwGo" type="button" hidden>Next</button></div>
   </section>
 
   <section class="results" id="results" hidden>
@@ -356,7 +362,7 @@ function buildMenu(){
 function hideAll(){
   stopAudio(); closeCard();
   $('restartBtn').textContent = 'Start over (all words)';
-  ['home','menu','tmenu','gmenu','grBox','meta','rail','promptBox','results','board','dict','mwBox'].forEach(id => $(id).hidden = true);
+  ['home','menu','tmenu','gmenu','mmenu','grBox','meta','rail','promptBox','results','board','dict','mwBox'].forEach(id => $(id).hidden = true);
 }
 function showHome(){
   hideAll(); $('modeBtn').hidden = true;
@@ -437,7 +443,7 @@ function finish(){
 $('hintBtn').addEventListener('click', () => { showEn = !showEn; save(); applyAids(); });
 $('lenBtn').addEventListener('click', () => { showLen = !showLen; save(); applyAids(); });
 $('retryBtn').addEventListener('click', () => ex === 'gr' ? startGr(shuffle(grMisses), $('title').textContent) : ex === 'tones' ? startTones(misses) : ex === 'mw' ? startMw(mwMisses) : start(misses));
-$('restartBtn').addEventListener('click', () => ex === 'gr' ? startGr(shuffle(grItems), $('title').textContent) : ex === 'tones' ? startTones(WORDS) : ex === 'mw' ? startMw(MW_ITEMS) : start(WORDS));
+$('restartBtn').addEventListener('click', () => ex === 'gr' ? startGr(shuffle(grItems), $('title').textContent) : ex === 'tones' ? startTones(WORDS) : ex === 'mw' ? startMw(mwList) : start(WORDS));
 
 // ---- Pinyin dictation: hear a word, type its pinyin, then tap vowels to add tone marks ----
 
@@ -691,7 +697,7 @@ $('playBtn').addEventListener('click', () => playWord(queue[idx]));
 $('slowBtn').addEventListener('click', () => playWord(queue[idx], true));
 // ---- Measure words (量詞): "三 __ 書", tap the right measure word ----
 // Data is measure-words.json: [{ "mw": "本", "py": "běn", "en": "books", "nouns": [["書","shū","book"], ...] }, ...]
-let MW = [], MW_ITEMS = [], mwMisses = [];
+let MW = [], MW_ITEMS = [], mwMisses = [], mwList = [];
 const NUMS = [['一','yī'],['兩','liǎng'],['三','sān'],['四','sì'],['五','wǔ'],['六','liù'],['七','qī'],['八','bā'],['九','jiǔ'],['十','shí']];
 // 一 changes tone before the measure word: yí before a 4th tone (and 個), yì before the others.
 function numPy(n, m){
@@ -714,11 +720,11 @@ function buildMwBoard(){
   });
 }
 function startMw(list){
-  ex = 'mw'; endless = false; queue = shuffle(list).map(it => ({ ...it, n: NUMS[Math.floor(Math.random() * NUMS.length)] }));
+  mwList = list; ex = 'mw'; endless = false; queue = shuffle(list).map(it => ({ ...it, n: NUMS[Math.floor(Math.random() * NUMS.length)] }));
   idx = 0; score = 0; mwMisses = []; misses = [];
   hideAll();
   $('title').textContent = '量詞 · Measure Words';
-  $('modeBtn').textContent = '← Home';
+  $('modeBtn').textContent = '← Measure words';
   ['meta','rail','mwBox','board','modeBtn'].forEach(id => $(id).hidden = false);
   $('qt').textContent = queue.length;
   buildMwBoard(); showMw(); window.scrollTo(0,0);
@@ -753,6 +759,54 @@ function pickMw(t){
     setTimeout(() => t.classList.remove('bad'), 450);
   }
 }
+// The measure-word page: Practice (everything) and one card per measure word.
+function showMwMenu(){
+  hideAll(); $('modeBtn').hidden = false; $('modeBtn').textContent = '← Home';
+  $('title').textContent = '量詞 · Measure Words'; $('mmenu').hidden = false;
+  const list = $('mList'); list.textContent = '';
+  MW.forEach(m => {
+    const row = el('div','gpt');
+    const b = el('button','go'); b.type = 'button';
+    b.append(el('span','h', m.mw + ' ' ), el('span','sub', m.py + ' · for ' + m.en));
+    b.addEventListener('click', () => openMwCard(m));
+    row.append(b); list.append(row);
+  });
+  window.scrollTo(0,0);
+}
+// One measure word: the pattern, what it counts, and every noun it goes with.
+function openMwCard(m){
+  const pane = $('sheetPane'); pane.textContent = '';
+  const top = el('div','top');
+  const h = el('h2', null, m.mw + ' '); h.append(el('small', null, m.py + ' · for ' + m.en));
+  const x = el('button','btn','Close'); x.type = 'button'; x.addEventListener('click', closeCard);
+  top.append(h, x); pane.append(top);
+  pane.append(rich('pat', 'Number + {k:' + m.mw + '} + {o:noun}'));
+  const lg = el('div','legend'); lg.append(el('span','r-k','Measure word'), el('span','r-o','Noun')); pane.append(lg);
+  const exs = el('div','exs');
+  m.nouns.forEach(w => {
+    const d = el('div');
+    d.append(rich('zh', '一{k:' + m.mw + '}{o:' + w[0] + '}'), el('div','py', numPy(NUMS[0], m) + ' ' + m.py + ' ' + w[1]), el('div','en', 'one ' + w[2]));
+    exs.append(d);
+  });
+  pane.append(exs);
+  const both = MW.filter(o => o !== m && o.nouns.some(w => m.nouns.some(v => v[0] === w[0])));
+  if (both.length) pane.append(el('p','tip', both.map(o => o.nouns.filter(w => m.nouns.some(v => v[0] === w[0])).map(w => w[0]).join('、') + ' can also take ' + o.mw + ' (' + o.en + ').').join(' ')));
+  $('sheet').hidden = false; x.focus();
+}
+// During a question: every measure word and what it's for, without the nouns, so it helps without giving the answer away.
+function openMwAll(){
+  const pane = $('sheetPane'); pane.textContent = '';
+  const top = el('div','top');
+  const h = el('h2', null, '量詞 '); h.append(el('small', null, 'what each one counts'));
+  const x = el('button','btn','Close'); x.type = 'button'; x.addEventListener('click', closeCard);
+  top.append(h, x); pane.append(top);
+  const exs = el('div','exs');
+  MW.forEach(m => { const d = el('div'); d.append(el('div','zh', m.mw), el('div','py', m.py), el('div','en', 'for ' + m.en)); exs.append(d); });
+  pane.append(exs);
+  $('sheet').hidden = false; x.focus();
+}
+$('mwPeek').addEventListener('click', openMwAll);
+$('mPractice').addEventListener('click', () => go('/measure/practice'));
 function finishMw(){
   // The results screen lists misses as [characters, pinyin, english]: show the phrase with 一.
   misses = mwMisses.map(({ m, w }) => [ '一' + m.mw + w[0], numPy(NUMS[0], m) + ' ' + m.py + ' ' + w[1], m.en ]);
@@ -1052,13 +1106,17 @@ function parentOf(path){
   if (path === '/vocab' || path === '/tones' || path === '/measure' || path === '/grammar' || path === '/questions') return '/';
   // Grammar and question pages nest: /grammar/cards/<id> → /grammar/cards → /grammar
   if (/^\/(grammar|questions)\/cards\/./.test(path)) return path.replace(/\/[^/]+$/, '');
+  if (path.startsWith('/measure/')) return '/measure';
   return path.startsWith('/vocab/') ? '/vocab' : path.startsWith('/tones/') ? '/tones' : path.startsWith('/grammar/') ? '/grammar' : path.startsWith('/questions/') ? '/questions' : null;
 }
 function route(){
   const path = location.pathname.replace(/\/+$/, '') || '/';
   if (path === '/vocab') return showMenu();
   if (path === '/tones') return showTonesMenu();
-  if (path === '/measure' && MW_ITEMS.length) return startMw(MW_ITEMS);
+  if (MW_ITEMS.length && (path === '/measure' || path.startsWith('/measure/'))) {
+    if (path === '/measure') return showMwMenu();
+    if (path === '/measure/practice') return startMw(MW_ITEMS);
+  }
   for (const k in SETS) {
     const S = SETS[k]; if (!S.data.points.length || !(path === S.base || path.startsWith(S.base + '/'))) continue;
     grSet = k;
