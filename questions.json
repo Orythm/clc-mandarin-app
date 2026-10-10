@@ -19,9 +19,9 @@
       "items": [
         {"type": "pick", "q": "你是日本人＿？", "opts": ["嗎", "什麼", "呢"], "en": "Are you Japanese?"},
         {"type": "pick", "q": "你喜歡打籃球＿？", "opts": ["嗎", "什麼", "哪"], "en": "Do you like playing basketball?"},
-        {"type": "pick", "q": "Which question is right?", "opts": ["你要喝咖啡嗎？", "你要喝什麼嗎？", "你是哪國人嗎？"], "en": "Would you like a coffee?"},
+        {"type": "pick", "q": "Which question is right?", "opts": ["你要喝咖啡嗎？", "你要不要喝咖啡嗎？", "你是哪國人嗎？"], "en": "Would you like a coffee?"},
         {"type": "pick", "q": "Which question is right?", "opts": ["你常看電影嗎？", "你常看電影還是嗎？", "誰常看電影嗎？"], "en": "Do you often go to the movies?"},
-        {"type": "pick", "ctx": "A：你是美國人嗎？", "q": "B：＿，我是美國人。", "opts": ["是的", "什麼", "嗎"], "en": "Yes, I'm American."},
+        {"type": "pick", "ctx": "A：你是美國人嗎？", "q": "B：＿，我是美國人。", "opts": ["是的", "不是", "嗎"], "en": "Yes, I'm American."},
         {"type": "order", "tiles": ["你", "有", "哥哥", "嗎", "？"], "en": "Do you have an older brother?"},
         {"type": "order", "tiles": ["你", "想", "學", "中文", "嗎", "？"], "en": "Do you want to learn Chinese?"}
       ]
@@ -44,9 +44,9 @@
         {"type": "pick", "ask": "Complete the question that this answers: 我喜歡吃炒飯。", "q": "你喜歡吃＿？", "opts": ["什麼", "哪", "幾"], "en": "What do you like to eat?"},
         {"type": "pick", "ask": "Complete the question that this answers: 我叫王大明。", "q": "你叫＿名字？", "opts": ["什麼", "誰", "哪"], "en": "What's your name?"},
         {"type": "pick", "ask": "Complete the question that this answers: 我明天要去游泳。", "q": "你明天要＿？", "opts": ["做什麼", "什麼做", "怎麼樣"], "en": "What are you doing tomorrow?"},
-        {"type": "pick", "ask": "Complete the question that this answers: 他週末常打網球。", "q": "他週末常＿？", "opts": ["做什麼", "誰", "幾"], "en": "What does he usually do on weekends?"},
-        {"type": "pick", "ask": "Complete the question that this answers: 我要喝烏龍茶。", "q": "你要喝＿？", "opts": ["什麼", "嗎", "哪國"], "en": "What would you like to drink?"},
-        {"type": "order", "tiles": ["你", "今天晚上", "要", "做什麼", "？"], "alts": [["今天晚上", "你", "要", "做什麼", "？"]], "en": "What are you doing tonight?"},
+        {"type": "pick", "ask": "Complete the question that this answers: 他週末常打網球。", "q": "他週末常＿？", "opts": ["做什麼", "什麼", "怎麼樣"], "en": "What does he usually do on weekends?"},
+        {"type": "pick", "ask": "Complete the question that this answers: 我要喝烏龍茶。", "q": "你要喝＿？", "opts": ["什麼", "嗎", "哪"], "en": "What would you like to drink?"},
+        {"type": "order", "tiles": ["你", "今天晚上", "要", "做", "什麼", "？"], "alts": [["今天晚上", "你", "要", "做", "什麼", "？"]], "en": "What are you doing tonight?"},
         {"type": "order", "tiles": ["你", "喜歡", "看", "什麼", "電影", "？"], "en": "What movies do you like?"}
       ]
     },
@@ -65,8 +65,8 @@
         "tip": "哪 nǎ = which. 那 nà = that."
       },
       "items": [
-        {"type": "pick", "ask": "Complete the question that this answers: 我是日本人。", "q": "你是＿人？", "opts": ["哪國", "什麼", "誰"], "en": "Where are you from?"},
-        {"type": "pick", "ask": "Complete the question that this answers: 她是臺灣人。", "q": "她是＿人？", "opts": ["哪國", "幾", "多少"], "en": "Where is she from?"},
+        {"type": "pick", "ask": "Complete the question that this answers: 我是日本人。", "q": "你是＿人？", "opts": ["哪國", "幾國", "誰"], "en": "Where are you from?"},
+        {"type": "pick", "ask": "Complete the question that this answers: 她是臺灣人。", "q": "她是＿人？", "opts": ["哪國", "幾國", "誰"], "en": "Where is she from?"},
         {"type": "pick", "ask": "Complete the question that this answers: 我要這本書。", "q": "你要＿本書？", "opts": ["哪", "那", "什麼"], "en": "Which book do you want?"},
         {"type": "pick", "ask": "Complete the question that this answers: 我喜歡那支手機。", "q": "你喜歡＿支手機？", "opts": ["哪", "那", "誰"], "en": "Which phone do you like?"},
         {"type": "order", "tiles": ["你", "是", "哪國", "人", "？"], "en": "Where are you from?"},
@@ -89,9 +89,9 @@
       },
       "items": [
         {"type": "pick", "ask": "Complete the question that this answers: 他是我哥哥。", "q": "他是＿？", "opts": ["誰", "什麼", "哪"], "en": "Who is he?"},
-        {"type": "pick", "ask": "Complete the question that this answers: 李先生喜歡踢足球。", "q": "＿喜歡踢足球？", "opts": ["誰", "什麼", "嗎"], "en": "Who likes playing football?"},
+        {"type": "pick", "ask": "Complete the question that this answers: 李先生喜歡踢足球。", "q": "＿喜歡踢足球？", "opts": ["誰", "什麼", "哪"], "en": "Who likes playing football?"},
         {"type": "pick", "ask": "Complete the question that this answers: 這是老師的書。", "q": "這是＿的書？", "opts": ["誰", "哪", "幾"], "en": "Whose book is this?"},
-        {"type": "pick", "ask": "Complete the question that this answers: 王小姐要去看電影。", "q": "＿要去看電影？", "opts": ["誰", "哪國", "做什麼"], "en": "Who is going to see a movie?"},
+        {"type": "pick", "ask": "Complete the question that this answers: 王小姐要去看電影。", "q": "＿要去看電影？", "opts": ["誰", "什麼", "哪"], "en": "Who is going to see a movie?"},
         {"type": "order", "tiles": ["這", "是", "誰", "的", "照片", "？"], "en": "Whose photo is this?"},
         {"type": "order", "tiles": ["誰", "想", "喝", "咖啡", "？"], "en": "Who wants coffee?"}
       ]
@@ -111,11 +111,11 @@
         "tip": "幾 for small numbers, 多少 for any."
       },
       "items": [
-        {"type": "pick", "ask": "Complete the question that this answers: 我有兩個妹妹。", "q": "你有＿個妹妹？", "opts": ["幾", "多少錢", "什麼"], "en": "How many younger sisters do you have?"},
+        {"type": "pick", "ask": "Complete the question that this answers: 我有兩個妹妹。", "q": "你有＿個妹妹？", "opts": ["幾", "什麼", "誰"], "en": "How many younger sisters do you have?"},
         {"type": "pick", "ask": "Complete the question that this answers: 一杯咖啡八十塊錢。", "q": "一杯咖啡＿錢？", "opts": ["多少", "幾", "什麼"], "en": "How much is a cup of coffee?"},
-        {"type": "pick", "ask": "Complete the question that this answers: 我們班有八個人。", "q": "你們班有＿個人？", "opts": ["幾", "哪", "誰"], "en": "How many people are in your class?"},
+        {"type": "pick", "ask": "Complete the question that this answers: 我們班有八個人。", "q": "你們班有＿個人？", "opts": ["幾", "什麼", "誰"], "en": "How many people are in your class?"},
         {"type": "pick", "ask": "Complete the question that this answers: 我們公司有一千多個人。", "q": "你們公司有＿人？", "opts": ["多少", "幾", "什麼"], "en": "How many people are at your company?"},
-        {"type": "pick", "ask": "Complete the question that this answers: 我有三張照片。", "q": "你有＿張照片？", "opts": ["幾", "多少錢", "哪國"], "en": "How many photos do you have?"},
+        {"type": "pick", "ask": "Complete the question that this answers: 我有三張照片。", "q": "你有＿張照片？", "opts": ["幾", "什麼", "誰"], "en": "How many photos do you have?"},
         {"type": "order", "tiles": ["這", "本", "書", "多少", "錢", "？"], "en": "How much is this book?"},
         {"type": "order", "tiles": ["你", "家", "有", "幾", "個", "人", "？"], "en": "How many people are in your family?"}
       ]
@@ -140,7 +140,7 @@
         {"type": "pick", "q": "我要喝茶，他＿？", "opts": ["呢", "嗎", "幾"], "en": "I'd like tea, what about him?"},
         {"type": "pick", "q": "Which question is right?", "opts": ["我很好，你呢？", "我很好，你嗎？", "我很好，呢你？"], "en": "I'm fine, and you?"},
         {"type": "pick", "ask": "Pick B's answer.", "ctx": "A：我是臺灣人，你呢？", "q": "B：＿", "opts": ["我也是臺灣人。", "我是臺灣人呢。", "我是臺灣人嗎？"], "en": "I'm Taiwanese too."},
-        {"type": "order", "tiles": ["我", "喜歡", "看書", "，", "你", "呢", "？"], "en": "I like reading, what about you?"}
+        {"type": "order", "tiles": ["我", "喜歡", "看", "書", "，", "你", "呢", "？"], "en": "I like reading, what about you?"}
       ]
     },
     {
@@ -158,12 +158,12 @@
         "tip": "No 嗎 with either."
       },
       "items": [
-        {"type": "pick", "q": "我們一起去吃晚飯，＿？", "opts": ["好不好", "誰", "幾"], "en": "Shall we go have dinner together?"},
-        {"type": "pick", "q": "這個週末我們去打棒球，＿？", "opts": ["怎麼樣", "哪國", "多少"], "en": "How about playing baseball this weekend?"},
+        {"type": "pick", "q": "我們一起去吃晚飯，＿？", "opts": ["好不好", "好不", "呢"], "en": "Shall we go have dinner together?"},
+        {"type": "pick", "q": "這個週末我們去打棒球，＿？", "opts": ["怎麼樣", "什麼", "好不"], "en": "How about playing baseball this weekend?"},
         {"type": "pick", "ctx": "A：我們明天去爬山，好不好？", "q": "B：＿！我也想去。", "opts": ["好啊", "好不好", "怎麼樣"], "en": "Sure! I want to go too."},
         {"type": "pick", "q": "Which question is right?", "opts": ["我們去游泳，好不好？", "我們去游泳，好不好嗎？", "好不好我們去游泳嗎？"], "en": "Shall we go swimming?"},
         {"type": "order", "tiles": ["我們", "去", "逛街", "，", "怎麼樣", "？"], "en": "How about we go shopping?"},
-        {"type": "order", "tiles": ["明天", "我們", "一起", "去", "看電影", "，", "好不好", "？"], "alts": [["我們", "明天", "一起", "去", "看電影", "，", "好不好", "？"]], "en": "Shall we go see a movie together tomorrow?"}
+        {"type": "order", "tiles": ["明天", "我們", "一起", "去", "看", "電影", "，", "好不好", "？"], "alts": [["我們", "明天", "一起", "去", "看", "電影", "，", "好不好", "？"]], "en": "Shall we go see a movie together tomorrow?"}
       ]
     },
     {

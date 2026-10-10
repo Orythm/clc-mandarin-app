@@ -1339,10 +1339,16 @@ $('gBrowse').addEventListener('click', () => go(GRS().base + '/cards'));
 // They are ordinary pick / recall items for the grammar question engine. `word` is the [characters, pinyin,
 // english] they are about, `sec` the mock-exam section.
 // Other words from the pool as wrong options: by characters (same length first) or by English, all different.
+// The closest words come first, so the answer can't be found by elimination: words sharing a character
+// (便宜 / 一共), the same number of characters, and the same kind of word (verbs with verbs, measure words together).
 function distract(w, pool, n, by){
   const len = [...w[0]].length, seen = new Set([w[by]]), out = [];
-  let cand = shuffle(pool.filter(x => x[0] !== w[0]));
-  if (by === 0) cand = cand.filter(x => [...x[0]].length === len).concat(cand.filter(x => [...x[0]].length !== len));
+  const kind = x => /measure word/.test(x[2]) ? 'mw' : /^to /.test(x[2]) ? 'v' : /particle/.test(x[2]) ? 'p' : 'n';
+  const score = x => ([...x[0]].some(c => w[0].includes(c)) ? 3 : 0) + ([...x[0]].length === len ? 1.5 : 0) + (kind(x) === kind(w) ? 2 : 0) + Math.random() * 2;
+  // Never a word that shares a meaning (能 and 可以 are both "can"; 好的 and 好啊 both "OK, sure").
+  const senses = x => /measure word/.test(x[2]) ? [x[2]] : x[2].toLowerCase().replace(/\([^)]*\)/g, '').split(/[,;!?]+/).map(t => t.trim()).filter(Boolean);
+  const mine = senses(w);
+  const cand = pool.filter(x => x[0] !== w[0] && !senses(x).some(t => mine.includes(t))).map(x => [score(x), x]).sort((a, b) => b[0] - a[0]).map(a => a[1]);
   for (const x of cand) { if (out.length >= n) break; if (!seen.has(x[by])) { seen.add(x[by]); out.push(x[by]); } }
   return out;
 }
