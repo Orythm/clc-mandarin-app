@@ -174,6 +174,16 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
 .fcard .fex .zh{font-family:var(--f-hand);font-size:11cqw}
 .fcard .fex .xpy{font-style:italic;font-size:5.5cqw}
 .fcard .fex .en{color:var(--muted);font-size:5.5cqw}
+.fcard .fex:empty,.fcard .fgr:empty,.fcard .fen:empty,.fcard .fpy:empty,.fcard .back .fzh:empty{display:none}
+.fcard .front .fen{margin:2cqw 0 0;font-size:6.5cqw}
+.fcard.gr .back{align-content:center;justify-items:stretch;text-align:left}
+.fgr{display:grid;gap:3.5cqw}
+.fgr .pat{font-family:var(--f-hand);font-size:6.5cqw;background:var(--bg);border:1px solid var(--line);border-radius:2cqw;padding:2cqw 3cqw}
+.fgr .gex .zh{font-family:var(--f-hand);font-size:7.5cqw;line-height:1.3}
+.fgr .gex .en{color:var(--muted);font-style:italic;font-size:4.8cqw}
+.fgr .tip{margin:0;font-size:4.8cqw;line-height:1.4}
+.fgr .lat{font-family:var(--f-py);font-size:.8em}
+.fgr .r-s,.fgr .r-v,.fgr .r-tw,.fgr .r-o{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}
 .fchint{color:var(--muted);font-size:.95rem;margin:0;text-align:center}
 .gh{font-family:var(--f-py);font-size:1.05rem;margin:6px 0 0}
 .gh small{color:var(--muted);font-weight:400;font-size:.9rem}
@@ -334,6 +344,7 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
     <div class="gtop" id="gTop">
       <button class="btn primary play" id="gPractice" type="button">Practice</button>
       <p class="gstat" id="gStat"></p>
+      <button class="btn play" id="gFlash" type="button">Flashcards</button>
       <h2 class="gh">By exercise type <small>all topics mixed</small></h2>
       <div class="modes" id="gTypes"></div>
       <button class="mode" id="gBrowse" type="button"><span class="ex"><span class="h">📖</span></span><span class="lbl">Browse the cards</span><span class="sub" id="gBrowseSub"></span></button>
@@ -411,8 +422,8 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
     <div class="meta" id="fcCount"></div>
     <div class="fcstage"><div class="fcard" id="fcCard" role="button" tabindex="0" aria-label="Hold to flip the card, swipe for the next one">
       <div class="fcin">
-        <div class="face front"><div class="fzh" id="fcFront"></div></div>
-        <div class="face back"><div class="fzh" id="fcZh"></div><div class="fpy" id="fcPy"></div><div class="fen" id="fcEn"></div><div class="fex" id="fcEx"></div></div>
+        <div class="face front"><div class="fzh" id="fcFront"></div><div class="fen" id="fcSub"></div></div>
+        <div class="face back"><div class="fzh" id="fcZh"></div><div class="fpy" id="fcPy"></div><div class="fen" id="fcEn"></div><div class="fex" id="fcEx"></div><div class="fgr" id="fcGr"></div></div>
       </div>
     </div></div>
     <p class="fchint">Hold the card to flip it · swipe for the next one</p>
@@ -922,19 +933,33 @@ $('mFlash').addEventListener('click', () => go('/measure/flashcards'));
 
 // Flashcards: the measure word alone; hold the card to flip it (pinyin, what it counts, one example);
 // swipe left or right for the next card. The deck reshuffles after the last card.
-let fcDeck = [], fcI = 0;
-function startFc(){
-  hideAll(); $('modeBtn').hidden = false; $('modeBtn').textContent = '← Measure words';
-  $('title').textContent = '量詞 · Flashcards'; $('fcBox').hidden = false; $('credit').hidden = true;
-  fcDeck = shuffle(MW); fcI = 0; showFc(); window.scrollTo(0,0);
+// Grammar and question words have the same flashcards: the topic on the front, its card (pattern, examples, tip) on the back.
+let fcDeck = [], fcI = 0, fcAll = [];
+function startFc(gr){
+  hideAll(); $('modeBtn').hidden = false; $('modeBtn').textContent = gr ? '← ' + GRS().en : '← Measure words';
+  $('title').textContent = (gr ? GRS().zh : '量詞') + ' · Flashcards'; $('fcBox').hidden = false; $('credit').hidden = true;
+  fcAll = gr ? GRS().data.points : MW;
+  $('fcCard').classList.toggle('gr', !!gr);
+  fcDeck = shuffle(fcAll); fcI = 0; showFc(); window.scrollTo(0,0);
 }
 function showFc(){
-  const m = fcDeck[fcI], w = m.nouns[Math.floor(Math.random() * m.nouns.length)];
   const card = $('fcCard'), inner = card.querySelector('.fcin');
   inner.style.transition = 'none'; card.classList.remove('flip');
-  $('fcFront').textContent = m.mw; $('fcZh').textContent = m.mw; $('fcPy').textContent = m.py; $('fcEn').textContent = 'for ' + m.en;
-  const ex = $('fcEx'); ex.textContent = '';
-  ex.append(el('div','zh', '一' + m.mw + w[0]), el('div','xpy', numPy(NUMS[0], m) + ' ' + m.py + ' ' + w[1]), el('div','en', 'one ' + w[2]));
+  const m = fcDeck[fcI], ex = $('fcEx'), g = $('fcGr'); ex.textContent = ''; g.textContent = '';
+  if (m.card) {
+    // Long topic names get smaller characters so they fit on one or two lines.
+    $('fcFront').textContent = m.zh; $('fcFront').style.fontSize = Math.max(14, Math.min(45, 88 / [...m.zh].reduce((n, c) => n + (c === ' ' ? .3 : 1), 0))) + 'cqw';
+    $('fcSub').textContent = m.en;
+    $('fcZh').textContent = ''; $('fcPy').textContent = ''; $('fcEn').textContent = '';
+    m.card.patterns.forEach(t => g.append(rich('pat', t)));
+    m.card.examples.forEach(e => { const d = el('div','gex'); d.append(rich('zh', e[0]), el('div','en', e[2])); g.append(d); });
+    if (m.card.tip) g.append(el('p','tip', m.card.tip));
+  } else {
+    const w = m.nouns[Math.floor(Math.random() * m.nouns.length)];
+    $('fcFront').textContent = m.mw; $('fcFront').style.fontSize = ''; $('fcSub').textContent = '';
+    $('fcZh').textContent = m.mw; $('fcPy').textContent = m.py; $('fcEn').textContent = 'for ' + m.en;
+    ex.append(el('div','zh', '一' + m.mw + w[0]), el('div','xpy', numPy(NUMS[0], m) + ' ' + m.py + ' ' + w[1]), el('div','en', 'one ' + w[2]));
+  }
   $('fcCount').textContent = (fcI + 1) + ' / ' + fcDeck.length;
   card.style.transition = 'none'; card.style.transform = 'scale(.94)'; card.style.opacity = '0';
   void card.offsetWidth;
@@ -943,7 +968,7 @@ function showFc(){
 function nextFc(){
   if (++fcI >= fcDeck.length) {
     const last = fcDeck[fcDeck.length - 1];
-    do fcDeck = shuffle(MW); while (MW.length > 1 && fcDeck[0] === last);
+    do fcDeck = shuffle(fcAll); while (fcAll.length > 1 && fcDeck[0] === last);
     fcI = 0;
   }
   showFc();
@@ -1336,6 +1361,7 @@ function grStartPractice(kind){
 }
 $('gPractice').addEventListener('click', () => go(GRS().base + '/practice'));
 $('gBrowse').addEventListener('click', () => go(GRS().base + '/cards'));
+$('gFlash').addEventListener('click', () => go(GRS().base + '/flashcards'));
 
 // ---- Questions made from the word lists: meaning, listening, writing, measure words; and the mock exam ----
 // They are ordinary pick / recall items for the grammar question engine. `word` is the [characters, pinyin,
@@ -1487,7 +1513,7 @@ function route(){
   if (MW_ITEMS.length && (path === '/measure' || path.startsWith('/measure/'))) {
     if (path === '/measure') return showMwMenu();
     if (path === '/measure/practice') return startMw(MW_ITEMS);
-    if (path === '/measure/flashcards') return startFc();
+    if (path === '/measure/flashcards') return startFc(false);
   }
   for (const k in SETS) {
     const S = SETS[k]; if (!S.data.points.length || !(path === S.base || path.startsWith(S.base + '/'))) continue;
@@ -1495,6 +1521,7 @@ function route(){
     if (path === S.base) return showGrammar();
     if (path === S.base + '/practice') return grStartPractice();
     if (path === S.base + '/cards') return showGrammar(true);
+    if (path === S.base + '/flashcards') return startFc(true);
     const ty = path.match(/\/type\/(\w+)$/);
     if (ty && KINDS.some(k => k[0] === ty[1])) return grStartPractice(ty[1]);
     const gp = S.data.points.find(p => path === S.base + '/' + p.id || path === S.base + '/cards/' + p.id);
