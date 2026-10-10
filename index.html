@@ -687,7 +687,12 @@ function numPy(n, m){
   if (n[0] !== '一') return n[1];
   return /[àèìòùǜ]/.test(m.py) || m.mw === '個' ? 'yí' : 'yì';
 }
-function mwItems(){ return MW.flatMap(m => m.nouns.map(w => ({ m, w }))); }
+// Each noun is asked once; a noun listed under two measure words (一杯可樂, 一瓶可樂) accepts either.
+function mwItems(){
+  const seen = new Set();
+  return MW.flatMap(m => m.nouns.filter(w => !seen.has(w[0]) && seen.add(w[0])).map(w => ({ m, w })));
+}
+const mwFits = (mw, noun) => MW.some(m => m.mw === mw && m.nouns.some(w => w[0] === noun));
 function buildMwBoard(){
   const b = $('board'); b.textContent = ''; b.className = 'board mwb';
   MW.forEach(m => {
@@ -711,7 +716,7 @@ function showMw(){
   const q = queue[idx]; answered = false; firstTry = true;
   const box = $('mwQ'); box.textContent = '';
   box.append(q.n[0], el('span','gap','\u00a0'), q.w[0]);
-  $('mwHint').textContent = q.w[1] + ' · ' + q.w[2];
+  $('mwHint').textContent = q.w[1];
   $('mwFb').textContent = ''; $('mwFb').className = 'fb';
   $('qn').textContent = idx + 1; $('sc').textContent = score;
   $('bar').style.width = (idx / queue.length * 100) + '%';
@@ -720,13 +725,15 @@ function showMw(){
 function pickMw(t){
   if (answered) return;
   const q = queue[idx];
-  if (t.dataset.key === q.m.mw) {
+  if (mwFits(t.dataset.key, q.w[0])) {
+    const m = MW.find(x => x.mw === t.dataset.key);
+    const others = MW.filter(x => x !== m && mwFits(x.mw, q.w[0])).map(x => x.mw);
     answered = true; t.classList.add('ok');
     if (firstTry) score++;
     $('sc').textContent = score;
-    $('mwQ').querySelector('.gap').textContent = q.m.mw;
-    $('mwHint').textContent = numPy(q.n, q.m) + ' ' + q.m.py + ' ' + q.w[1] + ' · ' + q.w[2];
-    $('mwFb').className = 'fb ok'; $('mwFb').textContent = '對！ ' + q.m.mw + ' is for ' + q.m.en;
+    $('mwQ').querySelector('.gap').textContent = m.mw;
+    $('mwHint').textContent = numPy(q.n, m) + ' ' + m.py + ' ' + q.w[1];
+    $('mwFb').className = 'fb ok'; $('mwFb').textContent = '對！ ' + m.mw + ' is for ' + m.en + (others.length ? ' (' + others.join(', ') + ' works too)' : '');
     setTimeout(() => { idx++; if (idx >= queue.length) finishMw(); else showMw(); }, 1100);
   } else {
     if (firstTry) { mwMisses.push({ m: q.m, w: q.w }); firstTry = false; }

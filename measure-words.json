@@ -1,1 +1,43 @@
-[]
+[
+  {"mw": "個", "py": "ge", "en": "people and most things", "nouns": [
+    ["包子","bāo zi","steamed bun"],
+    ["漢堡","hàn bǎo","hamburger"],
+    ["哥哥","gē ge","older brother"],
+    ["姐姐","jiě jie","older sister"],
+    ["弟弟","dì di","younger brother"],
+    ["妹妹","mèi mei","younger sister"]
+  ]},
+  {"mw": "張", "py": "zhāng", "en": "flat things", "nouns": [
+    ["照片","zhào piàn","photo"]
+  ]},
+  {"mw": "杯", "py": "bēi", "en": "cups and glasses", "nouns": [
+    ["咖啡","kā fēi","coffee"],
+    ["茶","chá","tea"],
+    ["烏龍茶","wū lóng chá","oolong tea"],
+    ["珍珠奶茶","zhēn zhū nǎi chá","bubble tea"],
+    ["果汁","guǒ zhī","juice"],
+    ["牛奶","niú nǎi","milk"],
+    ["水","shuǐ","water"],
+    ["可樂","kě lè","cola"],
+    ["啤酒","pí jiǔ","beer"],
+    ["紅酒","hóng jiǔ","red wine"]
+  ]},
+  {"mw": "瓶", "py": "píng", "en": "bottles", "nouns": [
+    ["可樂","kě lè","cola"],
+    ["啤酒","pí jiǔ","beer"],
+    ["紅酒","hóng jiǔ","red wine"],
+    ["果汁","guǒ zhī","juice"],
+    ["牛奶","niú nǎi","milk"],
+    ["水","shuǐ","water"]
+  ]},
+  {"mw": "本", "py": "běn", "en": "books", "nouns": [
+    ["書","shū","book"]
+  ]},
+  {"mw": "支", "py": "zhī", "en": "phones", "nouns": [
+    ["手機","shǒu jī","cell phone"]
+  ]},
+  {"mw": "塊", "py": "kuài", "en": "dollars, pieces", "nouns": [
+    ["錢","qián","money"],
+    ["巧克力","qiǎo kè lì","chocolate"]
+  ]}
+]

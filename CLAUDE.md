@@ -50,7 +50,7 @@ Fixing a typo works the same way: edit the word in `lessons.json`, confirm with 
 
 ## Measure words
 
-The 量詞 exercise (`/measure`) reads **`measure-words.json`**: a list of `{"mw": "本", "py": "běn", "en": "books", "nouns": [["書","shū","book"]]}`. Same word format rules as above. milo chooses which measure words go in; pick nouns that clearly take only that measure word, preferring ones from the lessons, and show milo the table before pushing. The home card stays hidden while the file is empty.
+The 量詞 exercise (`/measure`) reads **`measure-words.json`**: a list of `{"mw": "本", "py": "běn", "en": "books", "nouns": [["書","shū","book"]]}`. Same word format rules as above. milo chooses which measure words go in (first set approved 2026-10-10: 個 張 杯 瓶 本 支 塊); prefer nouns from the lessons and show milo the table before pushing. A noun may be listed under two measure words (可樂 under 杯 and 瓶): it's asked once and either answer counts. The home card stays hidden while the file is empty.
 
 ## Grammar
 
