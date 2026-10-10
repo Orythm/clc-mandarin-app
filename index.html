@@ -131,8 +131,9 @@ button.card:hover{border-color:var(--accent)}
 .gpoints{display:grid;gap:8px}
 .gtop{display:grid;gap:14px}
 /* Flashcards: one card, hold to flip, swipe either way for the next */
-.fc{display:grid;gap:10px;justify-items:center}
-.fcstage{width:100%;display:grid;place-items:center;perspective:1200px;overflow:hidden;padding:6px 0 10px}
+.fc{display:grid;gap:10px;justify-items:center;grid-template-rows:auto 1fr auto;flex:1}
+body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+.fcstage{width:100%;display:grid;place-items:center;perspective:1200px;overflow-x:clip;padding:6px 0 10px}
 .fcard{position:relative;width:min(100%,340px);aspect-ratio:3/4;max-height:62dvh;touch-action:pan-y;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;cursor:grab;outline:none}
 .fcard:focus-visible .face{outline:2px solid var(--accent);outline-offset:2px}
 .fcin{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .35s}
