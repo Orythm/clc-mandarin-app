@@ -83,7 +83,7 @@
         {"type": "order", "tiles": ["他", "喜歡", "吃", "炒飯", "。"], "en": "He likes fried rice."},
         {"type": "pick", "ask": "Complete the question that this answers: 我喜歡喝烏龍茶。", "q": "你喜歡喝＿？", "opts": ["什麼", "誰", "幾"], "en": "What do you like to drink?"},
         {"type": "pick", "ask": "Complete the question that this answers: 我不喜歡吃沙拉。", "q": "你不喜歡吃＿？", "opts": ["什麼", "哪", "幾"], "en": "What don't you like to eat?"},
-        {"type": "pick", "q": "Which question is right?", "opts": ["你喜歡喝什麼？", "你喜歡喝什麼嗎？", "你喜歡什麼喝？"], "en": "What do you like to drink?"},
+        {"type": "pick", "ask": "The answer is 我喜歡喝果汁。", "q": "Which question is right?", "opts": ["你喜歡喝什麼？", "你喜歡喝什麼嗎？", "你喜歡什麼喝？"], "en": "What do you like to drink?"},
         {"type": "pick", "ctx": "Q：你喜歡吃什麼？", "q": "Which answer fits?", "opts": ["我喜歡吃炒飯。", "我喜歡喝炒飯。", "我喜歡吃炒飯嗎？", "我吃炒飯喜歡。"], "en": "I like fried rice."},
         {"type": "pick", "ctx": "Q：你不喜歡喝什麼？", "q": "Which answer fits?", "opts": ["我不喜歡喝啤酒。", "我沒喜歡喝啤酒。", "我不喜歡吃啤酒。", "我喜歡喝不啤酒。"], "en": "I don't like beer."},
         {"type": "pick", "q": "他不喜歡＿漢堡。", "opts": ["吃", "喝"], "en": "He doesn't like hamburgers."},
@@ -108,7 +108,7 @@
         {"type": "pick", "ctx": "A：你要喝什麼？", "q": "B：我＿喝牛奶。", "opts": ["要", "是", "很"], "en": "I'd like milk."},
         {"type": "pick", "ctx": "A：你要喝咖啡嗎？", "q": "B：不，我＿喝咖啡，我要喝茶。", "opts": ["不要", "要", "很"], "en": "No, I don't want coffee, I want tea."},
         {"type": "pick", "ctx": "A：你要吃漢堡嗎？", "q": "B：我不要吃漢堡，我＿吃沙拉。", "opts": ["要", "不要", "是"], "en": "I don't want a hamburger, I want a salad."},
-        {"type": "pick", "q": "Which question is right?", "opts": ["你要吃什麼？", "你要吃什麼嗎？", "你要什麼吃？"], "en": "What would you like to eat?"},
+        {"type": "pick", "ask": "The answer is 我要吃牛肉麵。", "q": "Which question is right?", "opts": ["你要吃什麼？", "你要吃什麼嗎？", "你要什麼吃？"], "en": "What would you like to eat?"},
         {"type": "order", "tiles": ["我", "不", "要", "喝", "可樂", "。"], "en": "I don't want cola."},
         {"type": "order", "tiles": ["你", "要", "喝", "什麼", "？"], "en": "What would you like to drink?"},
         {"type": "order", "tiles": ["我", "要", "吃", "小籠包", "。"], "en": "I want to eat soup dumplings."},
@@ -116,7 +116,7 @@
         {"type": "pick", "ctx": "A：你要喝可樂嗎？", "q": "Which answer fits?", "opts": ["不要，我要喝水。", "不是，我要喝水。", "沒有，我要喝水。"], "en": "No, I'd like water."},
         {"type": "pick", "ask": "Complete the question that this answers: 我要吃牛肉麵。", "q": "你要吃＿？", "opts": ["什麼", "誰", "幾"], "en": "What would you like to eat?"},
         {"type": "pick", "ask": "Complete the question that this answers: 不要，我不要喝咖啡。", "q": "你要喝咖啡＿？", "opts": ["嗎", "什麼", "誰"], "en": "Would you like coffee?"},
-        {"type": "pick", "q": "Which question is right?", "opts": ["你要喝茶嗎？", "你要不要喝茶嗎？", "你喝要茶嗎？"], "en": "Would you like tea?"},
+        {"type": "pick", "ask": "The answer is 要，我要喝茶。", "q": "Which question is right?", "opts": ["你要喝茶嗎？", "你要不要喝茶嗎？", "你喝要茶嗎？"], "en": "Would you like tea?"},
         {"type": "pick", "ctx": "A：你要什麼？", "q": "B：我＿一杯果汁。", "opts": ["要", "是", "很"], "en": "I'd like a glass of juice."},
         {"type": "order", "tiles": ["他", "要", "喝", "一", "杯", "紅酒", "。"], "en": "He wants a glass of red wine."}
       ]
@@ -178,7 +178,7 @@
         {"type": "pick", "ctx": "A：你家有幾個人？", "q": "Which answer fits?", "opts": ["我家有五個人。", "我家有五張人。", "我家有個五人。", "我家有五個人嗎？"], "en": "There are five people in my family."},
         {"type": "pick", "ask": "Complete the question that this answers: 我有三本書。", "q": "你有＿本書？", "opts": ["幾", "什麼", "哪"], "en": "How many books do you have?"},
         {"type": "pick", "ask": "Complete the question that this answers: 我有兩個妹妹。", "q": "你有幾＿妹妹？", "opts": ["個", "張", "本"], "en": "How many younger sisters do you have?"},
-        {"type": "pick", "q": "Which question is right?", "opts": ["你有幾個哥哥？", "你有幾哥哥？", "你有幾個哥哥嗎？"], "en": "How many older brothers do you have?"},
+        {"type": "pick", "ask": "The answer is 我有兩個哥哥。", "q": "Which question is right?", "opts": ["你有幾個哥哥？", "你有幾哥哥？", "你有幾個哥哥嗎？"], "en": "How many older brothers do you have?"},
         {"type": "pick", "ctx": "A：王先生有幾支手機？", "q": "B：他有＿手機。", "opts": ["兩支", "二支", "兩本"], "en": "He has two phones."},
         {"type": "order", "tiles": ["你", "家", "有", "幾", "個", "人", "？"], "en": "How many people are in your family?"}
       ]
@@ -246,7 +246,7 @@
         {"type": "pick", "ask": "Answer using the table.", "table": "week", "q": "他星期四晚上做什麼？", "opts": ["他星期四晚上聽音樂。", "他星期四晚上看書。", "他聽音樂星期四晚上。"], "en": "He listens to music on Thursday evening."},
         {"type": "pick", "ask": "Answer using the table.", "table": "week", "q": "他星期一早上做什麼？", "opts": ["他星期一早上學中文。", "他星期一早上打網球。", "星期一早上學中文他。"], "en": "He studies Chinese on Monday morning."},
         {"type": "pick", "ask": "Complete the question that this answers: 我明天早上要去游泳。", "q": "你明天早上要＿？", "opts": ["做什麼", "哪", "誰"], "en": "What are you doing tomorrow morning?"},
-        {"type": "pick", "q": "Which question is right?", "opts": ["你今天晚上要做什麼？", "你要做什麼今天晚上？", "你今天晚上要做什麼嗎？"], "en": "What are you doing tonight?"},
+        {"type": "pick", "ask": "The answer is 我今天晚上要去看電影。", "q": "Which question is right?", "opts": ["你今天晚上要做什麼？", "你要做什麼今天晚上？", "你今天晚上要做什麼嗎？"], "en": "What are you doing tonight?"},
         {"type": "order", "tiles": ["他", "星期一", "早上", "學", "中文", "。"], "alts": [["星期一", "早上", "他", "學", "中文", "。"], ["星期一", "他", "早上", "學", "中文", "。"]], "en": "He studies Chinese on Monday morning."},
         {"type": "order", "tiles": ["我", "週末", "常", "去", "看", "電影", "。"], "alts": [["週末", "我", "常", "去", "看", "電影", "。"]], "en": "I often go to the movies at the weekend."}
       ]
@@ -280,7 +280,7 @@
         {"type": "pick", "ctx": "A：你常看電影嗎？", "q": "Which answer fits?", "opts": ["我不常看電影。", "我不看常電影。", "我沒常看電影。"], "en": "I don't often watch movies."},
         {"type": "pick", "ctx": "A：我很喜歡聽音樂，你呢？", "q": "Which answer fits?", "opts": ["我也很喜歡聽音樂。", "我很也喜歡聽音樂。", "我都很喜歡聽音樂。"], "en": "I like music a lot too."},
         {"type": "pick", "ctx": "A：你爸爸和媽媽喜歡喝咖啡嗎？", "q": "B：他們＿喜歡喝咖啡。", "opts": ["都", "常", "還是"], "en": "They both like coffee."},
-        {"type": "pick", "q": "Which question is right?", "opts": ["你們都喜歡打棒球嗎？", "你們喜歡都打棒球嗎？", "都你們喜歡打棒球嗎？"], "en": "Do you all like baseball?"},
+        {"type": "pick", "ask": "The answer is 是，我們都喜歡打棒球。", "q": "Which question is right?", "opts": ["你們都喜歡打棒球嗎？", "你們喜歡都打棒球嗎？", "都你們喜歡打棒球嗎？"], "en": "Do you all like baseball?"},
         {"type": "order", "tiles": ["他們", "也", "都", "喜歡", "看", "書", "。"], "en": "They all like reading too."}
       ]
     },
@@ -334,14 +334,14 @@
         {"type": "pick", "ask": "Answer using the table.", "table": "likes", "q": "陳小姐喜歡喝啤酒還是喝咖啡？", "opts": ["她喜歡喝咖啡。", "她喜歡喝啤酒。", "喝啤酒和喝咖啡，她都喜歡。"], "en": "She likes coffee."},
         {"type": "pick", "ask": "Answer using the table.", "table": "likes", "q": "王小姐喜歡看書還是看電影？", "opts": ["看書和看電影，她都喜歡。", "她喜歡看書。", "她不喜歡看電影。"], "en": "Reading and movies, she likes both."},
         {"type": "pick", "ask": "Answer using the table.", "table": "likes", "q": "李先生喜歡踢足球還是打籃球？", "opts": ["踢足球和打籃球，他都不喜歡。", "他喜歡打籃球。", "踢足球和打籃球，他都喜歡。"], "en": "Football and basketball, he likes neither."},
-        {"type": "pick", "q": "Which question is right?", "opts": ["他喜歡喝茶還是喝咖啡？", "他喜歡喝茶還是喝咖啡嗎？", "他還是喜歡喝茶喝咖啡？"], "en": "Does he like tea or coffee?"},
+        {"type": "pick", "ask": "The answer is 他喜歡喝咖啡。", "q": "Which question is right?", "opts": ["他喜歡喝茶還是喝咖啡？", "他喜歡喝茶還是喝咖啡嗎？", "他還是喜歡喝茶喝咖啡？"], "en": "Does he like tea or coffee?"},
         {"type": "pick", "ctx": "A：你是美國人還是日本人？", "q": "B：＿", "opts": ["我是美國人。", "是，我是美國人。", "我是美國人嗎？"], "en": "I'm American."},
         {"type": "order", "tiles": ["你", "想", "吃", "臺灣菜", "還是", "越南菜", "？"], "alts": [["你", "想", "吃", "越南菜", "還是", "臺灣菜", "？"]], "en": "Do you want to eat Taiwanese or Vietnamese food?"},
         {"type": "order", "tiles": ["你", "喜歡", "游泳", "還是", "打網球", "？"], "alts": [["你", "喜歡", "打網球", "還是", "游泳", "？"]], "en": "Do you like swimming or playing tennis?"},
         {"type": "order", "tiles": ["你", "週末", "常", "看", "電影", "還是", "看", "書", "？"], "alts": [["週末", "你", "常", "看", "電影", "還是", "看", "書", "？"], ["你", "週末", "常", "看", "書", "還是", "看", "電影", "？"], ["週末", "你", "常", "看", "書", "還是", "看", "電影", "？"]], "en": "On weekends, do you often go to the movies or read?"},
         {"type": "pick", "ask": "Complete the question that this answers: 我想喝咖啡。", "q": "你想喝茶＿喝咖啡？", "opts": ["還是", "和", "也"], "en": "Do you want tea or coffee?"},
         {"type": "pick", "ask": "Complete the question that this answers: 我是臺灣人。", "q": "你是日本人＿臺灣人？", "opts": ["還是", "和", "嗎"], "en": "Are you Japanese or Taiwanese?"},
-        {"type": "pick", "q": "Which question is right?", "opts": ["你想看書還是看電影？", "你想看書還是看電影嗎？", "你想看書和看電影？"], "en": "Do you want to read or watch a movie?"},
+        {"type": "pick", "ask": "The answer is 我想看電影。", "q": "Which question is right?", "opts": ["你想看書還是看電影？", "你想看書還是看電影嗎？", "你想看書和看電影？"], "en": "Do you want to read or watch a movie?"},
         {"type": "pick", "ctx": "A：你要喝紅酒還是啤酒？", "q": "Which answer fits?", "opts": ["我要喝紅酒。", "是，我要喝紅酒。", "我要喝紅酒還是啤酒。"], "en": "I'd like red wine."},
         {"type": "pick", "q": "你喜歡打籃球＿打棒球？", "opts": ["還是", "和", "也"], "en": "Do you like basketball or baseball?"},
         {"type": "order", "tiles": ["你", "要", "喝", "茶", "還是", "喝", "咖啡", "？"], "alts": [["你", "要", "喝", "咖啡", "還是", "喝", "茶", "？"]], "en": "Would you like tea or coffee?"}
@@ -461,12 +461,12 @@
         {"type": "pick", "ask": "Answer using the table.", "table": "prices", "q": "一瓶可樂多少錢？", "opts": ["一瓶可樂三十五塊錢。", "一瓶可樂三百五塊錢。", "一本可樂三十五塊錢。"], "en": "A bottle of cola is 35 dollars."},
         {"type": "pick", "q": "兩＿照片多少錢？", "opts": ["張", "本", "支"], "en": "How much are two photos?"},
         {"type": "pick", "q": "一＿啤酒多少錢？", "opts": ["瓶", "本", "張"], "en": "How much is a bottle of beer?"},
-        {"type": "pick", "q": "Which asks the price?", "opts": ["這支手機多少錢？", "這支手機幾錢？", "這支手機多少錢嗎？"], "en": "How much is this phone?"},
+        {"type": "pick", "ask": "The answer is 這支手機兩萬塊錢。", "q": "Which asks the price?", "opts": ["這支手機多少錢？", "這支手機幾錢？", "這支手機多少錢嗎？"], "en": "How much is this phone?"},
         {"type": "order", "tiles": ["一", "杯", "咖啡", "多少", "錢", "？"], "en": "How much is a cup of coffee?"},
         {"type": "order", "tiles": ["兩", "本", "書", "一千八百", "塊", "錢", "。"], "en": "Two books are 1,800 dollars."},
         {"type": "pick", "ask": "Answer using the table.", "table": "prices", "q": "一張照片多少錢？", "opts": ["一張照片二十塊錢。", "一張照片兩十塊錢。", "一個照片二十塊錢。"], "en": "A photo is 20 dollars."},
         {"type": "pick", "ask": "Complete the question that this answers: 一本書九百塊錢。", "q": "一本書＿錢？", "opts": ["多少", "幾", "什麼"], "en": "How much is a book?"},
-        {"type": "pick", "q": "Which asks the price?", "opts": ["一杯珍珠奶茶多少錢？", "一杯珍珠奶茶幾錢？", "一杯珍珠奶茶多少錢嗎？"], "en": "How much is a bubble tea?"},
+        {"type": "pick", "ask": "The answer is 一杯珍珠奶茶六十塊錢。", "q": "Which asks the price?", "opts": ["一杯珍珠奶茶多少錢？", "一杯珍珠奶茶幾錢？", "一杯珍珠奶茶多少錢嗎？"], "en": "How much is a bubble tea?"},
         {"type": "pick", "q": "三＿可樂多少錢？", "opts": ["瓶", "本", "張"], "en": "How much are three bottles of cola?"},
         {"type": "order", "tiles": ["一", "瓶", "紅酒", "多少", "錢", "？"], "en": "How much is a bottle of red wine?"}
       ]
@@ -522,7 +522,7 @@
         {"type": "pick", "ctx": "A：咖啡，你要大杯、中杯還是小杯？", "q": "B：＿", "opts": ["我要小杯。", "我要杯小。", "我要小杯嗎？"], "en": "Small, please."},
         {"type": "pick", "q": "你要外帶＿內用？", "opts": ["還是", "和", "也"], "en": "Take away or eat in?"},
         {"type": "pick", "ctx": "A：一個人去吃飯，你常外帶還是內用？", "q": "B：我常＿。", "opts": ["外帶", "大杯", "很"], "en": "I usually take away."},
-        {"type": "pick", "q": "Which question is right?", "opts": ["你要大杯、中杯還是小杯？", "你要大杯、中杯還是小杯嗎？", "你要大杯、中杯和小杯？"], "en": "Large, medium or small?"},
+        {"type": "pick", "ask": "The answer is 我要中杯。", "q": "Which question is right?", "opts": ["你要大杯、中杯還是小杯？", "你要大杯、中杯還是小杯嗎？", "你要大杯、中杯和小杯？"], "en": "Large, medium or small?"},
         {"type": "order", "tiles": ["你", "要", "外帶", "還是", "內用", "？"], "alts": [["你", "要", "內用", "還是", "外帶", "？"]], "en": "Do you want to take away or eat in?"},
         {"type": "order", "tiles": ["我", "要", "大杯", "珍珠奶茶", "。"], "en": "I'd like a large bubble tea."},
         {"type": "order", "tiles": ["你", "喜歡", "大車", "還是", "小車", "？"], "alts": [["你", "喜歡", "小車", "還是", "大車", "？"]], "en": "Do you like big cars or small cars?"},
@@ -560,7 +560,7 @@
         {"type": "pick", "ask": "Complete the question that this answers: 能，我的手機能上網。", "q": "你的手機能上網＿？", "opts": ["嗎", "呢", "還是"], "en": "Can your phone go online?"},
         {"type": "pick", "ctx": "A：這支手機能照相嗎？", "q": "Which answer fits?", "opts": ["能，這支手機能照相。", "能，這支手機照相能。", "不能，這支手機能照相。"], "en": "Yes, this phone can take photos."},
         {"type": "pick", "q": "你的手機＿上網嗎？", "opts": ["能", "都", "和"], "en": "Can your phone go online?"},
-        {"type": "pick", "q": "Which question is right?", "opts": ["這支手機能上網嗎？", "這支手機上網能嗎？", "這支手機能不能上網嗎？"], "en": "Can this phone go online?"},
+        {"type": "pick", "ask": "The answer is 能，這支手機能上網。", "q": "Which question is right?", "opts": ["這支手機能上網嗎？", "這支手機上網能嗎？", "這支手機能不能上網嗎？"], "en": "Can this phone go online?"},
         {"type": "order", "ask": "Rewrite it using 也.", "src": "這支新手機能上網和照相。", "tiles": ["這", "支", "新", "手機", "能", "上網", "，", "也", "能", "照相", "。"], "alts": [["這", "支", "新", "手機", "能", "照相", "，", "也", "能", "上網", "。"]], "en": "This new phone can go online and also take photos."},
         {"type": "order", "tiles": ["我", "的", "手機", "不", "能", "上網", "。"], "en": "My phone can't go online."}
       ]

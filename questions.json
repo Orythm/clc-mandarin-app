@@ -19,8 +19,8 @@
       "items": [
         {"type": "pick", "q": "你是日本人＿？", "opts": ["嗎", "什麼", "呢"], "en": "Are you Japanese?"},
         {"type": "pick", "q": "你喜歡打籃球＿？", "opts": ["嗎", "什麼", "哪"], "en": "Do you like playing basketball?"},
-        {"type": "pick", "q": "Which question is right?", "opts": ["你要喝咖啡嗎？", "你要不要喝咖啡嗎？", "你是哪國人嗎？"], "en": "Would you like a coffee?"},
-        {"type": "pick", "q": "Which question is right?", "opts": ["你常看電影嗎？", "你常看電影還是嗎？", "誰常看電影嗎？"], "en": "Do you often go to the movies?"},
+        {"type": "pick", "ask": "The answer is 要，我要喝咖啡。", "q": "Which question is right?", "opts": ["你要喝咖啡嗎？", "你要不要喝咖啡嗎？", "你是哪國人嗎？"], "en": "Would you like a coffee?"},
+        {"type": "pick", "ask": "The answer is 我不常看電影。", "q": "Which question is right?", "opts": ["你常看電影嗎？", "你常看電影還是嗎？", "誰常看電影嗎？"], "en": "Do you often go to the movies?"},
         {"type": "pick", "ctx": "A：你是美國人嗎？", "q": "B：＿，我是美國人。", "opts": ["是的", "不是", "嗎"], "en": "Yes, I'm American."},
         {"type": "order", "tiles": ["你", "有", "哥哥", "嗎", "？"], "en": "Do you have an older brother?"},
         {"type": "order", "tiles": ["你", "想", "學", "中文", "嗎", "？"], "en": "Do you want to learn Chinese?"}
@@ -138,7 +138,7 @@
         {"type": "pick", "q": "我是日本人，你＿？", "opts": ["呢", "嗎", "什麼"], "en": "I'm Japanese, and you?"},
         {"type": "pick", "q": "我喜歡打網球，你＿？", "opts": ["呢", "嗎", "誰"], "en": "I like tennis, what about you?"},
         {"type": "pick", "q": "我要喝茶，他＿？", "opts": ["呢", "嗎", "幾"], "en": "I'd like tea, what about him?"},
-        {"type": "pick", "q": "Which question is right?", "opts": ["我很好，你呢？", "我很好，你嗎？", "我很好，呢你？"], "en": "I'm fine, and you?"},
+        {"type": "pick", "ask": "The answer is 我也很好。", "q": "Which question is right?", "opts": ["我很好，你呢？", "我很好，你嗎？", "我很好，呢你？"], "en": "I'm fine, and you?"},
         {"type": "pick", "ask": "Pick B's answer.", "ctx": "A：我是臺灣人，你呢？", "q": "B：＿", "opts": ["我也是臺灣人。", "我是臺灣人呢。", "我是臺灣人嗎？"], "en": "I'm Taiwanese too."},
         {"type": "order", "tiles": ["我", "喜歡", "看", "書", "，", "你", "呢", "？"], "en": "I like reading, what about you?"}
       ]
@@ -161,7 +161,7 @@
         {"type": "pick", "q": "我們一起去吃晚飯，＿？", "opts": ["好不好", "好不", "呢"], "en": "Shall we go have dinner together?"},
         {"type": "pick", "q": "這個週末我們去打棒球，＿？", "opts": ["怎麼樣", "什麼", "好不"], "en": "How about playing baseball this weekend?"},
         {"type": "pick", "ctx": "A：我們明天去爬山，好不好？", "q": "B：＿！我也想去。", "opts": ["好啊", "好不好", "怎麼樣"], "en": "Sure! I want to go too."},
-        {"type": "pick", "q": "Which question is right?", "opts": ["我們去游泳，好不好？", "我們去游泳，好不好嗎？", "好不好我們去游泳嗎？"], "en": "Shall we go swimming?"},
+        {"type": "pick", "ask": "The answer is 好啊！我們去吧！", "q": "Which question is right?", "opts": ["我們去游泳，好不好？", "我們去游泳，好不好嗎？", "好不好我們去游泳嗎？"], "en": "Shall we go swimming?"},
         {"type": "order", "tiles": ["我們", "去", "逛街", "，", "怎麼樣", "？"], "en": "How about we go shopping?"},
         {"type": "order", "tiles": ["明天", "我們", "一起", "去", "看", "電影", "，", "好不好", "？"], "alts": [["我們", "明天", "一起", "去", "看", "電影", "，", "好不好", "？"]], "en": "Shall we go see a movie together tomorrow?"}
       ]
@@ -183,7 +183,7 @@
       "items": [
         {"type": "pick", "ask": "Complete the question that this answers: 太貴了。", "q": "你＿不買那支手機？", "opts": ["為什麼", "什麼", "怎麼樣"], "en": "Why aren't you buying that phone?"},
         {"type": "pick", "ask": "Complete the question that this answers: 我覺得中文很好玩。", "q": "你＿學中文？", "opts": ["為什麼", "做什麼", "哪"], "en": "Why are you learning Chinese?"},
-        {"type": "pick", "q": "Which question is right?", "opts": ["你為什麼不喜歡游泳？", "你為什麼不喜歡游泳嗎？", "你不喜歡游泳為什麼嗎？"], "en": "Why don't you like swimming?"},
+        {"type": "pick", "ask": "The answer is 我覺得游泳不好玩。", "q": "Which question is right?", "opts": ["你為什麼不喜歡游泳？", "你為什麼不喜歡游泳嗎？", "你不喜歡游泳為什麼嗎？"], "en": "Why don't you like swimming?"},
         {"type": "order", "tiles": ["你", "為什麼", "不", "喝", "咖啡", "？"], "alts": [["為什麼", "你", "不", "喝", "咖啡", "？"]], "en": "Why don't you drink coffee?"},
         {"type": "order", "tiles": ["他", "為什麼", "不", "買", "那", "本", "書", "？"], "alts": [["為什麼", "他", "不", "買", "那", "本", "書", "？"]], "en": "Why isn't he buying that book?"}
       ]

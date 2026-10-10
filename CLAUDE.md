@@ -69,7 +69,7 @@ Sentences use only words from the lessons and the extra vocab, same format rules
 
 ## Question words
 
-The 疑問詞 page (`/questions`) reads **`questions.json`**, same format as `grammar.json` and the same page and question engine (嗎, 什麼/做什麼, 哪, 誰, 幾/多少, 呢, 好不好/怎麼樣, 為什麼). "Complete the question" items show the answer in `ask` and the question with a gap.
+The 疑問詞 page (`/questions`) reads **`questions.json`**, same format as `grammar.json` and the same page and question engine (嗎, 什麼/做什麼, 哪, 誰, 幾/多少, 呢, 好不好/怎麼樣, 為什麼). "Complete the question" items show the answer in `ask` and the question with a gap. "Which question is right?" items (both files) also show the answer they get, as `"ask": "The answer is 我喜歡喝果汁。"` (milo, 2026-10-10).
 
 ## Pinyin on exercises
 
