@@ -35,6 +35,9 @@ h1{font-family:var(--f-hand);font-size:1.8rem;margin:0}
 .fb .zh{font-family:var(--f-hand);font-size:1.6rem}
 .tools{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 button{font:inherit;cursor:pointer}
+/* No text selection, callout menu or blue tap highlight on long press; typing fields stay selectable */
+body{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+input,textarea{user-select:text;-webkit-user-select:text}
 .btn{background:none;border:1px solid var(--line);color:var(--fg);border-radius:8px;padding:8px 14px;font-size:1rem}
 .btn:hover{border-color:var(--muted)}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--paper)}
