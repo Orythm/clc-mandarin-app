@@ -90,6 +90,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .mode{padding:14px}
 .mode .ex{font-size:1.3rem}
 .mode .ex .h{font-size:1.6rem}
+.wip{display:inline-block;vertical-align:middle;font-family:var(--f-py);font-size:.7rem;font-weight:600;letter-spacing:.05em;padding:2px 7px;border-radius:999px;background:var(--bad-soft);color:var(--bad)}
 .home{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
 .card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:20px 16px;text-align:left;color:var(--fg);display:grid;gap:6px;align-content:start}
 button.card:hover{border-color:var(--accent)}
@@ -159,11 +160,15 @@ button.card:hover{border-color:var(--accent)}
 .wt:disabled{cursor:default}
 .gq .tools{justify-content:space-between}
 /* Pinyin under the Chinese: its space is always kept, it only becomes visible while 拼音 is held, so nothing moves */
-.pyl{display:block;visibility:hidden;font-family:var(--f-py);font-size:.8rem;font-weight:400;color:var(--muted);letter-spacing:0;line-height:1.3;font-style:normal}
-.showpy .pyl{visibility:visible}
-.wt .pyl{font-size:.75rem}
-#mwHint,.board.mwb .tile small{visibility:hidden}
-.mwpy #mwHint,.mwpy .board.mwb .tile small,#mwBox.done #mwHint{visibility:visible}
+.rb{display:inline-flex;flex-direction:column;align-items:center}
+.nw{white-space:nowrap}
+.rt{visibility:hidden;font-family:var(--f-py);font-size:max(.7rem,.4em);font-weight:400;color:var(--muted);letter-spacing:0;line-height:1.2;font-style:normal;white-space:nowrap;padding:0 .1em}
+.showpy .rt{visibility:visible}
+.mwq .part{display:inline-flex;flex-direction:column;align-items:center}
+.mwq .part>span:first-child:not(.gap){border-bottom:3px solid transparent}
+.mwq .mpy{font-family:var(--f-py);font-size:1.05rem;font-weight:400;font-style:italic;color:var(--muted);margin-top:4px;white-space:nowrap}
+.mwq .mpy,.board.mwb .tile small{visibility:hidden}
+.mwpy .mwq .mpy,.mwpy .board.mwb .tile small,#mwBox.done .mwq .mpy{visibility:visible}
 #grPy,#mwPy{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:none}
 #grPy.on,#mwPy.on{background:var(--fg);border-color:var(--fg);color:var(--paper)}
 .gq .fb .zh{font-size:1.4rem}
@@ -201,7 +206,7 @@ button.card:hover{border-color:var(--accent)}
     </button>
     <button class="card" id="tonesCard" type="button">
       <span class="ic">聽寫</span>
-      <span class="lbl">Pinyin dictation</span>
+      <span class="lbl">Pinyin dictation <span class="wip">WIP</span></span>
       <span class="sub">Hear a word, type its pinyin, add the tone marks</span>
     </button>
     <button class="card" id="mwCard" type="button" hidden>
@@ -296,7 +301,6 @@ button.card:hover{border-color:var(--accent)}
 
   <section class="prompt" id="mwBox" aria-live="polite" hidden>
     <div class="mwq" id="mwQ"></div>
-    <div class="hint" id="mwHint"></div>
     <div class="fb" id="mwFb"></div>
     <div class="tools"><button class="btn" id="mwPy" type="button" aria-label="Hold to show pinyin">拼音</button></div>
   </section>
@@ -719,8 +723,8 @@ function startMw(list){
 function showMw(){
   const q = queue[idx]; answered = false; firstTry = true;
   const box = $('mwQ'); box.textContent = '';
-  box.append(q.n[0], el('span','gap','\u00a0'), q.w[0]);
-  $('mwHint').textContent = q.w[1];
+  const part = (zh, py, cls) => { const p = el('span','part'); p.append(el('span', cls || null, zh), el('span','mpy', py)); return p; };
+  box.append(part(q.n[0], q.n[1]), part('\u00a0', '\u00a0', 'gap'), part(q.w[0], q.w[1]));
   $('mwFb').textContent = ''; $('mwFb').className = 'fb'; $('mwBox').classList.remove('done');
   $('qn').textContent = idx + 1; $('sc').textContent = score;
   $('bar').style.width = (idx / queue.length * 100) + '%';
@@ -735,8 +739,9 @@ function pickMw(t){
     answered = true; t.classList.add('ok');
     if (firstTry) score++;
     $('sc').textContent = score;
+    const pys = $('mwQ').querySelectorAll('.mpy');
     $('mwQ').querySelector('.gap').textContent = m.mw;
-    $('mwHint').textContent = numPy(q.n, m) + ' ' + m.py + ' ' + q.w[1]; $('mwBox').classList.add('done');
+    pys[0].textContent = numPy(q.n, m); pys[1].textContent = m.py; $('mwBox').classList.add('done');
     $('mwFb').className = 'fb ok'; $('mwFb').textContent = '對！ ' + m.mw + ' is for ' + m.en + (others.length ? ' (' + others.join(', ') + ' works too)' : '');
     setTimeout(() => { idx++; if (idx >= queue.length) finishMw(); else showMw(); }, 1100);
   } else {
@@ -868,7 +873,7 @@ function buildPy(extra){
   PY_MAX = Math.max(1, ...Object.keys(PY).map(k => k.length));
 }
 const tone4 = py => /^[^ ]*[àèìòùǜ]/.test(py) || py === 'ge';
-function pinyinOf(text){
+function pinyinSegs(text){
   const out = [];   // {zh, py} for Chinese, plain strings for anything else
   for (let i = 0; i < text.length;) {
     if (!/[\u3400-\u9fff]/.test(text[i])) { out.push(text[i]); i++; continue; }
@@ -885,19 +890,33 @@ function pinyinOf(text){
     else if (!next || (pv && typeof pv !== 'string' && /^(星期|第)$/.test(pv.zh))) x.py = 'yī';
     else x.py = tone4(next) ? 'yí' : 'yì';
   });
-  const P = { '，': ', ', '。': '.', '？': '?', '！': '!', '、': ', ', '：': ': ', '＿': ' ＿ ' };
-  return out.map(x => typeof x === 'string' ? (x in P ? P[x] : x) : ' ' + x.py + ' ')
-    .join('').replace(/ +/g, ' ').replace(/ ([,.?!:)])/g, '$1').replace(/\( /g, '(').trim();
+  return out;
 }
-// Adds a hidden pinyin line to an element holding Chinese; it shows while 拼音 is held.
-function withPy(e, text){ if (isZh(text)) e.append(el('span','pyl',pinyinOf(text))); return e; }
+// Chinese text with each word's pinyin right under it (hidden until 拼音 is held; the space is always kept).
+function rubyText(text){
+  const f = document.createDocumentFragment();
+  pinyinSegs(text).forEach(x => {
+    if (typeof x === 'string') {
+      // Punctuation stays on the same line as the character before it.
+      const last = f.lastChild;
+      if (last && last.nodeType === 1 && !/^\s$/.test(x)) { const w = el('span','nw'); w.append(last, x); f.append(w); }
+      else if (last && last.nodeType === 3) last.data += x; else f.append(x);
+      return;
+    }
+    // One column per character when the syllables line up, else one per word.
+    const chars = [...x.zh], syl = x.py.split(' ');
+    const pairs = syl.length === chars.length ? chars.map((c, i) => [c, syl[i]]) : [[x.zh, x.py]];
+    pairs.forEach(([c, py]) => { const b = el('span','rb'); b.append(el('span', null, c), el('span','rt', py)); f.append(b); });
+  });
+  return f;
+}
+function withPy(e, text){ if (isZh(text)) { e.textContent = ''; e.append(rubyText(text)); } return e; }
 function grGapQ(q, fill){
   const box = $('grQ'); box.textContent = '';
   box.className = isZh(q) ? 'q' : 'q en';
   const line = el('span');
-  q.split('＿').forEach((part, i) => { if (i) line.append(el('span','gap', fill || '\u00a0')); line.append(part); });
+  q.split('＿').forEach((part, i) => { if (i) line.append(fill ? withPy(el('span','gap', fill), fill) : el('span','gap','\u00a0')); line.append(isZh(part) ? rubyText(part) : part); });
   box.append(line);
-  withPy(box, fill ? q.replace('＿', fill) : q);
 }
 function showGr(){
   grCur = queue[idx]; grPeeked = false; grDone = false; firstTry = true; grPlaced = [];
@@ -949,7 +968,7 @@ function grMiss(){
 function grShowDone(ok){
   grDone = true;
   const it = grCur.it, fb = $('grFb'); fb.textContent = ''; fb.className = 'fb ' + (ok ? 'ok' : 'bad');
-  fb.append(ok ? '對！ ' : 'Answer: ', el('span','zh', grAnswer(it))); withPy(fb, grAnswer(it));
+  fb.append(ok ? '對！ ' : 'Answer: ', withPy(el('span','zh', grAnswer(it)), grAnswer(it)));
   $('grUndo').hidden = true;
   $('grGo').hidden = false; $('grGo').textContent = idx + 1 < queue.length ? 'Next' : 'See results';
   $('grGo').focus({ preventScroll: true });
