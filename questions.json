@@ -11,8 +11,7 @@
           "Statement + {k:嗎}？"
         ],
         "examples": [
-          ["{s:你}{v:是}{o:臺灣人}{k:嗎}？", "nǐ shì tái wān rén ma?", "Are you Taiwanese?"],
-          ["{s:你}{v:喜歡喝}{o:茶}{k:嗎}？", "nǐ xǐ huān hē chá ma?", "Do you like tea?"]
+          ["{s:你}{v:是}{o:臺灣人}{k:嗎}？", "nǐ shì tái wān rén ma?", "Are you Taiwanese?"]
         ],
         "tip": "No 嗎 if there's already a question word."
       },
@@ -129,8 +128,7 @@
           "…，{s:你}{k:呢}？"
         ],
         "examples": [
-          ["{s:我}{v:是}美國人，{s:你}{k:呢}？", "wǒ shì měi guó rén, nǐ ne?", "I'm American, and you?"],
-          ["{s:我}{v:喜歡喝}{o:咖啡}，{s:你}{k:呢}？", "wǒ xǐ huān hē kā fēi, nǐ ne?", "I like coffee, what about you?"]
+          ["{s:我}{v:是}美國人，{s:你}{k:呢}？", "wǒ shì měi guó rén, nǐ ne?", "I'm American, and you?"]
         ],
         "tip": "呢 asks the same question back."
       },

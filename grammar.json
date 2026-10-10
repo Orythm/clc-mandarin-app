@@ -65,7 +65,6 @@
           "{s:我}{k:喜歡}{v:喝 / 吃}{o:＿}。"
         ],
         "examples": [
-          ["{s:你}{k:喜歡}{v:喝}{o:什麼}？", "nǐ xǐ huān hē shén me?", "What do you like to drink?"],
           ["{s:我}{k:喜歡}{v:喝}{o:珍珠奶茶}。", "wǒ xǐ huān hē zhēn zhū nǎi chá.", "I like bubble tea."]
         ],
         "tip": "喝 for drinks, 吃 for food."
@@ -227,9 +226,9 @@
         ],
         "examples": [
           ["{s:我們}{tw:今天晚上}{v:要去看電影}。", "wǒ men jīn tiān wǎn shàng yào qù kàn diàn yǐng.", "We're going to see a movie tonight."],
-          ["{s:他}{tw:星期一早上}{v:學中文}。", "tā xīng qí yī zǎo shàng xué zhōng wén.", "He studies Chinese on Monday mornings."]
+          ["{tw:今天晚上}{s:我們}{v:要去看電影}。", "jīn tiān wǎn shàng wǒ men yào qù kàn diàn yǐng.", "Tonight we're going to see a movie."]
         ],
-        "tip": "The time word goes before the verb."
+        "tip": "The time word goes before the verb, or first in the sentence."
       },
       "items": [
         {"type": "order", "tiles": ["我們", "今天晚上", "要", "去", "看", "電影", "。"], "alts": [["今天晚上", "我們", "要", "去", "看", "電影", "。"]], "en": "We're going to see a movie tonight."},
@@ -325,8 +324,7 @@
           "{o:A} {k:還是} {o:B}？"
         ],
         "examples": [
-          ["{s:你}{v:喜歡}{o:喝茶}{k:還是}{o:喝咖啡}？", "nǐ xǐ huān hē chá hái shì hē kā fēi?", "Do you like tea or coffee?"],
-          ["{s:你}{v:想吃}{o:越南菜}{k:還是}{o:美國菜}？", "nǐ xiǎng chī yuè nán cài hái shì měi guó cài?", "Do you want Vietnamese or American food?"]
+          ["{s:你}{v:喜歡}{o:喝茶}{k:還是}{o:喝咖啡}？", "nǐ xǐ huān hē chá hái shì hē kā fēi?", "Do you like tea or coffee?"]
         ],
         "tip": "還是 is already a question: no 嗎."
       },
