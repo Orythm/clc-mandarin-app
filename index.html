@@ -134,10 +134,11 @@ button.card:hover{border-color:var(--accent)}
 .empty{color:var(--muted)}
 .gq{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:18px 16px;display:grid;gap:12px}
 .gq .ask{color:var(--muted);font-size:1rem}
-.gq .src{font-family:var(--f-hand);font-size:clamp(1.4rem,4.6vw,1.8rem);background:var(--bg);border-radius:8px;padding:8px 12px}
+.gq{--zh-size:clamp(1.4rem,4.6vw,1.8rem)}
+.gq .src{font-family:var(--f-hand);font-size:var(--zh-size);line-height:1.5;background:var(--bg);border-radius:8px;padding:8px 12px}
 .gq .ctx{color:var(--muted);font-size:1.05rem}
-.gq .ctx.zh{font-family:var(--f-hand);font-size:1.35rem;color:var(--fg)}
-.gq .q{font-family:var(--f-hand);font-size:clamp(1.5rem,5vw,2rem);line-height:1.5}
+.gq .ctx.zh{font-family:var(--f-hand);font-size:var(--zh-size);line-height:1.5;color:var(--fg)}
+.gq .q{font-family:var(--f-hand);font-size:var(--zh-size);line-height:1.5}
 .gq .q.en{font-family:var(--f-py);font-size:1.15rem}
 .gq .gap{display:inline-block;min-width:2em;border-bottom:3px solid var(--accent);color:var(--accent);text-align:center}
 .gtable{border-collapse:collapse;font-family:var(--f-hand);font-size:1.15rem;justify-self:start}
@@ -153,6 +154,12 @@ button.card:hover{border-color:var(--accent)}
 .wt.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
 .wt:disabled{cursor:default}
 .gq .tools{justify-content:space-between}
+/* Pinyin under the Chinese, only while the 拼音 button is held */
+.pyl{display:none;font-family:var(--f-py);font-size:.8rem;font-weight:400;color:var(--muted);letter-spacing:0;line-height:1.3;font-style:normal}
+.showpy .pyl{display:block}
+.wt .pyl{font-size:.75rem}
+#grPy{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:none}
+#grPy.on{background:var(--fg);border-color:var(--fg);color:var(--paper)}
 .gq .fb .zh{font-size:1.4rem}
 .gq .fb .en{color:var(--muted);font-style:italic;display:block}
 .sheet{position:fixed;inset:0;z-index:10;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box}
@@ -201,6 +208,11 @@ button.card:hover{border-color:var(--accent)}
       <span class="lbl">Grammar</span>
       <span class="sub">Sentence patterns, Q&amp;A and fill the gap, with a card to peek at</span>
     </button>
+    <button class="card" id="qwCard" type="button" hidden>
+      <span class="ic">疑問詞</span>
+      <span class="lbl">Question words</span>
+      <span class="sub">嗎, 什麼, 哪, 誰, 幾, 多少, 呢, 為什麼…</span>
+    </button>
     <div class="card soon">
       <span class="ic">更多</span>
       <span class="lbl">More exercises</span>
@@ -234,7 +246,10 @@ button.card:hover{border-color:var(--accent)}
     <div class="opts" id="grOpts"></div>
     <div class="fb" id="grFb"></div>
     <div class="tools">
-      <button class="btn" id="grPeek" type="button">📖 Card</button>
+      <span>
+        <button class="btn" id="grPeek" type="button">📖 Card</button>
+        <button class="btn" id="grPy" type="button" aria-label="Hold to show pinyin">拼音</button>
+      </span>
       <span>
         <button class="btn" id="grUndo" type="button" hidden>Clear</button>
         <button class="btn primary" id="grGo" type="button" hidden>Check</button>
@@ -718,22 +733,28 @@ function finishMw(){
   finish();
 }
 
-// ---- Grammar (語法): one page with every point and rounds of mixed questions ----
-// Data is grammar.json: { "tables": {...}, "points": [{ id, zh, en, card: {patterns, examples, tip}, items }] }.
+// ---- Grammar (語法) and Question words (疑問詞): one page with every point and rounds of mixed questions ----
+// Both sets use the same page and question engine. Data is grammar.json / questions.json: { "tables": {...}, "points": [{ id, zh, en, card: {patterns, examples, tip}, items }] }.
 // Items: { type: "pick", ctx?, table?, q, opts, en, fill? } (opts[0] is right; "＿" in q is the gap, filled with fill or opts[0])
 //        { type: "order", ask?, src?, tiles, alts? } (tiles in the right order; alts are other accepted orders;
 //          src is a sentence to rewrite or a question to answer). ask is the instruction line on any item.
-let GR = { tables: {}, points: [] }, grItems = [], grMisses = [], grCur = null, grPeeked = false, grDone = false, grPlaced = [];
+const SETS = {
+  grammar: { base: '/grammar', file: '/grammar.json', zh: '語法', en: 'Grammar', card: 'grCard', data: { tables: {}, points: [] } },
+  questions: { base: '/questions', file: '/questions.json', zh: '疑問詞', en: 'Question words', card: 'qwCard', data: { tables: {}, points: [] } },
+};
+let grSet = 'grammar';
+const GRS = () => SETS[grSet];
+let grItems = [], grMisses = [], grCur = null, grPeeked = false, grDone = false, grPlaced = [];
 const ROUND = 10;
-function grPool(){ return GR.points.flatMap(p => p.items.map(it => ({ p, it }))); }
+function grPool(){ return GRS().data.points.flatMap(p => p.items.map(it => ({ p, it }))); }
 function buildGrammar(){
   $('gPractice').textContent = 'Practice · ' + Math.min(ROUND, grPool().length) + ' mixed questions';
   const list = $('gList'); list.textContent = '';
-  GR.points.forEach(p => {
+  GRS().data.points.forEach(p => {
     const row = el('div','gpt');
     const b = el('button','go'); b.type = 'button';
     b.append(el('span','h',p.zh), el('span','sub', p.en + ' · ' + p.items.length + ' questions'));
-    b.addEventListener('click', () => go('/grammar/' + p.id));
+    b.addEventListener('click', () => go(GRS().base + '/' + p.id));
     const k = el('button','peek','📖'); k.type = 'button'; k.setAttribute('aria-label', 'Card: ' + p.en);
     k.addEventListener('click', () => openCard(p));
     row.append(b, k); list.append(row);
@@ -741,7 +762,7 @@ function buildGrammar(){
 }
 function showGrammar(){
   hideAll(); $('modeBtn').hidden = false; $('modeBtn').textContent = '← Home';
-  $('gmenu').hidden = false; $('title').textContent = '語法 · Grammar';
+  $('gmenu').hidden = false; $('title').textContent = GRS().zh + ' · ' + GRS().en;
   buildGrammar();
 }
 // Card text marks sentence parts as {s:我們}{tw:今天晚上}{v:要去看電影}: s subject, v verb, tw time word,
@@ -779,7 +800,7 @@ function startGr(items, title){
   queue = items.map(x => ({ ...x, again: false })); idx = 0; score = 0; grMisses = []; misses = [];
   hideAll();
   $('title').textContent = title;
-  $('modeBtn').textContent = '← Grammar';
+  $('modeBtn').textContent = '← ' + GRS().en;
   ['meta','rail','grBox','modeBtn'].forEach(id => $(id).hidden = false);
   showGr(); window.scrollTo(0,0);
 }
@@ -788,13 +809,49 @@ const grAnswer = it => it.type === 'order' ? it.tiles.join('') : it.q.includes('
 function grTableEl(t){
   const tb = el('table','gtable');
   if (t.head.some(Boolean)) { const tr = el('tr'); t.head.forEach(c => tr.append(el('th', null, c))); tb.append(tr); }
-  t.rows.forEach(r => { const tr = el('tr'); r.forEach((c, i) => tr.append(el(i ? 'td' : 'th', null, c))); tb.append(tr); });
+  t.rows.forEach(r => { const tr = el('tr'); r.forEach((c, i) => tr.append(withPy(el(i ? 'td' : 'th', null, c), c))); tb.append(tr); });
   return tb;
 }
+// Pinyin for any sentence, from the lesson words plus pinyin.json (handout words, names, numbers):
+// longest match first, then 不 and 一 take their tone changes (bú / yí before a 4th tone).
+let PY = {}, PY_MAX = 1;
+function buildPy(extra){
+  PY = {};
+  LESSONS.forEach(L => L.words.forEach(w => { const k = w[0].replace(/…/g, ''); if (/^[\u3400-\u9fff]+$/.test(k) && !(k in PY)) PY[k] = w[1]; }));
+  Object.assign(PY, extra || {});
+  PY_MAX = Math.max(1, ...Object.keys(PY).map(k => k.length));
+}
+const tone4 = py => /^[^ ]*[àèìòùǜ]/.test(py) || py === 'ge';
+function pinyinOf(text){
+  const out = [];   // {zh, py} for Chinese, plain strings for anything else
+  for (let i = 0; i < text.length;) {
+    if (!/[\u3400-\u9fff]/.test(text[i])) { out.push(text[i]); i++; continue; }
+    let n = Math.min(PY_MAX, text.length - i);
+    while (n > 1 && !(text.substr(i, n) in PY)) n--;
+    const w = text.substr(i, n);
+    out.push({ zh: w, py: PY[w] || '?' }); i += n;
+  }
+  out.forEach((x, j) => {
+    if (typeof x === 'string' || (x.zh !== '不' && x.zh !== '一')) return;
+    const nx = out[j + 1], pv = out[j - 1];
+    const next = nx && typeof nx !== 'string' ? nx.py : null;
+    if (x.zh === '不') x.py = next && tone4(next) ? 'bú' : 'bù';
+    else if (!next || (pv && typeof pv !== 'string' && /^(星期|第)$/.test(pv.zh))) x.py = 'yī';
+    else x.py = tone4(next) ? 'yí' : 'yì';
+  });
+  const P = { '，': ', ', '。': '.', '？': '?', '！': '!', '、': ', ', '：': ': ', '＿': ' ＿ ' };
+  return out.map(x => typeof x === 'string' ? (x in P ? P[x] : x) : ' ' + x.py + ' ')
+    .join('').replace(/ +/g, ' ').replace(/ ([,.?!:)])/g, '$1').replace(/\( /g, '(').trim();
+}
+// Adds a hidden pinyin line to an element holding Chinese; it shows while 拼音 is held.
+function withPy(e, text){ if (isZh(text)) e.append(el('span','pyl',pinyinOf(text))); return e; }
 function grGapQ(q, fill){
   const box = $('grQ'); box.textContent = '';
   box.className = isZh(q) ? 'q' : 'q en';
-  q.split('＿').forEach((part, i) => { if (i) box.append(el('span','gap', fill || ' ')); box.append(part); });
+  const line = el('span');
+  q.split('＿').forEach((part, i) => { if (i) line.append(el('span','gap', fill || '\u00a0')); line.append(part); });
+  box.append(line);
+  withPy(box, fill ? q.replace('＿', fill) : q);
 }
 function showGr(){
   grCur = queue[idx]; grPeeked = false; grDone = false; firstTry = true; grPlaced = [];
@@ -805,9 +862,9 @@ function showGr(){
   const ask = it.ask || (it.type === 'order' ? 'Put the words in the right order.' : it.q.includes('＿') ? 'Fill the gap.' : '');
   $('grAsk').textContent = ask; $('grAsk').hidden = !ask;
   const c = it.ctx || '';
-  $('grCtx').textContent = c; $('grCtx').className = isZh(c) ? 'ctx zh' : 'ctx'; $('grCtx').hidden = !c;
-  $('grSrc').textContent = it.src || ''; $('grSrc').hidden = !it.src;
-  const tw = $('grTable'); tw.textContent = ''; if (it.table && GR.tables[it.table]) tw.append(grTableEl(GR.tables[it.table]));
+  $('grCtx').textContent = c; $('grCtx').className = isZh(c) ? 'ctx zh' : 'ctx'; $('grCtx').hidden = !c; withPy($('grCtx'), c);
+  $('grSrc').textContent = it.src || ''; $('grSrc').hidden = !it.src; withPy($('grSrc'), it.src || '');
+  const tw = $('grTable'); tw.textContent = ''; const tables = GRS().data.tables; if (it.table && tables[it.table]) tw.append(grTableEl(tables[it.table]));
   $('grFb').textContent = ''; $('grFb').className = 'fb';
   $('grGo').hidden = true; $('grUndo').hidden = true;
   const opts = $('grOpts'); opts.textContent = '';
@@ -817,7 +874,7 @@ function showGr(){
     const long = it.opts.some(o => [...o].length > 4);
     opts.className = long ? 'opts col' : 'opts';
     shuffle(it.opts).forEach(o => {
-      const b = el('button','wt',o); b.type = 'button';
+      const b = withPy(el('button','wt',o), o); b.type = 'button'; b.dataset.t = o;
       b.addEventListener('click', () => pickGr(b, o));
       opts.append(b);
     });
@@ -828,7 +885,7 @@ function showGr(){
     let order = shuffle(it.tiles.map((t, i) => i));
     if (order.every((v, i) => v === i) && order.length > 1) order.reverse();
     order.forEach(i => {
-      const b = el('button','wt',it.tiles[i]); b.type = 'button'; b.dataset.i = i;
+      const b = withPy(el('button','wt',it.tiles[i]), it.tiles[i]); b.type = 'button'; b.dataset.i = i; b.dataset.t = it.tiles[i];
       b.addEventListener('click', () => placeTile(b));
       opts.append(b);
     });
@@ -846,7 +903,7 @@ function grMiss(){
 function grShowDone(ok){
   grDone = true;
   const it = grCur.it, fb = $('grFb'); fb.textContent = ''; fb.className = 'fb ' + (ok ? 'ok' : 'bad');
-  fb.append(ok ? '對！ ' : 'Answer: ', el('span','zh', grAnswer(it)));
+  fb.append(ok ? '對！ ' : 'Answer: ', el('span','zh', grAnswer(it))); withPy(fb, grAnswer(it));
   $('grUndo').hidden = true;
   $('grGo').hidden = false; $('grGo').textContent = idx + 1 < queue.length ? 'Next' : 'See results';
   $('grGo').focus({ preventScroll: true });
@@ -874,7 +931,7 @@ function placeTile(b){
 }
 function checkOrder(){
   const it = grCur.it;
-  const got = grPlaced.map(b => b.textContent).join('');
+  const got = grPlaced.map(b => b.dataset.t).join('');
   const ok = [it.tiles].concat(it.alts || []).some(t => t.join('') === got);
   grPlaced.forEach(b => b.disabled = true);
   $('grAns').classList.add(ok ? 'ok' : 'bad');
@@ -888,6 +945,13 @@ $('grGo').addEventListener('click', () => {
   showGr(); window.scrollTo(0,0);
 });
 $('grUndo').addEventListener('click', () => { [...grPlaced].forEach(b => $('grOpts').append(b)); grPlaced = []; $('grGo').hidden = true; $('grUndo').hidden = true; });
+// 拼音: hold to show pinyin, let go to hide it.
+const pyOn = on => { $('grBox').classList.toggle('showpy', on); $('grPy').classList.toggle('on', on); };
+$('grPy').addEventListener('pointerdown', e => { e.preventDefault(); $('grPy').setPointerCapture(e.pointerId); pyOn(true); });
+['pointerup','pointercancel','lostpointercapture'].forEach(t => $('grPy').addEventListener(t, () => pyOn(false)));
+$('grPy').addEventListener('contextmenu', e => e.preventDefault());
+$('grPy').addEventListener('keydown', e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); pyOn(true); } });
+$('grPy').addEventListener('keyup', () => pyOn(false));
 $('grPeek').addEventListener('click', () => { if (!grDone) grPeeked = true; openCard(grCur.p); });
 function finishGr(){
   misses = grMisses.map(({ it }) => [grAnswer(it), '', '']);
@@ -897,9 +961,9 @@ function finishGr(){
   const g = $('missWrap').querySelector('.miss'); if (g) g.classList.add('long');
   $('restartBtn').textContent = 'Start over';
 }
-function grStartPoint(p){ startGr(shuffle(p.items).map(it => ({ p, it })), '語法 · ' + p.zh); }
-function grStartPractice(){ startGr(shuffle(grPool()).slice(0, ROUND), '語法 · Practice'); }
-$('gPractice').addEventListener('click', () => go('/grammar/practice'));
+function grStartPoint(p){ startGr(shuffle(p.items).map(it => ({ p, it })), GRS().zh + ' · ' + p.zh); }
+function grStartPractice(){ startGr(shuffle(grPool()).slice(0, ROUND), GRS().zh + ' · Practice'); }
+$('gPractice').addEventListener('click', () => go(GRS().base + '/practice'));
 
 // URLs: "/" is the home menu, "/vocab" the lesson list, "/vocab/lesson-<n>-py-zh" and
 // "/vocab/lesson-<n>-zh-py" open a quiz, "/tones" and "/tones/lesson-<n>" are the pinyin dictation, so the phone's back gesture moves between screens
@@ -907,18 +971,20 @@ $('gPractice').addEventListener('click', () => go('/grammar/practice'));
 const SLUG = { py2zh: 'py-zh', zh2py: 'zh-py' };
 function lessonPath(n, m){ return '/vocab/lesson-' + n + '-' + SLUG[m]; }
 function parentOf(path){
-  if (path === '/vocab' || path === '/tones' || path === '/measure' || path === '/grammar') return '/';
-  return path.startsWith('/vocab/') ? '/vocab' : path.startsWith('/tones/') ? '/tones' : path.startsWith('/grammar/') ? '/grammar' : null;
+  if (path === '/vocab' || path === '/tones' || path === '/measure' || path === '/grammar' || path === '/questions') return '/';
+  return path.startsWith('/vocab/') ? '/vocab' : path.startsWith('/tones/') ? '/tones' : path.startsWith('/grammar/') ? '/grammar' : path.startsWith('/questions/') ? '/questions' : null;
 }
 function route(){
   const path = location.pathname.replace(/\/+$/, '') || '/';
   if (path === '/vocab') return showMenu();
   if (path === '/tones') return showTonesMenu();
   if (path === '/measure' && MW_ITEMS.length) return startMw(MW_ITEMS);
-  if (GR.points.length) {
-    if (path === '/grammar') return showGrammar();
-    if (path === '/grammar/practice') return grStartPractice();
-    const gp = path.startsWith('/grammar/') && GR.points.find(p => '/grammar/' + p.id === path);
+  for (const k in SETS) {
+    const S = SETS[k]; if (!S.data.points.length || !(path === S.base || path.startsWith(S.base + '/'))) continue;
+    grSet = k;
+    if (path === S.base) return showGrammar();
+    if (path === S.base + '/practice') return grStartPractice();
+    const gp = S.data.points.find(p => S.base + '/' + p.id === path);
     if (gp) return grStartPoint(gp);
   }
   if (path === '/tones/endless') { lesson = { zh: '全部 ∞', endless: true, words: allWords() }; WORDS = lesson.words; return startTones(WORDS); }
@@ -944,10 +1010,14 @@ $('vocabCard').addEventListener('click', () => go('/vocab'));
 $('tonesCard').addEventListener('click', () => go('/tones'));
 $('mwCard').addEventListener('click', () => go('/measure'));
 $('grCard').addEventListener('click', () => go('/grammar'));
-// Grammar is optional as well: the home card shows once grammar.json has points.
-const grLoad = fetch('/grammar.json', {cache: 'no-cache'})
+$('qwCard').addEventListener('click', () => go('/questions'));
+// Grammar and question words are optional as well: each home card shows once its file has points.
+const grLoad = Promise.all(Object.values(SETS).map(S => fetch(S.file, {cache: 'no-cache'})
   .then(r => r.ok ? r.json() : null).catch(() => null)
-  .then(data => { GR = data && Array.isArray(data.points) ? { tables: data.tables || {}, points: data.points.filter(p => p.items && p.items.length) } : { tables: {}, points: [] }; $('grCard').hidden = !GR.points.length; });
+  .then(data => {
+    S.data = data && Array.isArray(data.points) ? { tables: data.tables || {}, points: data.points.filter(p => p.items && p.items.length) } : { tables: {}, points: [] };
+    $(S.card).hidden = !S.data.points.length;
+  })));
 // Measure words are optional: the home card only shows once measure-words.json has some.
 const mwLoad = fetch('/measure-words.json', {cache: 'no-cache'})
   .then(r => r.ok ? r.json() : []).catch(() => [])
@@ -956,10 +1026,11 @@ const mwLoad = fetch('/measure-words.json', {cache: 'no-cache'})
 const clipsLoad = fetch('/audio/index.json', {cache: 'no-cache'})
   .then(r => r.ok ? r.json() : {}).catch(() => ({}))
   .then(data => { CLIPS = data && typeof data === 'object' ? data : {}; });
-Promise.all([fetch('/lessons.json', {cache: 'no-cache'}), mwLoad, clipsLoad, grLoad])
-  .then(([r]) => { if (!r.ok) throw new Error(r.status); return r.json(); })
-  .then(data => {
-    LESSONS = data; buildMenu(); buildTonesMenu();
+const pyLoad = fetch('/pinyin.json', {cache: 'no-cache'}).then(r => r.ok ? r.json() : {}).catch(() => ({}));
+Promise.all([fetch('/lessons.json', {cache: 'no-cache'}), mwLoad, clipsLoad, grLoad, pyLoad])
+  .then(([r, , , , py]) => { if (!r.ok) throw new Error(r.status); return r.json().then(d => [d, py]); })
+  .then(([data, py]) => {
+    LESSONS = data; buildMenu(); buildTonesMenu(); buildPy(py);
     $('vocabSub').textContent = LESSONS.length + ' lessons · match pinyin and characters';
     let path = location.pathname.replace(/\/+$/, '') || '/';
     if (path === '/index.html') path = '/';

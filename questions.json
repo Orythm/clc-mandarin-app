@@ -1,0 +1,208 @@
+{
+  "tables": {
+  },
+  "points": [
+    {
+      "id": "ma",
+      "zh": "嗎",
+      "en": "Yes / no questions",
+      "card": {
+        "patterns": [
+          "Statement + {k:嗎}？"
+        ],
+        "examples": [
+          ["{s:你}{v:是}{o:臺灣人}{k:嗎}？", "nǐ shì tái wān rén ma?", "Are you Taiwanese?"],
+          ["{s:你}{v:喜歡喝}{o:茶}{k:嗎}？", "nǐ xǐ huān hē chá ma?", "Do you like tea?"],
+          ["是的，{s:我}{v:喜歡喝}{o:茶}。", "shì de, wǒ xǐ huān hē chá.", "Yes, I like tea."]
+        ],
+        "tip": "Put 嗎 at the end of a statement to make a yes / no question. Don't add 嗎 when the question already has a question word (什麼, 哪, 誰, 幾, 多少, 還是, 好不好…)."
+      },
+      "items": [
+        {"type": "pick", "q": "你是日本人＿？", "opts": ["嗎", "什麼", "呢"], "en": "Are you Japanese?"},
+        {"type": "pick", "q": "你喜歡打籃球＿？", "opts": ["嗎", "什麼", "哪"], "en": "Do you like playing basketball?"},
+        {"type": "pick", "q": "Which question is right?", "opts": ["你要喝咖啡嗎？", "你要喝什麼嗎？", "你是哪國人嗎？"], "en": "Would you like a coffee?"},
+        {"type": "pick", "q": "Which question is right?", "opts": ["你常看電影嗎？", "你常看電影還是嗎？", "誰常看電影嗎？"], "en": "Do you often go to the movies?"},
+        {"type": "pick", "ctx": "A：你是美國人嗎？", "q": "B：＿，我是美國人。", "opts": ["是的", "什麼", "嗎"], "en": "Yes, I'm American."},
+        {"type": "order", "tiles": ["你", "有", "哥哥", "嗎", "？"], "en": "Do you have an older brother?"},
+        {"type": "order", "tiles": ["你", "想", "學", "中文", "嗎", "？"], "en": "Do you want to learn Chinese?"}
+      ]
+    },
+    {
+      "id": "shenme",
+      "zh": "什麼 · 做什麼",
+      "en": "What? Do what?",
+      "card": {
+        "patterns": [
+          "{s:S.} + {v:V.} + {k:什麼}？",
+          "{s:S.} + {k:做什麼}？"
+        ],
+        "examples": [
+          ["{s:你}{v:喜歡喝}{k:什麼}？", "nǐ xǐ huān hē shén me?", "What do you like to drink?"],
+          ["{s:你}{v:叫}{k:什麼}名字？", "nǐ jiào shén me míng zi?", "What's your name?"],
+          ["{tw:週末}{s:你}常{k:做什麼}？", "zhōu mò nǐ cháng zuò shén me?", "What do you usually do on weekends?"]
+        ],
+        "tip": "什麼 = what. It sits where the answer goes: 你喜歡喝什麼？ → 我喜歡喝茶。 做什麼 = do what: 你明天要做什麼？ → 我明天要去游泳。"
+      },
+      "items": [
+        {"type": "pick", "ask": "Complete the question that this answers: 我喜歡吃炒飯。", "q": "你喜歡吃＿？", "opts": ["什麼", "哪", "幾"], "en": "What do you like to eat?"},
+        {"type": "pick", "ask": "Complete the question that this answers: 我叫王大明。", "q": "你叫＿名字？", "opts": ["什麼", "誰", "哪"], "en": "What's your name?"},
+        {"type": "pick", "ask": "Complete the question that this answers: 我明天要去游泳。", "q": "你明天要＿？", "opts": ["做什麼", "什麼做", "怎麼樣"], "en": "What are you doing tomorrow?"},
+        {"type": "pick", "ask": "Complete the question that this answers: 他週末常打網球。", "q": "他週末常＿？", "opts": ["做什麼", "誰", "幾"], "en": "What does he usually do on weekends?"},
+        {"type": "pick", "ask": "Complete the question that this answers: 我要喝烏龍茶。", "q": "你要喝＿？", "opts": ["什麼", "嗎", "哪國"], "en": "What would you like to drink?"},
+        {"type": "order", "tiles": ["你", "今天晚上", "要", "做什麼", "？"], "alts": [["今天晚上", "你", "要", "做什麼", "？"]], "en": "What are you doing tonight?"},
+        {"type": "order", "tiles": ["你", "喜歡", "看", "什麼", "電影", "？"], "en": "What movies do you like?"}
+      ]
+    },
+    {
+      "id": "na",
+      "zh": "哪 · 哪國",
+      "en": "Which? Which country?",
+      "card": {
+        "patterns": [
+          "{s:S.} + {v:是} + {k:哪國}人？",
+          "{k:哪} + MW + {o:N.}？"
+        ],
+        "examples": [
+          ["{s:你}{v:是}{k:哪國}人？", "nǐ shì nǎ guó rén?", "Where are you from?"],
+          ["{s:我}{v:是}美國人。", "wǒ shì měi guó rén.", "I'm American."],
+          ["{s:你}{v:要}{k:哪}支{o:手機}？", "nǐ yào nǎ zhī shǒu jī?", "Which phone do you want?"]
+        ],
+        "tip": "哪 nǎ = which. 哪國人 = a person of which country, i.e. where are you from. Don't mix up 哪 nǎ (which, 3rd tone) and 那 nà (that, 4th tone)."
+      },
+      "items": [
+        {"type": "pick", "ask": "Complete the question that this answers: 我是日本人。", "q": "你是＿人？", "opts": ["哪國", "什麼", "誰"], "en": "Where are you from?"},
+        {"type": "pick", "ask": "Complete the question that this answers: 她是臺灣人。", "q": "她是＿人？", "opts": ["哪國", "幾", "多少"], "en": "Where is she from?"},
+        {"type": "pick", "ask": "Complete the question that this answers: 我要這本書。", "q": "你要＿本書？", "opts": ["哪", "那", "什麼"], "en": "Which book do you want?"},
+        {"type": "pick", "ask": "Complete the question that this answers: 我喜歡那支手機。", "q": "你喜歡＿支手機？", "opts": ["哪", "那", "誰"], "en": "Which phone do you like?"},
+        {"type": "order", "tiles": ["你", "是", "哪國", "人", "？"], "en": "Where are you from?"},
+        {"type": "order", "tiles": ["你", "要", "買", "哪", "本", "書", "？"], "en": "Which book do you want to buy?"}
+      ]
+    },
+    {
+      "id": "shei",
+      "zh": "誰",
+      "en": "Who? Whose?",
+      "card": {
+        "patterns": [
+          "{k:誰} + {v:V.}？",
+          "{s:S.} + {v:是} + {k:誰}？",
+          "{k:誰}的 + {o:N.}？"
+        ],
+        "examples": [
+          ["{s:她}{v:是}{k:誰}？", "tā shì shéi?", "Who is she?"],
+          ["{s:她}{v:是}我姐姐。", "tā shì wǒ jiě jie.", "She's my older sister."],
+          ["{k:誰}{v:喜歡打}{o:籃球}？", "shéi xǐ huān dǎ lán qiú?", "Who likes playing basketball?"],
+          ["這是{k:誰}的{o:書}？", "zhè shì shéi de shū?", "Whose book is this?"]
+        ],
+        "tip": "誰 shéi = who. Like 什麼, it sits where the answer goes. 誰的 = whose."
+      },
+      "items": [
+        {"type": "pick", "ask": "Complete the question that this answers: 他是我哥哥。", "q": "他是＿？", "opts": ["誰", "什麼", "哪"], "en": "Who is he?"},
+        {"type": "pick", "ask": "Complete the question that this answers: 李先生喜歡踢足球。", "q": "＿喜歡踢足球？", "opts": ["誰", "什麼", "嗎"], "en": "Who likes playing football?"},
+        {"type": "pick", "ask": "Complete the question that this answers: 這是老師的書。", "q": "這是＿的書？", "opts": ["誰", "哪", "幾"], "en": "Whose book is this?"},
+        {"type": "pick", "ask": "Complete the question that this answers: 王小姐要去看電影。", "q": "＿要去看電影？", "opts": ["誰", "哪國", "做什麼"], "en": "Who is going to see a movie?"},
+        {"type": "order", "tiles": ["這", "是", "誰", "的", "照片", "？"], "en": "Whose photo is this?"},
+        {"type": "order", "tiles": ["誰", "想", "喝", "咖啡", "？"], "en": "Who wants coffee?"}
+      ]
+    },
+    {
+      "id": "ji-duoshao",
+      "zh": "幾 · 多少",
+      "en": "How many? How much?",
+      "card": {
+        "patterns": [
+          "{k:幾} + MW + {o:N.}？　(small numbers)",
+          "{k:多少} (+ MW) + {o:N.}？　(any number)"
+        ],
+        "examples": [
+          ["{s:你}{v:有}{k:幾}個{o:妹妹}？", "nǐ yǒu jǐ ge mèi mei?", "How many younger sisters do you have?"],
+          ["這支{o:手機}{k:多少}錢？", "zhè zhī shǒu jī duō shǎo qián?", "How much is this phone?"],
+          ["{s:你們學校}{v:有}{k:多少}{o:人}？", "nǐ men xué xiào yǒu duō shǎo rén?", "How many people are at your school?"]
+        ],
+        "tip": "幾 expects a small number and always takes a measure word: 幾個, 幾張. 多少 works for any number, with or without a measure word. Prices always use 多少錢."
+      },
+      "items": [
+        {"type": "pick", "ask": "Complete the question that this answers: 我有兩個妹妹。", "q": "你有＿個妹妹？", "opts": ["幾", "多少錢", "什麼"], "en": "How many younger sisters do you have?"},
+        {"type": "pick", "ask": "Complete the question that this answers: 一杯咖啡八十塊錢。", "q": "一杯咖啡＿錢？", "opts": ["多少", "幾", "什麼"], "en": "How much is a cup of coffee?"},
+        {"type": "pick", "ask": "Complete the question that this answers: 我們班有八個人。", "q": "你們班有＿個人？", "opts": ["幾", "哪", "誰"], "en": "How many people are in your class?"},
+        {"type": "pick", "ask": "Complete the question that this answers: 我們公司有一千多個人。", "q": "你們公司有＿人？", "opts": ["多少", "幾", "什麼"], "en": "How many people are at your company?"},
+        {"type": "pick", "ask": "Complete the question that this answers: 我有三張照片。", "q": "你有＿張照片？", "opts": ["幾", "多少錢", "哪國"], "en": "How many photos do you have?"},
+        {"type": "order", "tiles": ["這", "本", "書", "多少", "錢", "？"], "en": "How much is this book?"},
+        {"type": "order", "tiles": ["你", "家", "有", "幾", "個", "人", "？"], "en": "How many people are in your family?"}
+      ]
+    },
+    {
+      "id": "ne",
+      "zh": "呢",
+      "en": "And you? What about…?",
+      "card": {
+        "patterns": [
+          "…，{s:你}{k:呢}？"
+        ],
+        "examples": [
+          ["{s:我}{v:是}美國人，{s:你}{k:呢}？", "wǒ shì měi guó rén, nǐ ne?", "I'm American, and you?"],
+          ["{s:我}{v:喜歡喝}{o:咖啡}，{s:你}{k:呢}？", "wǒ xǐ huān hē kā fēi, nǐ ne?", "I like coffee, what about you?"],
+          ["{s:我}也{v:喜歡喝}{o:咖啡}。", "wǒ yě xǐ huān hē kā fēi.", "I like coffee too."]
+        ],
+        "tip": "呢 after a person or thing asks the same question back: \"and you?\", \"what about…?\". No need to repeat the verb."
+      },
+      "items": [
+        {"type": "pick", "q": "我是日本人，你＿？", "opts": ["呢", "嗎", "什麼"], "en": "I'm Japanese, and you?"},
+        {"type": "pick", "q": "我喜歡打網球，你＿？", "opts": ["呢", "嗎", "誰"], "en": "I like tennis, what about you?"},
+        {"type": "pick", "q": "我要喝茶，他＿？", "opts": ["呢", "嗎", "幾"], "en": "I'd like tea, what about him?"},
+        {"type": "pick", "q": "Which question is right?", "opts": ["我很好，你呢？", "我很好，你嗎？", "我很好，呢你？"], "en": "I'm fine, and you?"},
+        {"type": "pick", "ask": "Pick B's answer.", "ctx": "A：我是臺灣人，你呢？", "q": "B：＿", "opts": ["我也是臺灣人。", "我是臺灣人呢。", "我是臺灣人嗎？"], "en": "I'm Taiwanese too."},
+        {"type": "order", "tiles": ["我", "喜歡", "看書", "，", "你", "呢", "？"], "en": "I like reading, what about you?"}
+      ]
+    },
+    {
+      "id": "haobuhao",
+      "zh": "好不好 · 怎麼樣",
+      "en": "Shall we…? How about…?",
+      "card": {
+        "patterns": [
+          "Suggestion + ，{k:好不好}？",
+          "Suggestion + ，{k:怎麼樣}？",
+          "{o:N.} + {k:怎麼樣}？"
+        ],
+        "examples": [
+          ["{s:我們}{v:去看}{o:電影}，{k:好不好}？", "wǒ men qù kàn diàn yǐng, hǎo bù hǎo?", "Shall we go see a movie?"],
+          ["{tw:明天}{v:去游泳}，{k:怎麼樣}？", "míng tiān qù yóu yǒng, zěn me yàng?", "How about swimming tomorrow?"],
+          ["{o:臺灣菜}{k:怎麼樣}？", "tái wān cài zěn me yàng?", "How is Taiwanese food?"]
+        ],
+        "tip": "Put 好不好？ or 怎麼樣？ after a suggestion to ask what the other person thinks; answer 好啊！ or 不好。 怎麼樣 after a thing asks for an opinion. No 嗎 with either."
+      },
+      "items": [
+        {"type": "pick", "q": "我們一起去吃晚飯，＿？", "opts": ["好不好", "誰", "幾"], "en": "Shall we go have dinner together?"},
+        {"type": "pick", "q": "這個週末我們去打棒球，＿？", "opts": ["怎麼樣", "哪國", "多少"], "en": "How about playing baseball this weekend?"},
+        {"type": "pick", "ctx": "A：我們明天去爬山，好不好？", "q": "B：＿！我也想去。", "opts": ["好啊", "好不好", "怎麼樣"], "en": "Sure! I want to go too."},
+        {"type": "pick", "q": "Which question is right?", "opts": ["我們去游泳，好不好？", "我們去游泳，好不好嗎？", "好不好我們去游泳嗎？"], "en": "Shall we go swimming?"},
+        {"type": "order", "tiles": ["我們", "去", "逛街", "，", "怎麼樣", "？"], "en": "How about we go shopping?"},
+        {"type": "order", "tiles": ["明天", "我們", "一起", "去", "看電影", "，", "好不好", "？"], "alts": [["我們", "明天", "一起", "去", "看電影", "，", "好不好", "？"]], "en": "Shall we go see a movie together tomorrow?"}
+      ]
+    },
+    {
+      "id": "weishenme",
+      "zh": "為什麼",
+      "en": "Why?",
+      "card": {
+        "patterns": [
+          "{s:S.} + {k:為什麼} + {v:V.}？"
+        ],
+        "examples": [
+          ["{s:你}{k:為什麼}{v:學}{o:中文}？", "nǐ wèi shén me xué zhōng wén?", "Why are you learning Chinese?"],
+          ["{s:你}{k:為什麼}不{v:喜歡喝}{o:咖啡}？", "nǐ wèi shén me bù xǐ huān hē kā fēi?", "Why don't you like coffee?"],
+          ["太貴了。", "tài guì le.", "It's too expensive."]
+        ],
+        "tip": "為什麼 = why. It goes after the subject, before the verb (and before 不). A short answer can be 太貴了。 or 我覺得…"
+      },
+      "items": [
+        {"type": "pick", "ask": "Complete the question that this answers: 太貴了。", "q": "你＿不買那支手機？", "opts": ["為什麼", "什麼", "怎麼樣"], "en": "Why aren't you buying that phone?"},
+        {"type": "pick", "ask": "Complete the question that this answers: 我覺得中文很好玩。", "q": "你＿學中文？", "opts": ["為什麼", "做什麼", "哪"], "en": "Why are you learning Chinese?"},
+        {"type": "pick", "q": "Which question is right?", "opts": ["你為什麼不喜歡游泳？", "你為什麼不喜歡游泳嗎？", "你不喜歡游泳為什麼嗎？"], "en": "Why don't you like swimming?"},
+        {"type": "order", "tiles": ["你", "為什麼", "不", "喝", "咖啡", "？"], "alts": [["為什麼", "你", "不", "喝", "咖啡", "？"]], "en": "Why don't you drink coffee?"},
+        {"type": "order", "tiles": ["他", "為什麼", "不", "買", "那", "本", "書", "？"], "alts": [["為什麼", "他", "不", "買", "那", "本", "書", "？"]], "en": "Why isn't he buying that book?"}
+      ]
+    }
+  ]
+}

@@ -157,7 +157,7 @@
       "items": [
         {"type": "pick", "ctx": "A：老師有幾張照片？", "q": "B：老師有＿照片。", "opts": ["三張", "三個", "三"], "en": "The teacher has three photos."},
         {"type": "pick", "ctx": "A：你有幾個姐姐？", "q": "B：我有＿姐姐。", "opts": ["兩個", "二個", "兩張"], "en": "I have two older sisters."},
-        {"type": "pick", "q": "你有＿本書？", "opts": ["幾", "什麼", "哪"], "en": "How many books do you have?"},
+        {"type": "pick", "q": "你有＿本書？", "opts": ["幾", "什麼", "誰"], "en": "How many books do you have?"},
         {"type": "pick", "q": "他家有幾＿人？", "opts": ["個", "張", "本"], "en": "How many people are in his family?"},
         {"type": "pick", "q": "你有幾＿照片？", "opts": ["張", "個", "本"], "en": "How many photos do you have?"},
         {"type": "order", "tiles": ["你", "有", "幾", "個", "弟弟", "？"], "en": "How many younger brothers do you have?"},
@@ -272,7 +272,7 @@
         "tip": "和 only joins two things (nouns or activities), never two sentences: for that use 也. With 都, the two things come first, because 都 points back to them."
       },
       "items": [
-        {"type": "order", "ask": "Rewrite it using 也.", "src": "我喜歡看書和看電影。", "tiles": ["我", "喜歡", "看書", "，", "也", "喜歡", "看電影", "。"]},
+        {"type": "order", "ask": "Rewrite it using 也.", "src": "我喜歡看書和看電影。", "tiles": ["我", "喜歡", "看書", "，", "也", "喜歡", "看電影", "。"], "alts": [["我", "喜歡", "看電影", "，", "也", "喜歡", "看書", "。"]]},
         {"type": "order", "ask": "Rewrite it using 都, starting with the two things.", "src": "我喜歡游泳和踢足球。", "tiles": ["游泳", "和", "踢足球", "，", "我", "都", "喜歡", "。"], "alts": [["踢足球", "和", "游泳", "，", "我", "都", "喜歡", "。"]]},
         {"type": "order", "ask": "Answer that you want both, using 都.", "src": "你想吃越南菜還是美國菜？", "tiles": ["越南菜", "和", "美國菜", "，", "我", "都", "想", "吃", "。"], "alts": [["美國菜", "和", "越南菜", "，", "我", "都", "想", "吃", "。"]]},
         {"type": "order", "ask": "Answer that you want both, using 都.", "src": "你想看美國電影還是臺灣電影？", "tiles": ["美國電影", "和", "臺灣電影", "，", "我", "都", "想", "看", "。"], "alts": [["臺灣電影", "和", "美國電影", "，", "我", "都", "想", "看", "。"]]},
@@ -504,7 +504,7 @@
         {"type": "pick", "q": "上網和照相，這支手機＿能。", "opts": ["都", "也", "和"], "en": "Going online and taking photos, this phone can do both."},
         {"type": "pick", "q": "這支手機能上網＿照相。", "opts": ["和", "也", "都"], "en": "This phone can go online and take photos."},
         {"type": "pick", "q": "Which sentence is right?", "opts": ["這支手機能上網，也能照相。", "這支手機能上網，能也照相。", "這支手機也上網，能照相。"], "en": "This phone can go online, and it can also take photos."},
-        {"type": "order", "ask": "Rewrite it using 也.", "src": "我的手機能上網和照相。", "tiles": ["我的手機", "能", "上網", "，", "也", "能", "照相", "。"]},
+        {"type": "order", "ask": "Rewrite it using 也.", "src": "我的手機能上網和照相。", "tiles": ["我的手機", "能", "上網", "，", "也", "能", "照相", "。"], "alts": [["我的手機", "能", "照相", "，", "也", "能", "上網", "。"]]},
         {"type": "order", "ask": "Rewrite it using 都, starting with the two things.", "src": "這支手機能上網和照相。", "tiles": ["上網", "和", "照相", "，", "這支手機", "都", "能", "。"], "alts": [["照相", "和", "上網", "，", "這支手機", "都", "能", "。"]]},
         {"type": "order", "tiles": ["你的手機", "能", "照相", "嗎", "？"], "en": "Can your phone take photos?"}
       ]

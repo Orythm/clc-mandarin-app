@@ -63,6 +63,18 @@ The 語法 page (`/grammar`) reads **`grammar.json`**: `tables` (small tables a 
 
 Sentences use only words from the lessons and the extra vocab, same format rules as above. The source handouts are milo's class photos (`/mnt/project-files/images.zip`); the per-lesson plan is `/mnt/project-files/clc-mandarin-app/grammar-plan.md`. Points aren't split by lesson (milo's call): the page is one flat list in file order, and Practice mixes 10 questions from all of them. The home card stays hidden while `points` is empty.
 
+## Question words
+
+The 疑問詞 page (`/questions`) reads **`questions.json`**, same format as `grammar.json` and the same page and question engine (嗎, 什麼/做什麼, 哪, 誰, 幾/多少, 呢, 好不好/怎麼樣, 為什麼). "Complete the question" items show the answer in `ask` and the question with a gap.
+
+## Pinyin on exercises
+
+Grammar and question-word exercises have a 拼音 button: holding it shows pinyin under every Chinese line, option, tile and table cell. Pinyin is worked out in the app from `lessons.json` plus **`pinyin.json`** (`{"word": "pinyin"}` for words not in any lesson: handout vocab, names, numbers), longest match first, with 不/一 tone changes applied automatically. When you add a sentence with a character that's in neither file, add it to `pinyin.json` (it shows as `?` otherwise).
+
+## Several right answers
+
+Exercises have no English hints, so every question must accept all correct answers: re-ordering items list every other correct order in `alts` (A and B swapped, time word before the subject, 為什麼 before the subject…), and pick items must have exactly one correct option in context. Check this whenever you add questions.
+
 ## Other files
 
 - `index.html`: the quiz app. It fetches `/lessons.json` at startup. Chinese text uses TW-Kai (全字庫正楷體, Taiwan's MOE standard Kai, the free equivalent of 標楷體 DFKai-SB), self-hosted in `fonts/` as ~100 small slices covering 16k common characters, with Noto Serif TC from Google Fonts as fallback. Latin text uses Source Serif 4. LXGW WenKai TC was dropped because some characters (e.g. 教) don't match Taiwan forms, so any new character is covered automatically; don't embed font subsets.
