@@ -135,15 +135,15 @@ button.card:hover{border-color:var(--accent)}
 /* Measure words: one table row per measure word; on narrow screens only the table scrolls sideways */
 .mwtab{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:.75em}
 .mwtab table{border-collapse:collapse;width:100%;white-space:nowrap}
-.mwtab th{text-align:left;font-weight:600;font-size:.85em;color:var(--muted);padding:.5em .75em;border-bottom:1px solid var(--line);background:var(--bg)}
 .mwtab td{padding:.2em .75em;line-height:1.3;border-bottom:1px solid var(--line);vertical-align:baseline}
 .mwtab tr:last-child td{border-bottom:0}
 .mwtab .zh{font-family:var(--f-hand);font-size:1.4em;color:var(--accent)}
 .mwtab .py{font-size:1em;font-weight:400;font-style:italic;letter-spacing:0}
 .mwtab .en{color:var(--muted)}
 .mwtab .ex{font-family:var(--f-hand);font-size:1.2em}
-.mwtab .ex .dim{opacity:.45}
-.mwtab .ex small{font-family:var(--f-py);font-size:.7em;font-style:italic;color:var(--muted);margin-left:.5em}
+.mwtab .ex .dim{color:var(--muted);opacity:.75}
+.mwtab .ex .col{display:inline-flex;padding:0 .12em;flex-direction:column;align-items:center;vertical-align:top}
+.mwtab .ex .col small{font-family:var(--f-py);font-size:.55em;font-style:italic;line-height:1.1}
 .gtop{display:grid;gap:14px}
 /* Flashcards: one card, hold to flip, swipe either way for the next */
 .fc{display:grid;gap:.6em;justify-items:center;grid-template-rows:auto minmax(0,1fr) auto;flex:1;min-height:0}
@@ -835,12 +835,13 @@ function showMwMenu(){
   hideAll(); $('modeBtn').hidden = false; $('modeBtn').textContent = '← Home';
   $('title').textContent = '量詞 · Measure Words'; $('mmenu').hidden = false;
   const list = $('mList'); list.textContent = '';
-  const t = el('table'), hr = el('tr');
-  ['', 'Pinyin', 'For', 'Example'].forEach(h => hr.append(el('th', null, h)));
-  t.append(hr);
+  const t = el('table');
   MW.forEach(m => {
     const w = m.nouns[0], tr = el('tr'), ex = el('td','ex');
-    ex.append(el('span','dim','一'), m.mw, el('span','dim', w[0]), el('small', null, numPy(NUMS[0], m) + ' ' + m.py + ' ' + w[1]));
+    // Pinyin sits under the noun's characters only, one syllable per character.
+    const syl = w[1].split(' '), noun = el('span','dim');
+    [...w[0]].forEach((c, i) => { const col = el('span','col'); col.append(c, el('small', null, syl.length === w[0].length ? syl[i] : (i ? '' : w[1]))); noun.append(col); });
+    ex.append(el('span','dim','一'), m.mw, noun);
     tr.append(el('td','zh', m.mw), el('td','py', m.py), el('td','en', m.en), ex);
     t.append(tr);
   });
