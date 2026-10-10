@@ -88,6 +88,14 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   .py.zhq{font-size:3rem}
 }
 .lessons{display:grid;gap:18px}
+.lstat{margin:-.3em 0 .6em;color:var(--muted);font-size:.9rem}
+.clearp{margin:0;text-align:center;font-size:.9rem}
+.clearp .linkbtn{color:var(--muted);font-size:inherit}
+.gstat{margin:-.4em 0 0;color:var(--muted);font-size:.95rem;text-align:center}
+.gstat:empty{display:none}
+#reviewCard{border-color:var(--accent)}
+.lesson .mode .en{font-size:.75em;color:var(--muted);font-style:italic}
+@media (max-width:560px){.lesson .modes{grid-template-columns:1fr 1fr;gap:8px} .lesson .mode{padding:.7em} .lesson .mode .ex{display:none} .lesson .mode .lbl{font-size:1rem}}
 .lesson h2{font-family:var(--f-hand);font-size:1.4rem;margin:0 0 8px;display:flex;align-items:baseline;gap:10px}
 .lesson h2 small{font-family:var(--f-py);font-size:.9rem;color:var(--muted);font-weight:400}
 .mode{padding:14px}
@@ -217,6 +225,17 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
   body:has(#grBox:not([hidden])) .wrap,body:has(#mwBox:not([hidden])) .wrap{padding-bottom:100px}
 }
 .gq .fb .zh{font-size:1.4rem}
+.gq #grPlay{justify-self:center}
+.gq .q.big{font-size:2.2rem;text-align:center} .gq .q.en.big{font-size:1.6rem}
+.gq .pyhint{visibility:hidden;font-size:1.3rem;font-style:italic;color:var(--muted)}
+.gq.showpy .pyhint{visibility:visible}
+.gq .reveal{display:grid;gap:.2em;justify-items:center}
+.gq .reveal .zh{font-family:var(--f-hand);font-size:2.4rem;color:var(--fg)}
+.gq .reveal .rpy{font-style:italic;font-size:1.15rem}
+.gq .say{padding:.1em .5em;margin-left:.4em;font-size:1rem;vertical-align:middle}
+.sec{display:grid;grid-template-columns:1fr auto;gap:.2em 1.2em;max-width:22em}
+.sec .n{font-variant-numeric:tabular-nums;text-align:right}
+.sec .low{color:var(--bad)}
 .gq .fb .en{color:var(--muted);font-style:italic;display:block}
 .sheet{position:fixed;inset:0;z-index:10;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box}
 .sheet .pane{background:var(--paper);color:var(--fg);width:min(100%,640px);max-height:calc(100dvh - 32px);overflow:auto;border-radius:16px;padding:18px 16px 22px;box-sizing:border-box;display:grid;gap:12px;box-shadow:0 12px 40px -12px rgba(0,0,0,.5)}
@@ -236,7 +255,7 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
 /* Sentence parts on the cards: subject, verb, time word, thing/topic, key grammar word */
 .r-s{color:var(--r-s)} .r-v{color:var(--r-v)} .r-tw{color:var(--r-tw)} .r-o{color:var(--r-o)} .r-k{color:var(--r-k);font-weight:700}
 .pat .r-s,.pat .r-v,.pat .r-tw,.pat .r-o,.exs .r-s,.exs .r-v,.exs .r-tw,.exs .r-o{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:5px}
-.miss.long{grid-template-columns:1fr} .miss.long .zh{font-size:1.3rem}
+.miss .zh.long{grid-column:1/-1;font-size:1.3rem}
 @media (prefers-reduced-motion: reduce){.rail i,.tile{transition:none}}
 </style>
 
@@ -247,6 +266,16 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
   </header>
 
   <section class="home" id="home" hidden>
+    <button class="card" id="reviewCard" type="button" hidden>
+      <span class="ic">複習</span>
+      <span class="lbl" id="reviewLbl">Review mistakes</span>
+      <span class="sub">Words and questions you missed, until you get each right twice in a row</span>
+    </button>
+    <button class="card" id="mockCard" type="button">
+      <span class="ic">模擬考</span>
+      <span class="lbl">Mock midterm</span>
+      <span class="sub" id="mockSub">30 questions from every lesson: listening, meaning, writing, measure words, grammar</span>
+    </button>
     <button class="card" id="vocabCard" type="button">
       <span class="ic">詞彙</span>
       <span class="lbl">Vocab quiz</span>
@@ -285,6 +314,8 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
     </div>
   </section>
 
+  <p class="clearp" id="clearWrap" hidden><button class="linkbtn" id="clearProg" type="button">Clear my progress</button></p>
+
   <section class="menu" id="menu" hidden>
     <div class="lessons" id="lessons"></div>
   </section>
@@ -300,6 +331,7 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
   <section class="menu" id="gmenu" hidden>
     <div class="gtop" id="gTop">
       <button class="btn primary play" id="gPractice" type="button">Practice</button>
+      <p class="gstat" id="gStat"></p>
       <h2 class="gh">By exercise type <small>all topics mixed</small></h2>
       <div class="modes" id="gTypes"></div>
       <button class="mode" id="gBrowse" type="button"><span class="ex"><span class="h">📖</span></span><span class="lbl">Browse the cards</span><span class="sub" id="gBrowseSub"></span></button>
@@ -321,7 +353,9 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
     <div class="ctx" id="grCtx"></div>
     <div class="src" id="grSrc"></div>
     <div id="grTable"></div>
+    <button class="btn primary play" id="grPlay" type="button" hidden>▶ Play</button>
     <div class="q" id="grQ"></div>
+    <div class="pyhint" id="grPyHint" hidden></div>
     <div class="ans" id="grAns" hidden></div>
     <div class="opts" id="grOpts"></div>
     <div class="fb" id="grFb"></div>
@@ -345,6 +379,7 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
     <div class="tools">
       <button class="btn toggle" id="hintBtn" type="button" aria-pressed="false">English</button>
       <button class="btn toggle" id="lenBtn" type="button" aria-pressed="false">Same length</button>
+      <button class="btn" id="sayBtn" type="button" aria-label="Hear the word">🔊</button>
     </div>
   </section>
 
@@ -403,6 +438,30 @@ let showEn = false, showLen = false;
 try { showEn = localStorage.getItem('q_en') === '1'; showLen = localStorage.getItem('q_len') === '1'; } catch(e) {}
 let ex = 'vocab', endless = false, WORDS = [], lesson = null, mode = 'py2zh', queue = [], idx = 0, score = 0, misses = [], answered = false, firstTry = true;
 
+// ---- Progress: every answer is kept on this phone (no account), keyed by what was asked ----
+// PROG[key] = { n: times asked, x: times missed, s: right in a row since the last miss, w: 1 while weak, t: last time }.
+// A miss makes it weak; two right answers in a row make it not weak any more.
+// Keys: "py:", "mean:", "write:", "listen:", "dict:" + characters|pinyin of a word; "mw:" + noun; "g:<set>:<hash>" for a grammar item.
+const PROG_KEY = 'clc_progress_v1', MOCK_KEY = 'clc_mock_v1';
+let PROG = {}, MOCKS = [];
+try { PROG = JSON.parse(localStorage.getItem(PROG_KEY)) || {}; MOCKS = JSON.parse(localStorage.getItem(MOCK_KEY)) || []; } catch(e) {}
+function saveProg(){ try { localStorage.setItem(PROG_KEY, JSON.stringify(PROG)); localStorage.setItem(MOCK_KEY, JSON.stringify(MOCKS)); } catch(e) {} }
+function rec(key, ok){
+  if (!key) return;
+  const r = PROG[key] || (PROG[key] = { n: 0, x: 0, s: 0, w: 0 });
+  r.n++; r.t = Date.now();
+  if (ok) { r.s++; if (r.s >= 2) r.w = 0; } else { r.x++; r.s = 0; r.w = 1; }
+  saveProg(); refreshProgress();
+}
+const wid = w => w[0] + '|' + w[1];
+const WORD_KINDS = ['py','mean','write','listen','dict'];
+// For a list of words: how many have been asked in any vocab exercise, and how many are weak.
+function wordStats(words){
+  let seen = 0, weak = 0;
+  words.forEach(w => { const rs = WORD_KINDS.map(k => PROG[k + ':' + wid(w)]).filter(Boolean); if (rs.length) seen++; if (rs.some(r => r.w)) weak++; });
+  return { seen, weak };
+}
+const statText = (st, total) => st.seen ? ' · seen ' + st.seen + '/' + total + (st.weak ? ' · ' + st.weak + ' weak' : '') : '';
 function shuffle(a){ a = a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]} return a; }
 function el(tag, cls, text){ const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
 
@@ -414,37 +473,39 @@ function buildMenu(boxId, sets, pathOf){
     const sec = el('section','lesson');
     const h = el('h2', null, setName(L) + ' ');
     h.append(el('small', null, L.words.length + ' words'));
+    const st = statText(wordStats(L.words), L.words.length).replace(/^ · /, '');
     const modes = el('div','modes');
     const ex = L.n ? L.words[L.words.length > 17 ? 17 : 0] : L.words.find(w => [...w[0]].length === 2) || L.words[0];
-    [['py2zh','Pinyin → Characters'],['zh2py','Characters → Pinyin']].forEach(([m,label]) => {
+    [['py2zh','Pinyin → Characters'],['zh2py','Characters → Pinyin'],['meaning','Meaning'],['write','Write it']].forEach(([m,label]) => {
       const b = el('button','mode'); b.type = 'button';
       const e = el('span','ex');
-      const py = document.createTextNode(ex[1]); const zh = el('span','h',ex[0]); const arr = el('span','arr','→');
-      if (m === 'py2zh') e.append(py,' ',arr,' ',zh); else e.append(zh,' ',arr,' ',py);
+      const py = document.createTextNode(m === 'meaning' ? ex[2] : ex[1]); const zh = el('span','h',ex[0]); const arr = el('span','arr', m === 'meaning' ? '↔' : '→');
+      if (m === 'py2zh') e.append(py,' ',arr,' ',zh); else if (m === 'write') e.append(el('span','en',ex[2]),' ',arr,' ',el('span','h','✍')); else e.append(zh,' ',arr,' ',py);
       b.append(e, el('span','lbl',label));
       b.addEventListener('click', () => go((pathOf || (L => lessonPath(L.n, m)))(L, m)));
       modes.append(b);
     });
-    sec.append(h, modes); box.append(sec);
+    sec.append(h); if (st) sec.append(el('p','lstat', st[0].toUpperCase() + st.slice(1))); sec.append(modes); box.append(sec);
   });
 }
 function hideAll(){
   stopAudio(); closeCard();
   $('restartBtn').textContent = 'Start over (all words)';
-  ['home','menu','xmenu','tmenu','gmenu','mmenu','grBox','meta','rail','promptBox','results','board','dict','mwBox','fcBox'].forEach(id => $(id).hidden = true);
+  ['home','clearWrap','menu','xmenu','tmenu','gmenu','mmenu','grBox','meta','rail','promptBox','results','board','dict','mwBox','fcBox'].forEach(id => $(id).hidden = true);
   $('credit').hidden = false; // the credits footer shows on menus only; exercises hide it
 }
 function showHome(){
   hideAll(); $('modeBtn').hidden = true;
-  $('home').hidden = false; $('title').textContent = '華語練習 · CLC Mandarin';
+  $('home').hidden = false; $('clearWrap').hidden = false; $('title').textContent = '華語練習 · CLC Mandarin';
+  refreshProgress();
 }
 function showMenu(){
   hideAll(); $('modeBtn').hidden = false; $('modeBtn').textContent = '← Home';
-  $('menu').hidden = false; $('title').textContent = '華語詞彙 · Vocab Quiz';
+  $('menu').hidden = false; $('title').textContent = '華語詞彙 · Vocab Quiz'; buildMenu();
 }
 function showXMenu(){
   hideAll(); $('modeBtn').hidden = false; $('modeBtn').textContent = '← Home';
-  $('xmenu').hidden = false; $('title').textContent = '補充 · Vocabulary';
+  $('xmenu').hidden = false; $('title').textContent = '補充 · Vocabulary'; buildMenu('xlessons', EXTRA, extraPath);
 }
 function buildBoard(){
   const b = $('board'); b.textContent = '';
@@ -491,11 +552,11 @@ function pick(t){
   const w = queue[idx];
   if (t.dataset.key === w[0]) {
     answered = true; t.classList.add('ok');
-    if (firstTry) score++;
+    if (firstTry) { score++; rec('py:' + wid(w), true); }
     $('sc').textContent = score;
     setTimeout(next, 450);
   } else {
-    if (firstTry) { misses.push(w); firstTry = false; }
+    if (firstTry) { misses.push(w); firstTry = false; rec('py:' + wid(w), false); }
     t.classList.add('bad');
     setTimeout(() => t.classList.remove('bad'), 450);
   }
@@ -510,14 +571,15 @@ function finish(){
     $('retryBtn').hidden = false;
     const p = el('p', null, 'Missed on the first try:'); p.style.margin = '0'; m.append(p);
     const g = el('div','miss');
-    misses.forEach(w => { g.append(el('span','zh',w[0]), el('span','',w[1]), el('span','en',w[2])); });
+    // A word takes a row of three (characters, pinyin, English); a sentence takes a whole row.
+    misses.forEach(w => { if (w[1] || w[2]) g.append(el('span','zh',w[0]), el('span','',w[1]), el('span','en',w[2])); else { const z = el('span','zh long',w[0]); g.append(z); } });
     m.append(g);
   }
 }
 $('hintBtn').addEventListener('click', () => { showEn = !showEn; save(); applyAids(); });
 $('lenBtn').addEventListener('click', () => { showLen = !showLen; save(); applyAids(); });
-$('retryBtn').addEventListener('click', () => ex === 'gr' ? startGr(shuffle(grMisses), $('title').textContent) : ex === 'tones' ? startTones(misses) : ex === 'mw' ? startMw(mwMisses) : start(misses));
-$('restartBtn').addEventListener('click', () => ex === 'gr' ? startGr(shuffle(grItems), $('title').textContent) : ex === 'tones' ? startTones(WORDS) : ex === 'mw' ? startMw(mwList) : start(WORDS));
+$('retryBtn').addEventListener('click', () => ex === 'gr' ? startGr(shuffle(grMisses), $('title').textContent, grBack) : ex === 'tones' ? startTones(misses) : ex === 'mw' ? startMw(mwMisses) : start(misses));
+$('restartBtn').addEventListener('click', () => ex === 'gr' ? (grKindOf === 'exam' ? startMock() : grKindOf === 'review' ? startReview() : startGr(shuffle(grItems), $('title').textContent, grBack)) : ex === 'tones' ? startTones(WORDS) : ex === 'mw' ? startMw(mwList) : start(WORDS));
 
 // ---- Pinyin dictation: hear a word, type its pinyin, then tap vowels to add tone marks ----
 
@@ -730,6 +792,7 @@ function check(){
   const right = exact && spelledOk;
   stage = 'done';
   if (right) score++; else if (!misses.includes(w)) misses.push(w);
+  rec('dict:' + wid(w), right);
   $('sc').textContent = score;
   renderLetters();
   const fb = $('dFb'); fb.textContent = ''; fb.className = 'fb ' + (right ? 'ok' : 'bad');
@@ -768,6 +831,7 @@ document.addEventListener('keydown', e => {
   e.preventDefault(); advance();
 });
 $('playBtn').addEventListener('click', () => playWord(queue[idx]));
+$('sayBtn').addEventListener('click', () => playWord(queue[idx]));
 $('slowBtn').addEventListener('click', () => playWord(queue[idx], true));
 // ---- Measure words (量詞): "三 __ 書", tap the right measure word ----
 // Data is measure-words.json: [{ "mw": "本", "py": "běn", "en": "books", "nouns": [["書","shū","book"], ...] }, ...]
@@ -820,7 +884,7 @@ function pickMw(t){
     const m = MW.find(x => x.mw === t.dataset.key);
     const others = MW.filter(x => x !== m && mwFits(x.mw, q.w[0])).map(x => x.mw);
     answered = true; t.classList.add('ok');
-    if (firstTry) score++;
+    if (firstTry) { score++; rec('mw:' + q.w[0], true); }
     $('sc').textContent = score;
     const pys = $('mwQ').querySelectorAll('.mpy');
     $('mwQ').querySelector('.gap').textContent = m.mw;
@@ -828,7 +892,7 @@ function pickMw(t){
     $('mwFb').className = 'fb ok'; $('mwFb').textContent = '對！ ' + m.mw + ' is for ' + m.en + (others.length ? ' (' + others.join(', ') + ' works too)' : '');
     $('mwGo').textContent = idx + 1 < queue.length ? 'Next' : 'See results'; $('mwGo').hidden = false; $('mwGo').focus({ preventScroll: true });
   } else {
-    if (firstTry) { mwMisses.push({ m: q.m, w: q.w }); firstTry = false; }
+    if (firstTry) { mwMisses.push({ m: q.m, w: q.w }); firstTry = false; rec('mw:' + q.w[0], false); }
     t.classList.add('bad');
     setTimeout(() => t.classList.remove('bad'), 450);
   }
@@ -930,13 +994,19 @@ function finishMw(){
 //          src is a sentence to rewrite or a question to answer). ask is the instruction line on any item.
 const SETS = {
   grammar: { base: '/grammar', file: '/grammar.json', zh: '語法', en: 'Grammar', card: 'grCard', data: { tables: {}, points: [] } },
-  questions: { base: '/questions', file: '/questions.json', zh: '疑問詞', en: 'Question words', card: 'qwCard', data: { tables: {}, points: [] } },
+  questions: { base: '/questions', file: '/questions.json', zh: '疑問詞', en: 'Question words', card: 'qwCard', data: { tables: {}, points: [] },
+    examples: { fill: '你是日本人＿？', answer: 'A：你是哪國人？ → B：…', ask: '你要＿？ ← 我要喝茶。', order: 'Put the words in the right order' } },
 };
 let grSet = 'grammar';
 const GRS = () => SETS[grSet];
 let grItems = [], grMisses = [], grCur = null, grPeeked = false, grDone = false, grPlaced = [];
 const ROUND = 10;
-function grPool(){ return GRS().data.points.flatMap(p => p.items.map(it => ({ p, it }))); }
+function grPool(){ return grPoolOf(grSet); }
+// A grammar item's key is a hash of its wording, so editing a sentence starts its history afresh.
+function hashStr(t){ let h = 5381; for (let i = 0; i < t.length; i++) h = (h * 33 + t.charCodeAt(i)) >>> 0; return h.toString(36); }
+const grHash = it => it._h || (it._h = hashStr(JSON.stringify([it.type, it.ask, it.ctx, it.table, it.q, it.src, it.opts, it.tiles])));
+const itemKey = x => x.it.key || (x.p && x.p._set ? 'g:' + x.p._set + ':' + grHash(x.it) : null);
+function grPoolOf(k){ return SETS[k].data.points.flatMap(p => p.items.map(it => ({ p, it }))); }
 // Exercise types, worked out from each item so the data needs no extra field.
 const KINDS = [
   ['fill', 'Fill the gap', '我們＿很喜歡打籃球。'],
@@ -955,12 +1025,14 @@ function grKind(it){
 function buildGrammar(){
   const S = GRS(), pool = grPool();
   $('gPractice').textContent = 'Practice · ' + Math.min(ROUND, pool.length) + ' mixed questions';
+  const seen = pool.filter(x => PROG[itemKey(x)]).length, weak = pool.filter(x => (PROG[itemKey(x)] || {}).w).length;
+  $('gStat').textContent = seen ? 'Seen ' + seen + ' of ' + pool.length + ' questions' + (weak ? ' · ' + weak + ' weak' : '') + '. Practice asks new ones first.' : '';
   const types = $('gTypes'); types.textContent = '';
   KINDS.forEach(([k, label, ex]) => {
     const n = pool.filter(x => grKind(x.it) === k).length;
     if (!n) return;
     const b = el('button','mode'); b.type = 'button';
-    b.append(el('span','lbl',label), el('span','sub', ex));
+    b.append(el('span','lbl',label), el('span','sub', (S.examples && S.examples[k]) || ex));
     b.addEventListener('click', () => go(S.base + '/type/' + k));
     types.append(b);
   });
@@ -1015,17 +1087,19 @@ function closeCard(){ $('sheet').hidden = true; document.body.classList.remove('
 $('sheet').addEventListener('click', e => { if (e.target === $('sheet')) closeCard(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('sheet').hidden) closeCard(); });
 
-function startGr(items, title){
-  ex = 'gr'; endless = false; grItems = items;
+// kind: 'exam' (the mock: no cards, scores kept) or 'review'; "Start over" makes a new round of either.
+let grBack = null, grExam = false, grKindOf = null;
+function startGr(items, title, back, kind){
+  ex = 'gr'; endless = false; grItems = items; grBack = back || null; grKindOf = kind || null; grExam = kind === 'exam';
   queue = items.map(x => ({ ...x, again: false })); idx = 0; score = 0; grMisses = []; misses = [];
   hideAll();
   $('title').textContent = title;
-  $('modeBtn').textContent = /\/cards$/.test(parentOf(location.pathname) || '') ? '← Cards' : '← ' + GRS().en;
+  $('modeBtn').textContent = grBack || (/\/cards$/.test(parentOf(location.pathname) || '') ? '← Cards' : '← ' + GRS().en);
   ['meta','rail','grBox','modeBtn'].forEach(id => $(id).hidden = false); $('credit').hidden = true;
   showGr(); window.scrollTo(0,0);
 }
 const isZh = s => /[㐀-鿿]/.test(s);
-const grAnswer = it => it.type === 'order' ? it.tiles.join('') : it.q.includes('＿') ? it.q.replace(/^[^：]{1,3}：/, '').replace('＿', it.fill || it.opts[0]) : it.opts[0];
+const grAnswer = it => it.show ? it.show : it.type === 'order' ? it.tiles.join('') : it.q.includes('＿') ? it.q.replace(/^[^：]{1,3}：/, '').replace('＿', it.fill || it.opts[0]) : it.opts[0];
 function grTableEl(t){
   const tb = el('table','gtable');
   if (t.head.some(Boolean)) { const tr = el('tr'); t.head.forEach(c => tr.append(el('th', null, c))); tb.append(tr); }
@@ -1098,13 +1172,27 @@ function showGr(){
   const c = it.ctx || '';
   $('grCtx').textContent = c; $('grCtx').className = isZh(c) ? 'ctx zh' : 'ctx'; $('grCtx').hidden = !c; withPy($('grCtx'), c);
   $('grSrc').textContent = it.src || ''; $('grSrc').hidden = !it.src; withPy($('grSrc'), it.src || '');
-  const tw = $('grTable'); tw.textContent = ''; const tables = GRS().data.tables; if (it.table && tables[it.table]) tw.append(grTableEl(tables[it.table]));
+  const tw = $('grTable'); tw.textContent = ''; const tables = Object.assign({}, ...Object.values(SETS).map(S => S.data.tables), GRS().data.tables); if (it.table && tables[it.table]) tw.append(grTableEl(tables[it.table]));
   $('grFb').textContent = ''; $('grFb').className = 'fb';
   $('grGo').hidden = true; $('grUndo').hidden = true;
+  $('grBox').querySelectorAll('.reveal').forEach(x => x.remove());
+  // Cards can't be opened in the mock exam, or on questions made from the word lists (they have none).
+  $('grPeek').hidden = grExam || !(grCur.p && grCur.p.card);
+  // Listening questions play the word as they open; ▶ plays it again.
+  $('grPlay').hidden = !it.audio; if (it.audio) playWord(it.audio);
+  $('grPyHint').hidden = !it.pyHint; $('grPyHint').textContent = it.pyHint || '';
   const opts = $('grOpts'); opts.textContent = '';
-  if (it.type === 'pick') {
-    $('grAns').hidden = true; $('grQ').hidden = false;
+  if (it.type === 'recall') {
+    // Write it: the English (pinyin while 拼音 is held), write the characters on paper, then check yourself.
+    $('grAns').hidden = true; $('grQ').hidden = false; grGapQ(it.q); $('grQ').classList.add('big');
+    opts.className = 'opts';
+    const b = el('button','btn primary','Show the answer'); b.type = 'button';
+    b.addEventListener('click', revealRecall);
+    opts.append(b);
+  } else if (it.type === 'pick') {
+    $('grAns').hidden = true; $('grQ').hidden = !it.q;
     grGapQ(it.q);
+    $('grQ').classList.toggle('big', !!it.word);
     const long = it.opts.some(o => [...o].length > 4);
     opts.className = long ? 'opts col' : 'opts';
     shuffle(it.opts).forEach(o => {
@@ -1125,19 +1213,46 @@ function showGr(){
     });
   }
 }
+function revealRecall(){
+  const w = grCur.it.word, opts = $('grOpts'); opts.textContent = '';
+  const fb = $('grFb'); fb.textContent = ''; fb.className = 'fb';
+  const r = el('div','reveal'); r.append(el('span','zh',w[0]), el('span','rpy',w[1])); opts.before(r);
+  $('grPyHint').hidden = true;
+  playWord(w);
+  [['✓ I wrote it right', true], ['✗ Not quite', false]].forEach(([t, ok]) => {
+    const b = el('button','wt',t); b.type = 'button';
+    b.addEventListener('click', () => {
+      if (grDone) return;
+      if (ok) grRight(); else grMiss();
+      grDone = true; opts.querySelectorAll('button').forEach(x => x.disabled = true); b.classList.add(ok ? 'ok' : 'bad');
+      $('grGo').hidden = false; $('grGo').textContent = idx + 1 < queue.length ? 'Next' : 'See results';
+      $('grGo').focus({ preventScroll: true });
+    });
+    opts.append(b);
+  });
+}
 function grRight(){
   // Peeking at the card is fine, but the question comes back once at the end of the round.
-  if (firstTry && !grPeeked) score++;
+  if (firstTry && !grPeeked) { score++; if (!grCur.again) grCur.res = true; }
+  if (firstTry && !grPeeked) rec(itemKey(grCur), true);
   else if (grPeeked && firstTry && !grCur.again) queue.push({ ...grCur, again: true });
   $('sc').textContent = score; $('qt').textContent = queue.length;
 }
 function grMiss(){
-  if (firstTry) { firstTry = false; grMisses.push({ p: grCur.p, it: grCur.it }); }
+  if (firstTry) { firstTry = false; grCur.res = false; grMisses.push({ p: grCur.p, it: grCur.it }); rec(itemKey(grCur), false); }
 }
 function grShowDone(ok){
   grDone = true;
   const it = grCur.it, fb = $('grFb'); fb.textContent = ''; fb.className = 'fb ' + (ok ? 'ok' : 'bad');
-  fb.append(ok ? '對！ ' : 'Answer: ', withPy(el('span','zh', grAnswer(it)), grAnswer(it)));
+  const ans = grAnswer(it);
+  fb.append(ok ? '對！ ' : 'Answer: ', withPy(el('span','zh', ans), ans));
+  // Questions made from a word also show its pinyin and meaning; anything in Chinese can be heard.
+  if (it.word) fb.append(' ' + it.word[1] + ' · ' + it.word[2]);
+  if (isZh(ans)) {
+    const say = el('button','btn say','🔊'); say.type = 'button'; say.setAttribute('aria-label', 'Hear it');
+    say.addEventListener('click', () => playWord(it.word || [ans]));
+    fb.append(say);
+  }
   $('grUndo').hidden = true;
   $('grGo').hidden = false; $('grGo').textContent = idx + 1 < queue.length ? 'Next' : 'See results';
   $('grGo').focus({ preventScroll: true });
@@ -1194,29 +1309,155 @@ holdPy($('mwPy'), document.body, 'mwpy');
 $('mwGo').addEventListener('click', () => { idx++; if (idx >= queue.length) finishMw(); else showMw(); });
 $('grPeek').addEventListener('click', () => { if (!grDone) grPeeked = true; openCard(grCur.p); });
 function finishGr(){
-  misses = grMisses.map(({ it }) => [grAnswer(it), '', '']);
+  misses = grMisses.map(({ it }) => it.word || [grAnswer(it), '', '']);
   $('grBox').hidden = true;
   finish();
   $('final').textContent = score + ' / ' + queue.filter(x => !x.again).length;
-  const g = $('missWrap').querySelector('.miss'); if (g) g.classList.add('long');
+  if (grExam) { MOCKS.push({ t: Date.now(), s: score, n: queue.filter(x => !x.again).length }); saveProg(); }
+  // The mock exam scores each section, so it's clear what to revise.
+  const secs = [];
+  queue.filter(x => !x.again && x.it.sec).forEach(x => {
+    let s = secs.find(y => y.name === x.it.sec); if (!s) secs.push(s = { name: x.it.sec, ok: 0, n: 0 });
+    s.n++; if (x.res) s.ok++;
+  });
+  if (secs.length > 1) {
+    const t = el('div','sec');
+    secs.forEach(s => t.append(el('span', s.ok / s.n < .7 ? 'low' : null, s.name), el('span','n' + (s.ok / s.n < .7 ? ' low' : ''), s.ok + ' / ' + s.n)));
+    $('missWrap').prepend(t);
+  }
   $('restartBtn').textContent = 'Start over';
 }
 function grStartPoint(p){ startGr(shuffle(p.items).map(it => ({ p, it })), GRS().zh + ' · ' + p.zh); }
 function grStartPractice(kind){
   const pool = grPool().filter(x => !kind || grKind(x.it) === kind);
-  startGr(shuffle(pool).slice(0, ROUND), GRS().zh + ' · ' + (kind ? KINDS.find(k => k[0] === kind)[1] : 'Practice'));
+  startGr(freshFirst(pool, itemKey).slice(0, ROUND), GRS().zh + ' · ' + (kind ? KINDS.find(k => k[0] === kind)[1] : 'Practice'));
 }
 $('gPractice').addEventListener('click', () => go(GRS().base + '/practice'));
 $('gBrowse').addEventListener('click', () => go(GRS().base + '/cards'));
 
+// ---- Questions made from the word lists: meaning, listening, writing, measure words; and the mock exam ----
+// They are ordinary pick / recall items for the grammar question engine. `word` is the [characters, pinyin,
+// english] they are about, `sec` the mock-exam section.
+// Other words from the pool as wrong options: by characters (same length first) or by English, all different.
+function distract(w, pool, n, by){
+  const len = [...w[0]].length, seen = new Set([w[by]]), out = [];
+  let cand = shuffle(pool.filter(x => x[0] !== w[0]));
+  if (by === 0) cand = cand.filter(x => [...x[0]].length === len).concat(cand.filter(x => [...x[0]].length !== len));
+  for (const x of cand) { if (out.length >= n) break; if (!seen.has(x[by])) { seen.add(x[by]); out.push(x[by]); } }
+  return out;
+}
+const meaningItem = (w, pool, toZh) => toZh
+  ? { type: 'pick', ask: 'Which word means this?', q: w[2], opts: [w[0], ...distract(w, pool, 3, 0)], word: w, show: w[0], sec: 'Vocabulary', key: 'mean:' + wid(w) }
+  : { type: 'pick', ask: 'What does it mean?', q: w[0], opts: [w[2], ...distract(w, pool, 3, 2)], word: w, show: w[0], sec: 'Vocabulary', key: 'mean:' + wid(w) };
+// Wrong options never sound the same as the word (他 and 她 are both tā).
+const listenItem = (w, pool) => ({ type: 'pick', ask: 'Listen, then pick the word you hear.', q: '', audio: w, opts: [w[0], ...distract(w, pool.filter(x => x[1] !== w[1]), 3, 0)], word: w, show: w[0], sec: 'Listening', key: 'listen:' + wid(w) });
+const writeItem = w => ({ type: 'recall', ask: 'Write the characters on paper, then check. Hold 拼音 for a hint.', q: w[2], pyHint: w[1], word: w, sec: 'Writing', key: 'write:' + wid(w) });
+// Pinyin ↔ characters as four choices (how Review asks a word missed in the matching quiz).
+const pinyinItem = (w, pool, toZh) => toZh
+  ? { type: 'pick', ask: 'Which word is this?', q: w[1], opts: [w[0], ...distract(w, pool, 3, 0)], word: w, show: w[0], sec: 'Vocabulary', key: 'py:' + wid(w) }
+  : { type: 'pick', ask: 'Which pinyin is right?', q: w[0], opts: [w[1], ...distract(w, pool, 3, 1)], word: w, show: w[0], sec: 'Vocabulary', key: 'py:' + wid(w) };
+// Hear a word and pick its pinyin among the same syllables with other tones (how Review asks a dictation miss).
+function retone(syl, t){
+  const base = syl.normalize('NFD').replace(/[\u0300\u0301\u0304\u030c]/g, '').normalize('NFC');
+  const i = /[ae]/.test(base) ? base.search(/[ae]/) : base.includes('ou') ? base.indexOf('o') : Math.max(...[...'iouü'].map(v => base.lastIndexOf(v)));
+  return i < 0 || !t ? base : base.slice(0, i) + TONED[base[i]][t - 1] + base.slice(i + 1);
+}
+function toneItem(w){
+  const syls = w[1].split(' '), chars = [...w[0]], seen = new Set([w[1]]), wrong = [];
+  // 一 and 不 keep their tone: yī gòng for 一共 isn't wrong, just not how the book writes it.
+  const fixed = i => syls.length === chars.length && /[一不]/.test(chars[i]);
+  for (let g = 0; g < 60 && wrong.length < 3; g++) {
+    const v = syls.map((x, i) => /[a-zü]/i.test(x) && !fixed(i) && Math.random() < .6 ? retone(x, 1 + Math.floor(Math.random() * 4)) : x).join(' ');
+    if (!seen.has(v)) { seen.add(v); wrong.push(v); }
+  }
+  return { type: 'pick', ask: 'Listen, then pick the right pinyin.', q: '', audio: w, opts: [w[1], ...wrong], word: w, show: w[0], sec: 'Listening', key: 'dict:' + wid(w) };
+}
+function mwItem({ m, w }){
+  const n = NUMS[Math.floor(Math.random() * NUMS.length)];
+  const wrong = shuffle(MW.filter(x => !mwFits(x.mw, w[0]))).slice(0, 3).map(x => x.mw);
+  return { type: 'pick', ask: 'Pick the measure word.', q: n[0] + '＿' + w[0], opts: [m.mw, ...wrong], fill: m.mw, sec: 'Measure words' };
+}
+// Every lesson word once (a word in two lessons keeps its later meaning).
+function lessonWords(){
+  const by = new Map(); LESSONS.forEach(L => L.words.forEach(w => by.set(w[0], w)));
+  return [...by.values()];
+}
+// Questions never asked come first, then weak ones, then the rest (each group shuffled).
+function freshFirst(list, keyOf){
+  const rank = x => { const k = keyOf(x), rs = (Array.isArray(k) ? k : [k]).map(k => PROG[k]).filter(Boolean); return !rs.length ? 0 : rs.some(r => r.w) ? 1 : 2; };
+  return shuffle(list).map(x => [rank(x), x]).sort((a, b) => a[0] - b[0]).map(a => a[1]);
+}
+const wordKeys = w => WORD_KINDS.map(k => k + ':' + wid(w));
+const asItems = its => its.map(it => ({ p: null, it }));
+// A word set's Meaning round (every word once, English → characters or characters → English at random) and Write it round.
+function startMeaning(L){ startGr(asItems(shuffle(L.words).map(w => meaningItem(w, L.words.length >= 8 ? L.words : lessonWords(), Math.random() < .5))), setName(L).split(' · ')[0] + ' · Meaning', L.n ? '← Lessons' : '← Vocabulary'); }
+function startWrite(L){ startGr(asItems(shuffle(L.words).map(writeItem)), setName(L).split(' · ')[0] + ' · Write it', L.n ? '← Lessons' : '← Vocabulary'); }
+// Mock midterm: 30 questions from every lesson, in sections like a paper test; no cards, one score per section.
+function startMock(){
+  const words = lessonWords(), take = (a, n, kf) => (kf ? freshFirst(a, kf) : shuffle(a)).slice(0, n);
+  const heard = words.filter(w => recordingFor(w));
+  const listen = take(heard.length >= 4 ? heard : words, 4, wordKeys);
+  const rest = freshFirst(words.filter(w => !listen.includes(w)), wordKeys);
+  const gp = grPoolOf('grammar'), qp = grPoolOf('questions');
+  const sec = name => x => ({ p: x.p, it: { ...x.it, sec: name } });
+  const items = [
+    ...asItems(listen.map((w, i) => i < 2 ? listenItem(w, words) : toneItem(w))),
+    ...asItems(rest.slice(0, 10).map((w, i) => meaningItem(w, words, i >= 6))),
+    ...asItems(rest.slice(10, 13).map(writeItem)),
+    ...asItems(take(MW_ITEMS, 3, x => 'mw:' + x.w[0]).map(mwItem)),
+    ...take(gp.filter(x => grKind(x.it) !== 'order'), 6, itemKey).concat(take(gp.filter(x => grKind(x.it) === 'order'), 2, itemKey)).map(sec('Grammar')),
+    ...take(qp, 2, itemKey).map(sec('Question words')),
+  ];
+  grSet = 'grammar';
+  startGr(items, '模擬考 · Mock midterm', '← Home', 'exam');
+}
+
+// ---- Review: the weak items, each asked again in its own kind of question ----
+function wordById(id){
+  for (const L of LESSONS.concat(EXTRA)) { const w = L.words.find(x => wid(x) === id); if (w) return { w, pool: L.words.length >= 8 ? L.words : lessonWords() }; }
+  return null;
+}
+function itemFromKey(k){
+  const i = k.indexOf(':'), kind = k.slice(0, i), rest = k.slice(i + 1);
+  if (kind === 'g') {
+    const [set, h] = rest.split(':');
+    return SETS[set] ? grPoolOf(set).find(x => grHash(x.it) === h) || null : null;
+  }
+  if (kind === 'mw') { const x = MW_ITEMS.find(x => x.w[0] === rest); return x ? { p: null, it: mwItem(x) } : null; }
+  const f = wordById(rest); if (!f) return null;
+  const it = kind === 'py' ? pinyinItem(f.w, f.pool, Math.random() < .5) : kind === 'mean' ? meaningItem(f.w, f.pool, Math.random() < .5)
+    : kind === 'write' ? writeItem(f.w) : kind === 'listen' ? listenItem(f.w, f.pool) : kind === 'dict' ? toneItem(f.w) : null;
+  return it ? { p: null, it } : null;
+}
+const weakItems = () => Object.keys(PROG).filter(k => PROG[k].w).map(itemFromKey).filter(Boolean);
+function startReview(){
+  const items = shuffle(weakItems()).slice(0, 20);
+  if (!items.length) return goUp();
+  startGr(items, '複習 · Review', '← Home', 'review');
+}
+// Home cards: how many weak items there are, and the last mock exam scores.
+function refreshProgress(){
+  if (!LESSONS.length) return;
+  const n = weakItems().length;
+  $('reviewCard').hidden = !n; $('reviewLbl').textContent = 'Review mistakes (' + n + ')';
+  const last = MOCKS[MOCKS.length - 1];
+  $('mockSub').textContent = last
+    ? 'Last score ' + last.s + '/' + last.n + (MOCKS.length > 1 ? ' · best ' + Math.max(...MOCKS.map(m => Math.round(m.s / m.n * 100))) + '%' : '') + ' · new questions each time'
+    : '30 questions from every lesson: listening, meaning, writing, measure words, grammar';
+}
+$('clearProg').addEventListener('click', () => {
+  if (!confirm('Clear everything this phone remembers: mistakes, what you have seen and mock scores?')) return;
+  PROG = {}; MOCKS = []; saveProg(); refreshProgress();
+});
+
 // URLs: "/" is the home menu, "/vocab" the lesson list, "/vocab/lesson-<n>-py-zh" and
 // "/vocab/lesson-<n>-zh-py" open a quiz, "/tones" and "/tones/lesson-<n>" are the pinyin dictation, so the phone's back gesture moves between screens
 // instead of closing the app. Old "/lesson-..." links are redirected to "/vocab/lesson-...".
-const SLUG = { py2zh: 'py-zh', zh2py: 'zh-py' };
+const SLUG = { py2zh: 'py-zh', zh2py: 'zh-py', meaning: 'meaning', write: 'write' };
 function lessonPath(n, m){ return '/vocab/lesson-' + n + '-' + SLUG[m]; }
 const extraPath = (L, m) => '/extra/' + L.id + '-' + SLUG[m];
 function parentOf(path){
-  if (path === '/vocab' || path === '/extra' || path === '/tones' || path === '/measure' || path === '/grammar' || path === '/questions') return '/';
+  if (path === '/vocab' || path === '/extra' || path === '/mock' || path === '/review' || path === '/tones' || path === '/measure' || path === '/grammar' || path === '/questions') return '/';
   // Grammar and question pages nest: /grammar/cards/<id> → /grammar/cards → /grammar
   if (/^\/(grammar|questions)\/cards\/./.test(path)) return path.replace(/\/[^/]+$/, '');
   if (path.startsWith('/measure/')) return '/measure';
@@ -1227,8 +1468,12 @@ function route(){
   const path = location.pathname.replace(/\/+$/, '') || '/';
   if (path === '/vocab') return showMenu();
   if (path === '/extra' && EXTRA.length) return showXMenu();
-  const xr = path.match(/^\/extra\/([\w-]+)-(py-zh|zh-py)$/);
+  if (path === '/mock' && LESSONS.length) return startMock();
+  if (path === '/review' && LESSONS.length) return startReview();
+  const xr = path.match(/^\/extra\/([\w-]+)-(py-zh|zh-py|meaning|write)$/);
   const XL = xr && EXTRA.find(x => x.id === xr[1]);
+  if (XL && xr[2] === 'meaning') return startMeaning(XL);
+  if (XL && xr[2] === 'write') return startWrite(XL);
   if (XL) { lesson = XL; WORDS = XL.words; mode = xr[2] === 'zh-py' ? 'zh2py' : 'py2zh'; return start(WORDS); }
   if (path === '/tones') return showTonesMenu();
   if (MW_ITEMS.length && (path === '/measure' || path.startsWith('/measure/'))) {
@@ -1251,8 +1496,10 @@ function route(){
   const t = path.match(/^\/tones\/lesson-(\d+)$/);
   const TL = t && LESSONS.find(x => x.n === +t[1]);
   if (TL) { lesson = TL; WORDS = TL.words; return startTones(WORDS); }
-  const r = path.match(/^\/vocab\/lesson-(\d+)-(py-zh|zh-py)$/);
+  const r = path.match(/^\/vocab\/lesson-(\d+)-(py-zh|zh-py|meaning|write)$/);
   const L = r && LESSONS.find(x => x.n === +r[1]);
+  if (L && r[2] === 'meaning') return startMeaning(L);
+  if (L && r[2] === 'write') return startWrite(L);
   if (!L) { if (location.pathname !== '/') history.replaceState(null, '', '/'); showHome(); return; }
   lesson = L; WORDS = L.words; mode = r[2] === 'zh-py' ? 'zh2py' : 'py2zh'; start(WORDS);
 }
@@ -1267,6 +1514,8 @@ window.addEventListener('popstate', route);
 $('menuBtn').addEventListener('click', goUp);
 $('modeBtn').addEventListener('click', goUp);
 $('vocabCard').addEventListener('click', () => go('/vocab'));
+$('mockCard').addEventListener('click', () => go('/mock'));
+$('reviewCard').addEventListener('click', () => go('/review'));
 $('xCard').addEventListener('click', () => go('/extra'));
 $('tonesCard').addEventListener('click', () => go('/tones'));
 $('mwCard').addEventListener('click', () => go('/measure'));
@@ -1277,6 +1526,7 @@ const grLoad = Promise.all(Object.values(SETS).map(S => fetch(S.file, {cache: 'n
   .then(r => r.ok ? r.json() : null).catch(() => null)
   .then(data => {
     S.data = data && Array.isArray(data.points) ? { tables: data.tables || {}, points: data.points.filter(p => p.items && p.items.length) } : { tables: {}, points: [] };
+    S.data.points.forEach(p => p._set = S === SETS.grammar ? 'grammar' : 'questions');
     $(S.card).hidden = !S.data.points.length;
   })));
 // Measure words are optional: the home card only shows once measure-words.json has some.
@@ -1300,7 +1550,7 @@ Promise.all([fetch('/lessons.json', {cache: 'no-cache'}), mwLoad, clipsLoad, grL
   .then(([r, , , , py]) => { if (!r.ok) throw new Error(r.status); return r.json().then(d => [d, py]); })
   .then(([data, py]) => {
     LESSONS = data; buildMenu(); buildTonesMenu(); buildPy(py);
-    $('vocabSub').textContent = LESSONS.length + ' lessons · match pinyin and characters';
+    $('vocabSub').textContent = LESSONS.length + ' lessons · pinyin, characters, meaning, writing';
     let path = location.pathname.replace(/\/+$/, '') || '/';
     if (path === '/index.html') path = '/';
     if (/^\/lesson-\d+-(py-zh|zh-py)$/.test(path)) path = '/vocab' + path;

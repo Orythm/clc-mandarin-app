@@ -79,6 +79,12 @@ Grammar and question-word exercises have a 拼音 button: holding it shows pinyi
 
 Exercises have no English hints, so every question must accept all correct answers: re-ordering items list every other correct order in `alts` (A and B swapped, time word before the subject, 為什麼 before the subject…), and pick items must have exactly one correct option in context. Check this whenever you add questions.
 
+## Mock midterm, Review and saved progress
+
+Added 2026-10-10 for milo's midterm. Each lesson (and extra topic) has four modes: Pinyin → Characters and Characters → Pinyin (the tile board), Meaning (`/vocab/lesson-<n>-meaning`, English ↔ characters, four choices) and Write it (`/vocab/lesson-<n>-write`: the English, write the characters on paper, reveal, mark yourself). `/mock` is a 30-question mock exam (listening, meaning, writing, measure words, grammar, question words) with no cards and a score per section. These use the grammar question engine with generated items (`meaningItem`, `listenItem`, `toneItem`, `writeItem`, `pinyinItem`, `mwItem` in `index.html`).
+
+Every answer is saved on the device in `localStorage` (`clc_progress_v1`, mock scores in `clc_mock_v1`); there's no account or sync (milo's OK, 2026-10-10). A miss makes an item weak; two right answers in a row clear it. The home card 複習 (`/review`, hidden when nothing is weak) asks up to 20 weak items, each in its own kind of question. Practice rounds and the mock ask unseen items first. Grammar items are keyed by a hash of their wording, so editing a sentence resets its history. "Clear my progress" is at the bottom of the home page.
+
 ## Other files
 
 - `index.html`: the quiz app. It fetches `/lessons.json` at startup. Chinese text uses TW-Kai (全字庫正楷體, Taiwan's MOE standard Kai, the free equivalent of 標楷體 DFKai-SB), self-hosted in `fonts/` as ~100 small slices covering 16k common characters, with Noto Serif TC from Google Fonts as fallback. Latin text uses Source Serif 4. LXGW WenKai TC was dropped because some characters (e.g. 教) don't match Taiwan forms, so any new character is covered automatically; don't embed font subsets.
