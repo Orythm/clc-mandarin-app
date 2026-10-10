@@ -130,7 +130,7 @@ button.card:hover{border-color:var(--accent)}
 /* Grammar: one page with a Practice button and the list of points; a card popup opens over any question */
 .gpoints{display:grid;gap:8px}
 .gtop{display:grid;gap:14px}
-/* Flashcards: one card, hold to flip, swipe right for the next */
+/* Flashcards: one card, hold to flip, swipe either way for the next */
 .fc{display:grid;gap:10px;justify-items:center}
 .fcstage{width:100%;display:grid;place-items:center;perspective:1200px;overflow:hidden;padding:6px 0 10px}
 .fcard{position:relative;width:min(100%,340px);aspect-ratio:3/4;max-height:62dvh;touch-action:pan-y;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;cursor:grab;outline:none}
@@ -344,13 +344,13 @@ button.card:hover{border-color:var(--accent)}
 
   <section class="fc" id="fcBox" hidden>
     <div class="meta" id="fcCount"></div>
-    <div class="fcstage"><div class="fcard" id="fcCard" role="button" tabindex="0" aria-label="Hold to flip the card, swipe right for the next one">
+    <div class="fcstage"><div class="fcard" id="fcCard" role="button" tabindex="0" aria-label="Hold to flip the card, swipe for the next one">
       <div class="fcin">
         <div class="face front"><div class="fzh" id="fcFront"></div></div>
         <div class="face back"><div class="fzh" id="fcZh"></div><div class="fpy" id="fcPy"></div><div class="fen" id="fcEn"></div><div class="fex" id="fcEx"></div></div>
       </div>
     </div></div>
-    <p class="fchint">Hold the card to flip it · swipe right for the next one</p>
+    <p class="fchint">Hold the card to flip it · swipe for the next one</p>
   </section>
 
   <section class="results" id="results" hidden>
@@ -856,7 +856,7 @@ $('mPractice').addEventListener('click', () => go('/measure/practice'));
 $('mFlash').addEventListener('click', () => go('/measure/flashcards'));
 
 // Flashcards: the measure word alone; hold the card to flip it (pinyin, what it counts, one example);
-// swipe right for the next card. The deck reshuffles after the last card.
+// swipe left or right for the next card. The deck reshuffles after the last card.
 let fcDeck = [], fcI = 0;
 function startFc(){
   hideAll(); $('modeBtn').hidden = false; $('modeBtn').textContent = '← Measure words';
@@ -886,9 +886,9 @@ function nextFc(){
 (function(){
   const card = $('fcCard');
   let x0 = 0, y0 = 0, dx = 0, down = false, drag = false, holdT = 0;
-  const fly = () => {
+  const fly = dir => {
     card.style.transition = 'transform .25s ease-in, opacity .25s';
-    card.style.transform = 'translateX(120vw) rotate(25deg)'; card.style.opacity = '0';
+    card.style.transform = 'translateX(' + dir * 120 + 'vw) rotate(' + dir * 25 + 'deg)'; card.style.opacity = '0';
     setTimeout(nextFc, 250);
   };
   card.addEventListener('pointerdown', e => {
@@ -905,7 +905,7 @@ function nextFc(){
   });
   const up = () => {
     if (!down) return; down = false; clearTimeout(holdT);
-    if (drag && dx > 80) return fly();
+    if (drag && Math.abs(dx) > 80) return fly(Math.sign(dx));
     card.classList.remove('flip');
     card.style.transition = 'transform .2s'; card.style.transform = '';
   };
@@ -913,7 +913,7 @@ function nextFc(){
   card.addEventListener('contextmenu', e => e.preventDefault());
   card.addEventListener('keydown', e => {
     if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); card.classList.add('flip'); }
-    if (e.key === 'ArrowRight') { e.preventDefault(); fly(); }
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); fly(e.key === 'ArrowRight' ? 1 : -1); }
   });
   card.addEventListener('keyup', e => { if (e.key === ' ' || e.key === 'Enter') card.classList.remove('flip'); });
 })();
