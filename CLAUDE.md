@@ -54,7 +54,7 @@ Handout words that aren't in any lesson live in **`extra-vocab.json`**, grouped 
 
 ## Measure words
 
-The 量詞 exercise (`/measure`) reads **`measure-words.json`**: a list of `{"mw": "本", "py": "běn", "en": "books", "nouns": [["書","shū","book"]]}`. Same word format rules as above. milo chooses which measure words go in (first set approved 2026-10-10: 個 張 杯 瓶 本 支 塊); prefer nouns from the lessons and show milo the table before pushing. A noun may be listed under two measure words (可樂 under 杯 and 瓶): it's asked once and either answer counts. The page at `/measure` has Practice (`/measure/practice`, every noun once, Next button to move on) and a card per measure word (pattern, every noun with pinyin, which nouns also take another measure word), built from the file. During a question, 📖 Cards shows every measure word and what it counts, without the nouns. The home card stays hidden while the file is empty.
+The 量詞 exercise (`/measure`) reads **`measure-words.json`**: a list of `{"mw": "本", "py": "běn", "en": "books", "nouns": [["書","shū","book"]]}`. Same word format rules as above. milo chooses which measure words go in (first set approved 2026-10-10: 個 張 杯 瓶 本 支 塊); prefer nouns from the lessons and show milo the table before pushing. A noun may be listed under two measure words (可樂 under 杯 and 瓶): it's asked once and either answer counts. The page at `/measure` has Practice (`/measure/practice`, every noun once, Next button to move on), Flashcards (`/measure/flashcards`: hold to flip, swipe either way for the next) and a card per measure word (pattern, every noun with pinyin, which nouns also take another measure word), built from the file. There is no cards button during a question (milo removed it, 2026-10-10). The home card stays hidden while the file is empty.
 
 ## Grammar
 
@@ -73,7 +73,7 @@ The 疑問詞 page (`/questions`) reads **`questions.json`**, same format as `gr
 
 ## Pinyin on exercises
 
-Grammar and question-word exercises have a 拼音 button: holding it shows pinyin under each character (one column per character, `rubyText`) in every sentence, option, tile and table cell; Measure words has the same button. Space for it is always kept so nothing jumps. Pinyin is worked out in the app from `lessons.json` plus **`pinyin.json`** (`{"word": "pinyin"}` for words not in any lesson: handout vocab, names, numbers), longest match first, with 不/一 tone changes applied automatically. When you add a sentence with a character that's in neither file, add it to `pinyin.json` (it shows as `?` otherwise).
+Grammar and question-word exercises have a 拼音 button: holding it shows pinyin under each character (one column per character, `rubyText`) in every sentence, option, tile and table cell; Measure words has the same button. On phones (≤560px) the button floats at the bottom right; desktop keeps it inline. Space for it is always kept so nothing jumps. Pinyin is worked out in the app from `lessons.json` plus **`pinyin.json`** (`{"word": "pinyin"}` for words not in any lesson: handout vocab, names, numbers), longest match first, with 不/一 tone changes applied automatically. When you add a sentence with a character that's in neither file, add it to `pinyin.json` (it shows as `?` otherwise).
 
 ## Several right answers
 

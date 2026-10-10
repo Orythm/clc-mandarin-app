@@ -191,6 +191,12 @@ button.card:hover{border-color:var(--accent)}
 .mwpy .mwq .mpy,.mwpy .board.mwb .tile small,#mwBox.done .mwq .mpy{visibility:visible}
 #grPy,#mwPy{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:none}
 #grPy.on,#mwPy.on{background:var(--fg);border-color:var(--fg);color:var(--paper)}
+/* Phones: 拼音 floats at the bottom right, within thumb reach */
+@media (max-width:560px){
+  #grPy,#mwPy{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:20;min-width:64px;min-height:64px;padding:0 14px;border-radius:32px;font-size:1.3rem;background:var(--paper);box-shadow:0 6px 18px -6px rgba(0,0,0,.45)}
+  #grPy.on,#mwPy.on{background:var(--fg)}
+  body:has(#grBox:not([hidden])) .wrap,body:has(#mwBox:not([hidden])) .wrap{padding-bottom:100px}
+}
 .gq .fb .zh{font-size:1.4rem}
 .gq .fb .en{color:var(--muted);font-style:italic;display:block}
 .sheet{position:fixed;inset:0;z-index:10;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box}
@@ -339,7 +345,7 @@ button.card:hover{border-color:var(--accent)}
   <section class="prompt" id="mwBox" aria-live="polite" hidden>
     <div class="mwq" id="mwQ"></div>
     <div class="fb" id="mwFb"></div>
-    <div class="tools mwtools"><span><button class="btn" id="mwPeek" type="button">📖 Cards</button> <button class="btn" id="mwPy" type="button" aria-label="Hold to show pinyin">拼音</button></span><button class="btn primary" id="mwGo" type="button" hidden>Next</button></div>
+    <div class="tools mwtools"><span><button class="btn" id="mwPy" type="button" aria-label="Hold to show pinyin">拼音</button></span><button class="btn primary" id="mwGo" type="button" hidden>Next</button></div>
   </section>
 
   <section class="fc" id="fcBox" hidden>
@@ -839,19 +845,6 @@ function openMwCard(m){
   if (both.length) pane.append(el('p','tip', both.map(o => o.nouns.filter(w => m.nouns.some(v => v[0] === w[0])).map(w => w[0]).join('、') + ' can also take ' + o.mw + ' (' + o.en + ').').join(' ')));
   $('sheet').hidden = false; x.focus();
 }
-// During a question: every measure word and what it's for, without the nouns, so it helps without giving the answer away.
-function openMwAll(){
-  const pane = $('sheetPane'); pane.textContent = '';
-  const top = el('div','top');
-  const h = el('h2', null, '量詞 '); h.append(el('small', null, 'what each one counts'));
-  const x = el('button','btn','Close'); x.type = 'button'; x.addEventListener('click', closeCard);
-  top.append(h, x); pane.append(top);
-  const exs = el('div','exs');
-  MW.forEach(m => { const d = el('div'); d.append(el('div','zh', m.mw), el('div','py', m.py), el('div','en', 'for ' + m.en)); exs.append(d); });
-  pane.append(exs);
-  $('sheet').hidden = false; x.focus();
-}
-$('mwPeek').addEventListener('click', openMwAll);
 $('mPractice').addEventListener('click', () => go('/measure/practice'));
 $('mFlash').addEventListener('click', () => go('/measure/flashcards'));
 
