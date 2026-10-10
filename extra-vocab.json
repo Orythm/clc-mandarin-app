@@ -24,7 +24,13 @@
       ["空心菜","kōng xīn cài","water spinach"],
       ["飯","fàn","rice (cooked), meal"],
       ["湯","tāng","soup"],
-      ["麵包","miàn bāo","bread"]
+      ["麵包","miàn bāo","bread"],
+      ["茶","chá","tea"],
+      ["烏龍茶","wū lóng chá","oolong tea"],
+      ["咖啡","kā fēi","coffee"],
+      ["菜","cài","dish, food"],
+      ["晚飯","wǎn fàn","dinner"],
+      ["包子","bāo zi","steamed bun"]
     ]
   },
   {
@@ -38,7 +44,16 @@
       ["約會","yuē huì","date (to go out)"],
       ["羽毛球","yǔ máo qiú","badminton"],
       ["看電影","kàn diàn yǐng","to watch movies"],
-      ["聊天","liáo tiān","to chat"]
+      ["聊天","liáo tiān","to chat"],
+      ["運動","yùn dòng","to exercise"],
+      ["籃球","lán qiú","basketball"],
+      ["網球","wǎng qiú","tennis"],
+      ["棒球","bàng qiú","baseball"],
+      ["足球","zú qiú","football (soccer)"],
+      ["游泳","yóu yǒng","swimming"],
+      ["看書","kàn shū","to read"],
+      ["照相","zhào xiàng","to take pictures"],
+      ["上網","shàng wǎng","to go online"]
     ]
   },
   {
@@ -52,7 +67,32 @@
       ["學校","xué xiào","school"],
       ["班","bān","class"],
       ["公司","gōng sī","company"],
-      ["星期","xīng qí","week"]
+      ["星期","xīng qí","week"],
+      ["爸爸","bà ba","dad"],
+      ["媽媽","mā ma","mom"],
+      ["哥哥","gē ge","older brother"],
+      ["姐姐","jiě jie","older sister"],
+      ["弟弟","dì di","younger brother"],
+      ["妹妹","mèi mei","younger sister"],
+      ["家人","jiā rén","family members"],
+      ["先生","xiān shēng","Mr., sir"],
+      ["小姐","xiǎo jiě","Miss"],
+      ["老師","lǎo shī","teacher"],
+      ["伯母","bó mǔ","auntie (friend's mother)"],
+      ["老闆","lǎo bǎn","boss, shop owner"],
+      ["客人","kè rén","guest, customer"],
+      ["家","jiā","home, family"],
+      ["房子","fáng zi","house, apartment"],
+      ["教室","jiào shì","classroom"],
+      ["臺灣","tái wān","Taiwan"],
+      ["日本","rì běn","Japan"],
+      ["美國","měi guó","USA"],
+      ["越南","yuè nán","Vietnam"],
+      ["週末","zhōu mò","weekend"],
+      ["今天","jīn tiān","today"],
+      ["明天","míng tiān","tomorrow"],
+      ["早上","zǎo shàng","morning"],
+      ["晚上","wǎn shàng","evening"]
     ]
   }
 ]
