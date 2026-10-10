@@ -796,11 +796,11 @@ function buildGrammar(){
     const n = pool.filter(x => grKind(x.it) === k).length;
     if (!n) return;
     const b = el('button','mode'); b.type = 'button';
-    b.append(el('span','lbl',label), el('span','sub', ex), el('span','sub', n + ' questions'));
+    b.append(el('span','lbl',label), el('span','sub', ex));
     b.addEventListener('click', () => go(S.base + '/type/' + k));
     types.append(b);
   });
-  $('gBrowseSub').textContent = S.data.points.length + ' cards: the pattern, examples and a tip for each point';
+  $('gBrowseSub').textContent = 'The pattern, examples and a tip for each point';
   const list = $('gList'); list.textContent = '';
   S.data.points.forEach(p => {
     const row = el('div','gpt');
@@ -915,7 +915,7 @@ function rubyText(text){
 function withPy(e, text){ if (isZh(text)) { e.textContent = ''; e.append(rubyText(text)); } return e; }
 function grGapQ(q, fill){
   const box = $('grQ'); box.textContent = '';
-  box.className = isZh(q) ? 'q' : 'q en';
+  box.className = isZh(q) || /^[A-Z]：/.test(q) ? 'q' : 'q en';   // "B：＿" is a Chinese line too
   const line = el('span');
   q.split('＿').forEach((part, i) => { if (i) line.append(fill ? withPy(el('span','gap', fill), fill) : el('span','gap','\u00a0')); line.append(isZh(part) ? rubyText(part) : part); });
   box.append(line);
