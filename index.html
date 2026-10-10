@@ -175,13 +175,16 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
 .fcard .fex .xpy{font-style:italic;font-size:5.5cqw}
 .fcard .fex .en{color:var(--muted);font-size:5.5cqw}
 .fcard .fex:empty,.fcard .fgr:empty,.fcard .fen:empty,.fcard .fpy:empty,.fcard .back .fzh:empty{display:none}
-.fcard .front .fen{margin:2cqw 0 0;font-size:6.5cqw}
+.fcard.gr .front .fzh{white-space:nowrap}
+.fgr .gtitle{color:var(--muted);font-size:5cqw;text-align:center}
+.fgr .gex .py{font-style:italic;font-size:4.3cqw;font-weight:400;letter-spacing:0}
+.fgr .r-k{font-weight:400}
 .fcard.gr .back{align-content:center;justify-items:stretch;text-align:left}
-.fgr{display:grid;gap:3.5cqw}
-.fgr .pat{font-family:var(--f-hand);font-size:6.5cqw;background:var(--bg);border:1px solid var(--line);border-radius:2cqw;padding:2cqw 3cqw}
-.fgr .gex .zh{font-family:var(--f-hand);font-size:7.5cqw;line-height:1.3}
-.fgr .gex .en{color:var(--muted);font-style:italic;font-size:4.8cqw}
-.fgr .tip{margin:0;font-size:4.8cqw;line-height:1.4}
+.fgr{display:grid;gap:2.6cqw}
+.fgr .pat{font-family:var(--f-hand);font-size:5.6cqw;background:var(--bg);border:1px solid var(--line);border-radius:2cqw;padding:2cqw 3cqw}
+.fgr .gex .zh{font-family:var(--f-hand);font-size:6.6cqw;line-height:1.25}
+.fgr .gex .en{color:var(--muted);font-style:italic;font-size:4.3cqw}
+.fgr .tip{margin:0;font-size:4.3cqw;line-height:1.35}
 .fgr .lat{font-family:var(--f-py);font-size:.8em}
 .fgr .r-s,.fgr .r-v,.fgr .r-tw,.fgr .r-o{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}
 .fchint{color:var(--muted);font-size:.95rem;margin:0;text-align:center}
@@ -947,12 +950,15 @@ function showFc(){
   inner.style.transition = 'none'; card.classList.remove('flip');
   const m = fcDeck[fcI], ex = $('fcEx'), g = $('fcGr'); ex.textContent = ''; g.textContent = '';
   if (m.card) {
-    // Long topic names get smaller characters so they fit on one or two lines.
-    $('fcFront').textContent = m.zh; $('fcFront').style.fontSize = Math.max(14, Math.min(45, 88 / [...m.zh].reduce((n, c) => n + (c === ' ' ? .3 : 1), 0))) + 'cqw';
-    $('fcSub').textContent = m.en;
+    // Front: the topic in characters only, always on one line (long names get smaller characters).
+    const front = m.zh.replace(/ ?([/·]) ?/g, '$1');
+    $('fcFront').textContent = front; $('fcFront').style.fontSize = Math.min(45, 86 / [...front].reduce((n, c) => n + (c === ' ' ? .3 : 1), 0)) + 'cqw';
+    $('fcSub').textContent = '';
+    // Back: the English name, the pattern, examples with pinyin and English, the tip.
     $('fcZh').textContent = ''; $('fcPy').textContent = ''; $('fcEn').textContent = '';
+    g.append(el('div','gtitle', m.en));
     m.card.patterns.forEach(t => g.append(rich('pat', t)));
-    m.card.examples.forEach(e => { const d = el('div','gex'); d.append(rich('zh', e[0]), el('div','en', e[2])); g.append(d); });
+    m.card.examples.forEach(e => { const d = el('div','gex'); d.append(rich('zh', e[0]), el('div','py', e[1]), el('div','en', e[2])); g.append(d); });
     if (m.card.tip) g.append(el('p','tip', m.card.tip));
   } else {
     const w = m.nouns[Math.floor(Math.random() * m.nouns.length)];
