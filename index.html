@@ -221,6 +221,7 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
 .wt.ok{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
 .wt.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
 .wt:disabled{cursor:default}
+.wt.slot{visibility:hidden}
 .gq .tools{justify-content:space-between}
 /* Pinyin under the Chinese: its space is always kept, it only becomes visible while 拼音 is held, so nothing moves */
 .rb{display:inline-flex;flex-direction:column;align-items:center}
@@ -1294,6 +1295,9 @@ function showGr(){
       b.addEventListener('click', () => placeTile(b));
       opts.append(b);
     });
+    // The answer line starts as tall as the tiles, so it doesn't grow (and push things down) while you build.
+    $('grAns').style.minHeight = '';
+    requestAnimationFrame(() => { $('grAns').style.minHeight = Math.max($('grAns').offsetHeight, opts.offsetHeight) / parseFloat(getComputedStyle($('grAns')).fontSize) + 'em'; });
   }
 }
 function revealRecall(){
@@ -1355,8 +1359,12 @@ function pickGr(b, o){
 function placeTile(b){
   if (grDone) return;
   const ans = $('grAns');
-  if (b.parentNode === ans) { $('grOpts').append(b); grPlaced = grPlaced.filter(x => x !== b); }
-  else { ans.append(b); grPlaced.push(b); }
+  // A tile leaves an empty slot of its own size behind, so the words below never move.
+  if (b.parentNode === ans) { b._slot.replaceWith(b); grPlaced = grPlaced.filter(x => x !== b); }
+  else {
+    if (!b._slot) { b._slot = b.cloneNode(true); b._slot.className = 'wt slot'; b._slot.disabled = true; b._slot.setAttribute('aria-hidden', 'true'); }
+    b.replaceWith(b._slot); ans.append(b); grPlaced.push(b);
+  }
   const all = grPlaced.length === grCur.it.tiles.length;
   $('grGo').hidden = !all; $('grGo').textContent = 'Check';
   $('grUndo').hidden = !grPlaced.length;
@@ -1376,7 +1384,7 @@ $('grGo').addEventListener('click', () => {
   if (idx >= queue.length) return finishGr();
   showGr(); window.scrollTo(0,0);
 });
-$('grUndo').addEventListener('click', () => { [...grPlaced].forEach(b => $('grOpts').append(b)); grPlaced = []; $('grGo').hidden = true; $('grUndo').hidden = true; });
+$('grUndo').addEventListener('click', () => { [...grPlaced].forEach(b => b._slot.replaceWith(b)); grPlaced = []; $('grGo').hidden = true; $('grUndo').hidden = true; });
 // 拼音: hold to show pinyin, let go to hide it.
 // Hold-to-show pinyin: while the button is held, `cls` is set on `target`.
 function holdPy(btn, target, cls){
