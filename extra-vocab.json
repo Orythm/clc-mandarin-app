@@ -17,7 +17,14 @@
       ["漢堡","hàn bǎo","hamburger"],
       ["巧克力","qiǎo kè lì","chocolate"],
       ["沙拉","shā lā","salad"],
-      ["壽司","shòu sī","sushi"]
+      ["壽司","shòu sī","sushi"],
+      ["豬肉","zhū ròu","pork"],
+      ["牛肉","niú ròu","beef"],
+      ["臭豆腐","chòu dòu fu","stinky tofu"],
+      ["空心菜","kōng xīn cài","water spinach"],
+      ["飯","fàn","rice (cooked), meal"],
+      ["湯","tāng","soup"],
+      ["麵包","miàn bāo","bread"]
     ]
   },
   {
@@ -28,7 +35,10 @@
       ["逛街","guàng jiē","to go shopping"],
       ["騎腳踏車","qí jiǎo tà chē","to ride a bike"],
       ["爬山","pá shān","to go hiking"],
-      ["約會","yuē huì","date (to go out)"]
+      ["約會","yuē huì","date (to go out)"],
+      ["羽毛球","yǔ máo qiú","badminton"],
+      ["看電影","kàn diàn yǐng","to watch movies"],
+      ["聊天","liáo tiān","to chat"]
     ]
   },
   {
