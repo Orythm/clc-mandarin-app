@@ -69,7 +69,7 @@ The 疑問詞 page (`/questions`) reads **`questions.json`**, same format as `gr
 
 ## Pinyin on exercises
 
-Grammar and question-word exercises have a 拼音 button: holding it shows pinyin under every Chinese line, option, tile and table cell. Pinyin is worked out in the app from `lessons.json` plus **`pinyin.json`** (`{"word": "pinyin"}` for words not in any lesson: handout vocab, names, numbers), longest match first, with 不/一 tone changes applied automatically. When you add a sentence with a character that's in neither file, add it to `pinyin.json` (it shows as `?` otherwise).
+Grammar and question-word exercises have a 拼音 button: holding it shows pinyin under each character (one column per character, `rubyText`) in every sentence, option, tile and table cell; Measure words has the same button. Space for it is always kept so nothing jumps. Pinyin is worked out in the app from `lessons.json` plus **`pinyin.json`** (`{"word": "pinyin"}` for words not in any lesson: handout vocab, names, numbers), longest match first, with 不/一 tone changes applied automatically. When you add a sentence with a character that's in neither file, add it to `pinyin.json` (it shows as `?` otherwise).
 
 ## Several right answers
 
