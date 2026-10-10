@@ -18,11 +18,13 @@
       "zh": "時間詞",
       "en": "Time words",
       "card": {
-        "patterns": ["S. + TW. + VO."],
+        "patterns": [
+          "{s:S.} + {tw:TW.} + {v:VO.}"
+        ],
         "examples": [
-          ["我們今天晚上要去看電影。", "wǒ men jīn tiān wǎn shàng yào qù kàn diàn yǐng.", "We're going to see a movie tonight."],
-          ["他星期一早上做什麼？", "tā xīng qí yī zǎo shàng zuò shén me?", "What does he do on Monday mornings?"],
-          ["他星期一早上學中文。", "tā xīng qí yī zǎo shàng xué zhōng wén.", "He studies Chinese on Monday mornings."]
+          ["{s:我們}{tw:今天晚上}{v:要去看電影}。", "wǒ men jīn tiān wǎn shàng yào qù kàn diàn yǐng.", "We're going to see a movie tonight."],
+          ["{s:他}{tw:星期一早上}{v:做什麼}？", "tā xīng qí yī zǎo shàng zuò shén me?", "What does he do on Monday mornings?"],
+          ["{s:他}{tw:星期一早上}{v:學中文}。", "tā xīng qí yī zǎo shàng xué zhōng wén.", "He studies Chinese on Monday mornings."]
         ],
         "tip": "The time word (今天晚上, 明天早上, 星期一, 週末) goes right after the subject, before the verb. Putting it first (今天晚上我們…) is also heard, but the handout teaches S + TW + VO."
       },
@@ -44,12 +46,16 @@
       "zh": "也 · 都 · 常",
       "en": "also · all · often",
       "card": {
-        "patterns": ["S. + 也 + V.", "S. + 都 + V.", "S. + 常 / 不常 + V."],
+        "patterns": [
+          "{s:S.} + {k:也} + {v:V.}",
+          "{s:S.} + {k:都} + {v:V.}",
+          "{s:S.} + {k:常 / 不常} + {v:V.}"
+        ],
         "examples": [
-          ["他也是日本人。", "tā yě shì rì běn rén.", "He's Japanese too."],
-          ["我們都很喜歡打籃球。", "wǒ men dōu hěn xǐ huān dǎ lán qiú.", "We all like playing basketball a lot."],
-          ["我常去看電影。", "wǒ cháng qù kàn diàn yǐng.", "I often go to the movies."],
-          ["我不常打網球。", "wǒ bù cháng dǎ wǎng qiú.", "I don't often play tennis."]
+          ["{s:他}{k:也}{v:是日本人}。", "tā yě shì rì běn rén.", "He's Japanese too."],
+          ["{s:我們}{k:都}很{v:喜歡打籃球}。", "wǒ men dōu hěn xǐ huān dǎ lán qiú.", "We all like playing basketball a lot."],
+          ["{s:我}{k:常}{v:去看電影}。", "wǒ cháng qù kàn diàn yǐng.", "I often go to the movies."],
+          ["{s:我}{k:不常}{v:打網球}。", "wǒ bù cháng dǎ wǎng qiú.", "I don't often play tennis."]
         ],
         "tip": "All three go after the subject and before the verb. 也 = also, too. 都 = all, both (the subject is plural: 我們, 他們, A和B). 常 = often; not often is 不常. Together: 也都, 都常."
       },
@@ -71,11 +77,15 @@
       "zh": "A 和 B · 也 · 都",
       "en": "Liking two things, three ways",
       "card": {
-        "patterns": ["S. + V. + A 和 B。", "S. + V. + A，也 + V. + B。", "A 和 B，S. + 都 + V。"],
+        "patterns": [
+          "{s:S.} + {v:V.} + {o:A} {k:和} {o:B}。",
+          "{s:S.} + {v:V.} + {o:A}，{k:也} + {v:V.} + {o:B}。",
+          "{o:A} {k:和} {o:B}，{s:S.} + {k:都} + {v:V.}。"
+        ],
         "examples": [
-          ["我喜歡聽音樂和打籃球。", "wǒ xǐ huān tīng yīn yuè hàn dǎ lán qiú.", "I like listening to music and playing basketball."],
-          ["我喜歡聽音樂，也喜歡打籃球。", "wǒ xǐ huān tīng yīn yuè, yě xǐ huān dǎ lán qiú.", "I like listening to music, and I also like playing basketball."],
-          ["聽音樂和打籃球，我都喜歡。", "tīng yīn yuè hàn dǎ lán qiú, wǒ dōu xǐ huān.", "Music and basketball, I like both."]
+          ["{s:我}{v:喜歡}{o:聽音樂}{k:和}{o:打籃球}。", "wǒ xǐ huān tīng yīn yuè hàn dǎ lán qiú.", "I like listening to music and playing basketball."],
+          ["{s:我}{v:喜歡}{o:聽音樂}，{k:也}{v:喜歡}{o:打籃球}。", "wǒ xǐ huān tīng yīn yuè, yě xǐ huān dǎ lán qiú.", "I like listening to music, and I also like playing basketball."],
+          ["{o:聽音樂}{k:和}{o:打籃球}，{s:我}{k:都}{v:喜歡}。", "tīng yīn yuè hàn dǎ lán qiú, wǒ dōu xǐ huān.", "Music and basketball, I like both."]
         ],
         "tip": "和 only joins two things (nouns or activities), never two sentences: for that use 也. With 都, the two things come first, because 都 points back to them."
       },
@@ -96,11 +106,13 @@
       "zh": "還是",
       "en": "A or B? questions",
       "card": {
-        "patterns": ["S. + V. + A 還是 B？"],
+        "patterns": [
+          "{s:S.} + {v:V.} + {o:A} {k:還是} {o:B}？"
+        ],
         "examples": [
-          ["你喜歡喝茶還是喝咖啡？", "nǐ xǐ huān hē chá hái shì hē kā fēi?", "Do you like tea or coffee?"],
-          ["你想吃越南菜還是美國菜？", "nǐ xiǎng chī yuè nán cài hái shì měi guó cài?", "Do you want Vietnamese or American food?"],
-          ["越南菜和美國菜，我都想吃。", "yuè nán cài hàn měi guó cài, wǒ dōu xiǎng chī.", "Vietnamese and American food, I want both."]
+          ["{s:你}{v:喜歡}{o:喝茶}{k:還是}{o:喝咖啡}？", "nǐ xǐ huān hē chá hái shì hē kā fēi?", "Do you like tea or coffee?"],
+          ["{s:你}{v:想吃}{o:越南菜}{k:還是}{o:美國菜}？", "nǐ xiǎng chī yuè nán cài hái shì měi guó cài?", "Do you want Vietnamese or American food?"],
+          ["{o:越南菜}{k:和}{o:美國菜}，{s:我}{k:都}{v:想吃}。", "yuè nán cài hàn měi guó cài, wǒ dōu xiǎng chī.", "Vietnamese and American food, I want both."]
         ],
         "tip": "還是 already makes it a question, so there's no 嗎 at the end. Answer with one of the two, or with 都 (both) or 都不 (neither)."
       },
@@ -120,11 +132,14 @@
       "zh": "主題句",
       "en": "Topic sentences",
       "card": {
-        "patterns": ["S. + V. + Topic。", "Topic，S. + V。"],
+        "patterns": [
+          "{s:S.} + {v:V.} + {o:Topic}。",
+          "{o:Topic}，{s:S.} + {v:V.}。"
+        ],
         "examples": [
-          ["你常吃臺灣菜嗎？", "nǐ cháng chī tái wān cài ma?", "Do you often eat Taiwanese food?"],
-          ["我不常吃臺灣菜。", "wǒ bù cháng chī tái wān cài.", "I don't often eat Taiwanese food."],
-          ["臺灣菜，我不常吃。", "tái wān cài, wǒ bù cháng chī.", "Taiwanese food, I don't often eat it."]
+          ["{s:你}常{v:吃}{o:臺灣菜}嗎？", "nǐ cháng chī tái wān cài ma?", "Do you often eat Taiwanese food?"],
+          ["{s:我}不常{v:吃}{o:臺灣菜}。", "wǒ bù cháng chī tái wān cài.", "I don't often eat Taiwanese food."],
+          ["{o:臺灣菜}，{s:我}不常{v:吃}。", "tái wān cài, wǒ bù cháng chī.", "Taiwanese food, I don't often eat it."]
         ],
         "tip": "Put the thing you're talking about first, add a comma, then say the rest of the sentence without it. Very common when answering a question about that thing."
       },
@@ -144,11 +159,14 @@
       "zh": "吧",
       "en": "Making suggestions",
       "card": {
-        "patterns": ["我們 + V. + O. + 吧！", "…，好不好？ / …，怎麼樣？"],
+        "patterns": [
+          "{s:我們} + {v:V. + O.} + {k:吧}！",
+          "…，{k:好不好}？ / …，{k:怎麼樣}？"
+        ],
         "examples": [
-          ["週末我們去游泳，好不好？", "zhōu mò wǒ men qù yóu yǒng, hǎo bù hǎo?", "Shall we go swimming this weekend?"],
-          ["我不喜歡游泳，我們去打網球吧！", "wǒ bù xǐ huān yóu yǒng, wǒ men qù dǎ wǎng qiú ba!", "I don't like swimming, let's go play tennis!"],
-          ["好啊！", "hǎo a!", "OK, sure!"]
+          ["{tw:週末}{s:我們}{v:去游泳}，{k:好不好}？", "zhōu mò wǒ men qù yóu yǒng, hǎo bù hǎo?", "Shall we go swimming this weekend?"],
+          ["我不喜歡游泳，{s:我們}{v:去打網球}{k:吧}！", "wǒ bù xǐ huān yóu yǒng, wǒ men qù dǎ wǎng qiú ba!", "I don't like swimming, let's go play tennis!"],
+          ["{k:好啊}！", "hǎo a!", "OK, sure!"]
         ],
         "tip": "吧 at the end turns a sentence into a suggestion: \"let's…\". To ask what the other person thinks, end with 好不好？ or 怎麼樣？ Answer 好啊！ or 不好。"
       },

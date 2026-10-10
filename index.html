@@ -9,13 +9,16 @@
   --accent:#a3322a; --ok:#2f7a4a; --ok-soft:#e3f1e8; --bad:#b3362c; --bad-soft:#f7e3e0;
   --f-hand:"Source Serif 4","DFKai-SB","BiauKai","TW-Kai","Noto Serif TC","PMingLiU",serif;
   --f-py:"Source Serif 4",Georgia,serif;
+  --r-s:#2a5db0; --r-v:#2f7a4a; --r-tw:#b06a00; --r-o:#7b3fa0; --r-k:#c0392b;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#141816; --paper:#1d2320; --fg:#e7ece8; --muted:#9ba59f; --line:#2f3733;
-  --accent:#e0776c; --ok:#6cc48d; --ok-soft:#1e3327; --bad:#ec7b70; --bad-soft:#3b2220; color-scheme:dark}}
+  --accent:#e0776c; --ok:#6cc48d; --ok-soft:#1e3327; --bad:#ec7b70; --bad-soft:#3b2220; color-scheme:dark;
+  --r-s:#7fa8ef; --r-v:#6cc48d; --r-tw:#e8a94a; --r-o:#c493e3; --r-k:#f0837a}}
 :root[data-theme="dark"]{
   --bg:#141816; --paper:#1d2320; --fg:#e7ece8; --muted:#9ba59f; --line:#2f3733;
-  --accent:#e0776c; --ok:#6cc48d; --ok-soft:#1e3327; --bad:#ec7b70; --bad-soft:#3b2220; color-scheme:dark}
+  --accent:#e0776c; --ok:#6cc48d; --ok-soft:#1e3327; --bad:#ec7b70; --bad-soft:#3b2220; color-scheme:dark;
+  --r-s:#7fa8ef; --r-v:#6cc48d; --r-tw:#e8a94a; --r-o:#c493e3; --r-k:#f0837a}
 body{background:var(--bg);color:var(--fg);font-family:var(--f-py)}
 .wrap{max-width:900px;margin:0 auto;padding-inline:16px;padding-block:20px 40px;display:grid;gap:16px}
 header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:8px 16px}
@@ -161,6 +164,10 @@ button.card:hover{border-color:var(--accent)}
 .exs .py{font-size:1rem;font-weight:400;color:var(--muted);letter-spacing:0}
 .exs .en{font-style:italic;color:var(--muted)}
 .tip{margin:0;line-height:1.5}
+/* Sentence parts on the cards: subject, verb, time word, thing/topic, key grammar word */
+.r-s{color:var(--r-s)} .r-v{color:var(--r-v)} .r-tw{color:var(--r-tw)} .r-o{color:var(--r-o)} .r-k{color:var(--r-k);font-weight:700}
+.pat .r-s,.pat .r-v,.pat .r-tw,.pat .r-o,.exs .r-s,.exs .r-v,.exs .r-tw,.exs .r-o{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:5px}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.9rem}
 .miss.long{grid-template-columns:1fr} .miss.long .zh{font-size:1.3rem}
 @media (prefers-reduced-motion: reduce){.rail i,.tile{transition:none}}
 </style>
@@ -742,15 +749,28 @@ function showGrammar(){
   $('gmenu').hidden = false; $('title').textContent = '語法 · Grammar';
   buildGrammar();
 }
+// Card text marks sentence parts as {s:我們}{tw:今天晚上}{v:要去看電影}: s subject, v verb, tw time word,
+// o thing or topic, k the grammar word the point is about.
+const ROLES = { s: 'Subject', v: 'Verb', tw: 'Time word', o: 'Thing / topic', k: 'Key word' };
+function rich(cls, str){
+  const e = el('div', cls);
+  str.split(/(\{(?:s|v|tw|o|k):[^}]*\})/).forEach(part => {
+    const m = part.match(/^\{(s|v|tw|o|k):([^}]*)\}$/);
+    if (m) e.append(el('span', 'r-' + m[1], m[2])); else if (part) e.append(part);
+  });
+  return e;
+}
 function openCard(p){
   const pane = $('sheetPane'); pane.textContent = '';
   const top = el('div','top');
   const h = el('h2', null, p.zh + ' '); h.append(el('small', null, p.en));
   const x = el('button','btn','Close'); x.type = 'button'; x.addEventListener('click', closeCard);
   top.append(h, x); pane.append(top);
-  p.card.patterns.forEach(s => pane.append(el('div','pat',s)));
+  p.card.patterns.forEach(s => pane.append(rich('pat', s)));
+  const used = Object.keys(ROLES).filter(k => p.card.patterns.concat(p.card.examples.map(e => e[0])).some(s => s.includes('{' + k + ':')));
+  if (used.length) { const lg = el('div','legend'); used.forEach(k => lg.append(el('span', 'r-' + k, ROLES[k]))); pane.append(lg); }
   const exs = el('div','exs');
-  p.card.examples.forEach(e => { const d = el('div'); d.append(el('div','zh',e[0]), el('div','py',e[1]), el('div','en',e[2])); exs.append(d); });
+  p.card.examples.forEach(e => { const d = el('div'); d.append(rich('zh', e[0]), el('div','py',e[1]), el('div','en',e[2])); exs.append(d); });
   pane.append(exs);
   if (p.card.tip) pane.append(el('p','tip',p.card.tip));
   $('sheet').hidden = false; x.focus();

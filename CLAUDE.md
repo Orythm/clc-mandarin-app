@@ -54,7 +54,7 @@ The 量詞 exercise (`/measure`) reads **`measure-words.json`**: a list of `{"mw
 
 ## Grammar
 
-The 語法 page (`/grammar`) reads **`grammar.json`**: `tables` (small tables a question can show, by name) and `points`, one per grammar point: `id`, `zh`, `en`, a `card` (`patterns`, `examples` as `[characters, pinyin, english]`, `tip`) that can be opened during any question, and `items`:
+The 語法 page (`/grammar`) reads **`grammar.json`**: `tables` (small tables a question can show, by name) and `points`, one per grammar point: `id`, `zh`, `en`, a `card` (`patterns`, `examples` as `[characters, pinyin, english]`, `tip`; in patterns and example characters, colour the sentence parts as `{s:我們}{tw:今天晚上}{v:要去看電影}` with s subject, v verb, tw time word, o thing/topic, k the grammar word) that can be opened during any question, and `items`:
 
 - `{"type": "pick", "ctx": "A：…", "table": "week", "q": "B：他＿是日本人。", "opts": ["也", "都", "常"], "en": "…"}`: the first option is the right one (they're shuffled on screen); `＿` marks the gap; `ctx` and `table` are optional.
 - `{"type": "order", "ctx": "English or instruction", "tiles": ["我們", "今天晚上", "要", "去", "看電影。"], "alts": [[…]]}`: tiles in the right order, punctuation attached to a tile; `alts` lists other accepted orders.
