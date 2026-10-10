@@ -169,12 +169,12 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
 .fchint{color:var(--muted);font-size:.95rem;margin:0;text-align:center}
 .gh{font-family:var(--f-py);font-size:1.05rem;margin:6px 0 0}
 .gh small{color:var(--muted);font-weight:400;font-size:.9rem}
-.gpt{display:flex;align-items:stretch;background:var(--bg);border:1px solid var(--line);border-radius:12px}
+.gpt{display:flex;background:var(--bg);border:1px solid var(--line);border-radius:.75em}
 .gpt:hover{border-color:var(--accent)}
-.gpt .go{flex:1;background:none;border:0;color:var(--fg);text-align:left;padding:12px 14px;display:grid;gap:2px}
+.gpt .go{flex:1;background:none;border:0;color:var(--fg);text-align:left;padding:.75em .9em;display:grid;gap:.15em}
 .gpt .go .h{font-family:var(--f-hand);font-size:1.5rem}
 .gpt .go .sub{color:var(--muted);font-size:.95rem}
-.gpt .peek{background:none;border:0;border-left:1px solid var(--line);padding:0 16px;font-size:1.4rem}
+.pane .practise{justify-self:start}
 .empty{color:var(--muted)}
 .gq{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:18px 16px;display:grid;gap:12px}
 .gq .ask{color:var(--muted);font-size:1rem}
@@ -232,6 +232,7 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
 .sheetopen #grPy,.sheetopen #mwPy{visibility:hidden}
 .exs .en{font-style:italic;color:var(--muted)}
 .tip{margin:0;line-height:1.5}
+.pat .lat,.exs .zh .lat{font-family:var(--f-py);font-size:.8em}
 /* Sentence parts on the cards: subject, verb, time word, thing/topic, key grammar word */
 .r-s{color:var(--r-s)} .r-v{color:var(--r-v)} .r-tw{color:var(--r-tw)} .r-o{color:var(--r-o)} .r-k{color:var(--r-k);font-weight:700}
 .pat .r-s,.pat .r-v,.pat .r-tw,.pat .r-o,.exs .r-s,.exs .r-v,.exs .r-tw,.exs .r-o{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:5px}
@@ -969,10 +970,8 @@ function buildGrammar(){
     const row = el('div','gpt');
     const b = el('button','go'); b.type = 'button';
     b.append(el('span','h',p.zh), el('span','sub', p.en));
-    b.addEventListener('click', () => openCard(p));
-    const k = el('button','peek','▶'); k.type = 'button'; k.setAttribute('aria-label', 'Practise ' + p.en); k.title = 'Practise this point';
-    k.addEventListener('click', () => go(S.base + '/cards/' + p.id));
-    row.append(b, k); list.append(row);
+    b.addEventListener('click', () => openCard(p, S.base + '/cards/' + p.id));
+    row.append(b); list.append(row);
   });
 }
 function showGrammar(cards){
@@ -987,11 +986,15 @@ function rich(cls, str){
   const e = el('div', cls);
   str.split(/(\{(?:s|v|tw|o|k):[^}]*\})/).forEach(part => {
     const m = part.match(/^\{(s|v|tw|o|k):([^}]*)\}$/);
-    if (m) e.append(el('span', 'r-' + m[1], m[2])); else if (part) e.append(part);
+    const t = m ? el('span', 'r-' + m[1]) : e, text = m ? m[2] : part;
+    // Latin words (S., Verb, Pronoun) in a smaller serif so they don't tower over the characters
+    text.split(/([A-Za-z][A-Za-z.,' ]*[A-Za-z.]|[A-Za-z])/).forEach((r, i) => { if (i % 2) t.append(el('span', 'lat', r)); else if (r) t.append(r); });
+    if (m) e.append(t);
   });
   return e;
 }
-function openCard(p){
+// `practise`: a path to start a round on this point, offered when the card is opened from the list.
+function openCard(p, practise){
   const pane = $('sheetPane'); pane.textContent = '';
   const top = el('div','top');
   const h = el('h2', null, p.zh + ' '); h.append(el('small', null, p.en));
@@ -1005,6 +1008,7 @@ function openCard(p){
   p.card.examples.forEach(e => { const d = el('div'); d.append(rich('zh', e[0]), el('div','py',e[1]), el('div','en',e[2])); exs.append(d); });
   pane.append(exs);
   if (p.card.tip) pane.append(el('p','tip',p.card.tip));
+  if (practise) { const b = el('button','btn practise','Practice this'); b.type = 'button'; b.addEventListener('click', () => { closeCard(); go(practise); }); pane.append(b); }
   $('sheet').hidden = false; document.body.classList.add('sheetopen'); x.focus();
 }
 function closeCard(){ $('sheet').hidden = true; document.body.classList.remove('sheetopen'); }

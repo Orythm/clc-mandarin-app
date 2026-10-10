@@ -22,8 +22,8 @@
   "points": [
     {
       "id": "bu",
-      "zh": "不 bù / bú",
-      "en": "不 changes its tone",
+      "zh": "不",
+      "en": "Not (bù or bú)",
       "card": {
         "patterns": [
           "{k:不} bú + 4th tone, otherwise bù"
@@ -59,7 +59,7 @@
     {
       "id": "xihuan",
       "zh": "喜歡 · 喝 / 吃",
-      "en": "What do you like to eat and drink?",
+      "en": "Liking food and drinks",
       "card": {
         "patterns": [
           "{s:我}{k:喜歡}{v:喝 / 吃}{o:＿}。"
@@ -124,7 +124,7 @@
     {
       "id": "juede",
       "zh": "覺得",
-      "en": "To think, to feel (an opinion)",
+      "en": "To think, to feel",
       "card": {
         "patterns": [
           "{s:我}{k:覺得}{o:＿}很好喝。"
@@ -154,7 +154,7 @@
     },
     {
       "id": "ji",
-      "zh": "幾 + MW + N",
+      "zh": "幾",
       "en": "How many? (small numbers)",
       "card": {
         "patterns": [
@@ -185,8 +185,8 @@
     },
     {
       "id": "de",
-      "zh": "Pronoun + (的)",
-      "en": "When you can drop 的",
+      "zh": "的",
+      "en": "Possessive, and when to drop it",
       "card": {
         "patterns": [
           "{s:Pronoun} + ({k:的}) + {o:family, group}"
@@ -254,7 +254,7 @@
     {
       "id": "ye-dou-chang",
       "zh": "也 · 都 · 常",
-      "en": "also · all · often",
+      "en": "Also, all, often",
       "card": {
         "patterns": [
           "{s:S.} + {k:也 / 都 / 常} + {v:V.}"
@@ -286,8 +286,8 @@
     },
     {
       "id": "he-ye-dou",
-      "zh": "A 和 B · 也 · 都",
-      "en": "Liking two things, three ways",
+      "zh": "和 · 也 · 都",
+      "en": "Liking two things",
       "card": {
         "patterns": [
           "{s:S.} + {v:V.} + {o:A} {k:和} {o:B}"
@@ -319,7 +319,7 @@
     {
       "id": "haishi",
       "zh": "還是",
-      "en": "A or B? questions",
+      "en": "A or B?",
       "card": {
         "patterns": [
           "{o:A} {k:還是} {o:B}？"
@@ -411,7 +411,7 @@
     {
       "id": "duo",
       "zh": "多",
-      "en": "…and more (二十多, 一千多)",
+      "en": "And more (20-something)",
       "card": {
         "patterns": [
           "Number + {k:多} + MW · Number + MW + {k:多}"
@@ -442,7 +442,7 @@
     },
     {
       "id": "price",
-      "zh": "多少錢？",
+      "zh": "多少錢",
       "en": "Asking the price",
       "card": {
         "patterns": [
@@ -507,7 +507,7 @@
     {
       "id": "size",
       "zh": "大 / 中 / 小 · 外帶 / 內用",
-      "en": "Ordering: size, take away or eat in",
+      "en": "Size, take away or eat in",
       "card": {
         "patterns": [
           "{o:A}、{o:B}{k:還是}{o:C}？"
@@ -537,7 +537,7 @@
     {
       "id": "neng",
       "zh": "能",
-      "en": "Can: three ways to say two things",
+      "en": "Can, to be able to",
       "card": {
         "patterns": [
           "{s:S.} + {k:能} + {v:V.}"
