@@ -15,7 +15,6 @@
   "points": [
     {
       "id": "time-words",
-      "lesson": 3,
       "zh": "時間詞",
       "en": "Time words",
       "card": {
@@ -42,7 +41,6 @@
     },
     {
       "id": "ye-dou-chang",
-      "lesson": 3,
       "zh": "也 · 都 · 常",
       "en": "also · all · often",
       "card": {
@@ -70,7 +68,6 @@
     },
     {
       "id": "he-ye-dou",
-      "lesson": 3,
       "zh": "A 和 B · 也 · 都",
       "en": "Liking two things, three ways",
       "card": {
@@ -96,7 +93,6 @@
     },
     {
       "id": "haishi",
-      "lesson": 3,
       "zh": "還是",
       "en": "A or B? questions",
       "card": {
@@ -121,7 +117,6 @@
     },
     {
       "id": "topic",
-      "lesson": 3,
       "zh": "主題句",
       "en": "Topic sentences",
       "card": {
@@ -146,7 +141,6 @@
     },
     {
       "id": "ba",
-      "lesson": 3,
       "zh": "吧",
       "en": "Making suggestions",
       "card": {

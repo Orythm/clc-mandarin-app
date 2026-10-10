@@ -120,14 +120,8 @@ button.card:hover{border-color:var(--accent)}
 .board.mwb .tile{display:grid;gap:2px;justify-items:center}
 .board.mwb .tile small{font-family:var(--f-py);font-size:.95rem;color:var(--muted)}
 @media (max-width:560px){.board.mwb{grid-template-columns:repeat(3,1fr)} .board.mwb .tile{font-size:1.9rem}}
-/* Grammar: one page with lesson chips, a Practice button and the list of points; a card popup opens over any question */
-.chips{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.chips .lbl{color:var(--muted);font-size:.95rem;margin-right:4px}
-.chip{background:none;border:1px solid var(--line);color:var(--fg);border-radius:999px;padding:6px 14px;font-size:1rem}
-.chip[aria-pressed="true"]{background:var(--fg);border-color:var(--fg);color:var(--paper)}
-.chip:disabled{opacity:.4;cursor:default}
+/* Grammar: one page with a Practice button and the list of points; a card popup opens over any question */
 .gpoints{display:grid;gap:8px}
-.gpoints h2{font-family:var(--f-hand);font-size:1.3rem;margin:10px 0 0}
 .gpt{display:flex;align-items:stretch;background:var(--bg);border:1px solid var(--line);border-radius:12px}
 .gpt:hover{border-color:var(--accent)}
 .gpt .go{flex:1;background:none;border:0;color:var(--fg);text-align:left;padding:12px 14px;display:grid;gap:2px}
@@ -215,7 +209,6 @@ button.card:hover{border-color:var(--accent)}
   </section>
 
   <section class="menu" id="gmenu" hidden>
-    <div class="chips" id="gChips"></div>
     <button class="btn primary play" id="gPractice" type="button">Practice</button>
     <div class="gpoints" id="gList"></div>
   </section>
@@ -724,53 +717,24 @@ function finishMw(){
   finish();
 }
 
-// ---- Grammar (語法): one page with every point, lesson chips to filter, and rounds of mixed questions ----
-// Data is grammar.json: { "tables": {...}, "points": [{ id, lesson, zh, en, card: {patterns, examples, tip}, items }] }.
+// ---- Grammar (語法): one page with every point and rounds of mixed questions ----
+// Data is grammar.json: { "tables": {...}, "points": [{ id, zh, en, card: {patterns, examples, tip}, items }] }.
 // Items: { type: "pick", ctx?, table?, q, opts, en } (opts[0] is right; "＿" in q is the gap)
 //        { type: "order", ctx, tiles, alts? } (tiles in the right order; alts are other accepted orders)
-let GR = { tables: {}, points: [] }, grSel = null, grItems = [], grMisses = [], grCur = null, grPeeked = false, grDone = false, grPlaced = [];
+let GR = { tables: {}, points: [] }, grItems = [], grMisses = [], grCur = null, grPeeked = false, grDone = false, grPlaced = [];
 const ROUND = 10;
-function grLessons(){ return [...new Set(GR.points.map(p => p.lesson))].sort((a, b) => a - b); }
-function grLoadSel(){
-  let s = null;
-  try { s = JSON.parse(localStorage.getItem('g_lessons')); } catch(e) {}
-  const have = grLessons();
-  s = Array.isArray(s) ? s.filter(n => have.includes(n)) : [];
-  grSel = new Set(s.length ? s : have);
-}
-function grSaveSel(){ try { localStorage.setItem('g_lessons', JSON.stringify([...grSel])); } catch(e) {} }
-function grPool(){ return GR.points.filter(p => grSel.has(p.lesson)).flatMap(p => p.items.map(it => ({ p, it }))); }
+function grPool(){ return GR.points.flatMap(p => p.items.map(it => ({ p, it }))); }
 function buildGrammar(){
-  const chips = $('gChips'); chips.textContent = '';
-  chips.append(el('span','lbl','Lessons'));
-  const have = grLessons();
-  const ns = [...new Set(LESSONS.map(L => L.n).concat(have))].sort((a, b) => a - b);
-  ns.forEach(n => {
-    const b = el('button','chip', String(n)); b.type = 'button';
-    b.disabled = !have.includes(n);
-    b.title = b.disabled ? 'No grammar for lesson ' + n + ' yet' : 'Lesson ' + n;
-    b.setAttribute('aria-pressed', grSel.has(n));
-    b.addEventListener('click', () => {
-      if (grSel.has(n)) { if (grSel.size > 1) grSel.delete(n); } else grSel.add(n);
-      grSaveSel(); buildGrammar();
-    });
-    chips.append(b);
-  });
-  const pool = grPool();
-  $('gPractice').textContent = 'Practice · ' + Math.min(ROUND, pool.length) + ' mixed questions';
+  $('gPractice').textContent = 'Practice · ' + Math.min(ROUND, grPool().length) + ' mixed questions';
   const list = $('gList'); list.textContent = '';
-  [...grSel].sort((a, b) => a - b).forEach(n => {
-    const L = LESSONS.find(x => x.n === n);
-    list.append(el('h2', null, (L ? L.zh + ' · ' : '') + 'Lesson ' + n));
-    GR.points.filter(p => p.lesson === n).forEach(p => {
-      const row = el('div','gpt');
-      const b = el('button','go'); b.type = 'button';
-      b.append(el('span','h',p.zh), el('span','sub', p.en + ' · ' + p.items.length + ' questions'));
-      b.addEventListener('click', () => go('/grammar/' + p.id));
-      const k = el('button','peek','📖'); k.type = 'button'; k.setAttribute('aria-label', 'Card: ' + p.en);
-      k.addEventListener('click', () => openCard(p));
-      row.append(b, k); list.append(row);
-    });
+  GR.points.forEach(p => {
+    const row = el('div','gpt');
+    const b = el('button','go'); b.type = 'button';
+    b.append(el('span','h',p.zh), el('span','sub', p.en + ' · ' + p.items.length + ' questions'));
+    b.addEventListener('click', () => go('/grammar/' + p.id));
+    const k = el('button','peek','📖'); k.type = 'button'; k.setAttribute('aria-label', 'Card: ' + p.en);
+    k.addEventListener('click', () => openCard(p));
+    row.append(b, k); list.append(row);
   });
 }
 function showGrammar(){
@@ -781,7 +745,7 @@ function showGrammar(){
 function openCard(p){
   const pane = $('sheetPane'); pane.textContent = '';
   const top = el('div','top');
-  const h = el('h2', null, p.zh + ' '); h.append(el('small', null, p.en + ' · Lesson ' + p.lesson));
+  const h = el('h2', null, p.zh + ' '); h.append(el('small', null, p.en));
   const x = el('button','btn','Close'); x.type = 'button'; x.addEventListener('click', closeCard);
   top.append(h, x); pane.append(top);
   p.card.patterns.forEach(s => pane.append(el('div','pat',s)));
@@ -967,7 +931,7 @@ $('grCard').addEventListener('click', () => go('/grammar'));
 // Grammar is optional as well: the home card shows once grammar.json has points.
 const grLoad = fetch('/grammar.json', {cache: 'no-cache'})
   .then(r => r.ok ? r.json() : null).catch(() => null)
-  .then(data => { GR = data && Array.isArray(data.points) ? { tables: data.tables || {}, points: data.points.filter(p => p.items && p.items.length) } : { tables: {}, points: [] }; $('grCard').hidden = !GR.points.length; grLoadSel(); });
+  .then(data => { GR = data && Array.isArray(data.points) ? { tables: data.tables || {}, points: data.points.filter(p => p.items && p.items.length) } : { tables: {}, points: [] }; $('grCard').hidden = !GR.points.length; });
 // Measure words are optional: the home card only shows once measure-words.json has some.
 const mwLoad = fetch('/measure-words.json', {cache: 'no-cache'})
   .then(r => r.ok ? r.json() : []).catch(() => [])
