@@ -314,7 +314,7 @@ button.card:hover{border-color:var(--accent)}
 
   <div class="board" id="board" hidden></div>
 </div>
-<footer class="credit" id="credit" hidden><p>Recordings: 中華民國教育部（Ministry of Education, R.O.C.）。《國語辭典簡編本》（版本編號：2014_20260929）網址：<a href="https://dict.concised.moe.edu.tw/" target="_blank" rel="noopener">https://dict.concised.moe.edu.tw/</a>. Converted to MP3, otherwise unmodified, under <a href="https://creativecommons.org/licenses/by-nd/3.0/tw/" target="_blank" rel="noopener">CC BY-ND 3.0 TW</a> (<a href="/audio/moe-usage-notice.pdf" target="_blank">使用說明</a>); five come from an earlier MOE release via <a href="https://www.moedict.tw/" target="_blank" rel="noopener">萌典 moedict.tw</a>.</p></footer>
+<footer class="credit" id="credit"><p>Recordings: 中華民國教育部（Ministry of Education, R.O.C.）。《國語辭典簡編本》（版本編號：2014_20260929）網址：<a href="https://dict.concised.moe.edu.tw/" target="_blank" rel="noopener">https://dict.concised.moe.edu.tw/</a>. Converted to MP3, otherwise unmodified, under <a href="https://creativecommons.org/licenses/by-nd/3.0/tw/" target="_blank" rel="noopener">CC BY-ND 3.0 TW</a> (<a href="/audio/moe-usage-notice.pdf" target="_blank">使用說明</a>); five come from an earlier MOE release via <a href="https://www.moedict.tw/" target="_blank" rel="noopener">萌典 moedict.tw</a>.</p></footer>
 
 <script>
 let LESSONS = [];
@@ -353,7 +353,7 @@ function hideAll(){
 }
 function showHome(){
   hideAll(); $('modeBtn').hidden = true;
-  $('home').hidden = false; $('credit').hidden = false; $('title').textContent = '華語練習 · CLC Mandarin';
+  $('home').hidden = false; $('title').textContent = '華語練習 · CLC Mandarin';
 }
 function showMenu(){
   hideAll(); $('modeBtn').hidden = false; $('modeBtn').textContent = '← Home';
@@ -372,7 +372,7 @@ function buildBoard(){
 function start(list){
   ex = 'vocab'; endless = false; queue = shuffle(list); idx = 0; score = 0; misses = [];
   $('title').textContent = lesson.zh + ' · Lesson ' + lesson.n;
-  $('home').hidden = true; $('credit').hidden = true; $('menu').hidden = true; $('results').hidden = true;
+  $('home').hidden = true; $('menu').hidden = true; $('results').hidden = true;
   $('modeBtn').textContent = '← Lessons';
   ['meta','rail','promptBox','board','modeBtn'].forEach(id => $(id).hidden = false);
   $('qt').textContent = queue.length;
