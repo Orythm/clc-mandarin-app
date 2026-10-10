@@ -404,6 +404,7 @@ function hideAll(){
   stopAudio(); closeCard();
   $('restartBtn').textContent = 'Start over (all words)';
   ['home','menu','xmenu','tmenu','gmenu','mmenu','grBox','meta','rail','promptBox','results','board','dict','mwBox','fcBox'].forEach(id => $(id).hidden = true);
+  $('credit').hidden = false; // the credits footer shows on menus only; exercises hide it
 }
 function showHome(){
   hideAll(); $('modeBtn').hidden = true;
@@ -432,7 +433,7 @@ function start(list){
   $('title').textContent = setName(lesson);
   hideAll();
   $('modeBtn').textContent = lesson.n ? '← Lessons' : '← Vocabulary';
-  ['meta','rail','promptBox','board','modeBtn'].forEach(id => $(id).hidden = false);
+  ['meta','rail','promptBox','board','modeBtn'].forEach(id => $(id).hidden = false); $('credit').hidden = true;
   $('qt').textContent = queue.length;
   $('py').className = mode === 'zh2py' ? 'py zhq' : 'py';
   buildBoard(); show(); window.scrollTo(0,0);
@@ -627,7 +628,7 @@ function startTones(list){
   hideAll();
   $('title').textContent = '聽寫 · ' + lesson.zh;
   $('modeBtn').textContent = '← Lessons';
-  ['meta','dict','modeBtn'].forEach(id => $(id).hidden = false);
+  ['meta','dict','modeBtn'].forEach(id => $(id).hidden = false); $('credit').hidden = true;
   $('rail').hidden = endless; $('dEnd').hidden = !endless;
   $('qt').textContent = endless ? '∞' : queue.length;
   showWord(); window.scrollTo(0,0);
@@ -770,7 +771,7 @@ function startMw(list){
   hideAll();
   $('title').textContent = '量詞 · Measure Words';
   $('modeBtn').textContent = '← Measure words';
-  ['meta','rail','mwBox','board','modeBtn'].forEach(id => $(id).hidden = false);
+  ['meta','rail','mwBox','board','modeBtn'].forEach(id => $(id).hidden = false); $('credit').hidden = true;
   $('qt').textContent = queue.length;
   buildMwBoard(); showMw(); window.scrollTo(0,0);
 }
@@ -859,7 +860,7 @@ $('mFlash').addEventListener('click', () => go('/measure/flashcards'));
 let fcDeck = [], fcI = 0;
 function startFc(){
   hideAll(); $('modeBtn').hidden = false; $('modeBtn').textContent = '← Measure words';
-  $('title').textContent = '量詞 · Flashcards'; $('fcBox').hidden = false;
+  $('title').textContent = '量詞 · Flashcards'; $('fcBox').hidden = false; $('credit').hidden = true;
   fcDeck = shuffle(MW); fcI = 0; showFc(); window.scrollTo(0,0);
 }
 function showFc(){
@@ -1018,7 +1019,7 @@ function startGr(items, title){
   hideAll();
   $('title').textContent = title;
   $('modeBtn').textContent = /\/cards$/.test(parentOf(location.pathname) || '') ? '← Cards' : '← ' + GRS().en;
-  ['meta','rail','grBox','modeBtn'].forEach(id => $(id).hidden = false);
+  ['meta','rail','grBox','modeBtn'].forEach(id => $(id).hidden = false); $('credit').hidden = true;
   showGr(); window.scrollTo(0,0);
 }
 const isZh = s => /[㐀-鿿]/.test(s);
