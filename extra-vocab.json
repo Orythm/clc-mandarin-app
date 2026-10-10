@@ -57,17 +57,13 @@
     ]
   },
   {
-    "id": "people-places",
-    "zh": "人和地方",
-    "en": "People, places, time",
+    "id": "people",
+    "zh": "人",
+    "en": "People",
     "words": [
       ["朋友","péng yǒu","friend"],
       ["太太","tài tai","wife, Mrs."],
       ["女兒","nǚ ér","daughter"],
-      ["學校","xué xiào","school"],
-      ["班","bān","class"],
-      ["公司","gōng sī","company"],
-      ["星期","xīng qí","week"],
       ["爸爸","bà ba","dad"],
       ["媽媽","mā ma","mom"],
       ["哥哥","gē ge","older brother"],
@@ -80,14 +76,32 @@
       ["老師","lǎo shī","teacher"],
       ["伯母","bó mǔ","auntie (friend's mother)"],
       ["老闆","lǎo bǎn","boss, shop owner"],
-      ["客人","kè rén","guest, customer"],
+      ["客人","kè rén","guest, customer"]
+    ]
+  },
+  {
+    "id": "places",
+    "zh": "地方",
+    "en": "Places",
+    "words": [
+      ["學校","xué xiào","school"],
+      ["班","bān","class"],
+      ["公司","gōng sī","company"],
       ["家","jiā","home, family"],
       ["房子","fáng zi","house, apartment"],
       ["教室","jiào shì","classroom"],
       ["臺灣","tái wān","Taiwan"],
       ["日本","rì běn","Japan"],
       ["美國","měi guó","USA"],
-      ["越南","yuè nán","Vietnam"],
+      ["越南","yuè nán","Vietnam"]
+    ]
+  },
+  {
+    "id": "time",
+    "zh": "時間",
+    "en": "Time",
+    "words": [
+      ["星期","xīng qí","week"],
       ["週末","zhōu mò","weekend"],
       ["今天","jīn tiān","today"],
       ["明天","míng tiān","tomorrow"],
