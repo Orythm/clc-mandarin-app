@@ -208,8 +208,8 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
 .mwq .mpy{font-family:var(--f-py);font-size:1.05rem;font-weight:400;font-style:italic;color:var(--muted);margin-top:4px;white-space:nowrap}
 .mwq .mpy,.board.mwb .tile small{visibility:hidden}
 .mwpy .mwq .mpy,.mwpy .board.mwb .tile small,#mwBox.done .mwq .mpy{visibility:visible}
-#grPy,#mwPy{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:none}
-#grPy.on,#mwPy.on{background:var(--fg);border-color:var(--fg);color:var(--paper)}
+#grPy,#mwPy,#cardPy{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:none}
+#grPy.on,#mwPy.on,#cardPy.on{background:var(--fg);border-color:var(--fg);color:var(--paper)}
 /* Phones: 拼音 floats at the bottom right, within thumb reach */
 @media (max-width:560px){
   #grPy,#mwPy{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:20;min-width:64px;min-height:64px;padding:0 14px;border-radius:32px;font-size:1.3rem;background:var(--paper);box-shadow:0 6px 18px -6px rgba(0,0,0,.45)}
@@ -222,17 +222,19 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
 .sheet .pane{background:var(--paper);color:var(--fg);width:min(100%,640px);max-height:calc(100dvh - 32px);overflow:auto;border-radius:16px;padding:18px 16px 22px;box-sizing:border-box;display:grid;gap:12px;box-shadow:0 12px 40px -12px rgba(0,0,0,.5)}
 .pane .top{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
 .pane h2{font-family:var(--f-hand);font-size:1.7rem;margin:0}
-.pane h2 small{font-family:var(--f-py);font-size:1rem;color:var(--muted);font-weight:400}
+.pane h2 small{display:block;font-family:var(--f-py);font-size:1rem;color:var(--muted);font-weight:400;margin-top:.2em}
+.pane .acts{display:flex;gap:.5em;flex:none}
 .pat{font-family:var(--f-hand);font-size:1.25rem;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 12px}
 .exs{display:grid;gap:10px}
 .exs .zh{font-family:var(--f-hand);font-size:1.4rem}
-.exs .py{font-size:1rem;font-weight:400;color:var(--muted);letter-spacing:0}
+.exs .py{font-size:1rem;font-weight:400;color:var(--muted);letter-spacing:0;visibility:hidden}
+.pane.showpy .exs .py{visibility:visible}
+.sheetopen #grPy,.sheetopen #mwPy{visibility:hidden}
 .exs .en{font-style:italic;color:var(--muted)}
 .tip{margin:0;line-height:1.5}
 /* Sentence parts on the cards: subject, verb, time word, thing/topic, key grammar word */
 .r-s{color:var(--r-s)} .r-v{color:var(--r-v)} .r-tw{color:var(--r-tw)} .r-o{color:var(--r-o)} .r-k{color:var(--r-k);font-weight:700}
 .pat .r-s,.pat .r-v,.pat .r-tw,.pat .r-o,.exs .r-s,.exs .r-v,.exs .r-tw,.exs .r-o{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:5px}
-.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.9rem}
 .miss.long{grid-template-columns:1fr} .miss.long .zh{font-size:1.3rem}
 @media (prefers-reduced-motion: reduce){.rail i,.tile{transition:none}}
 </style>
@@ -981,7 +983,6 @@ function showGrammar(cards){
 }
 // Card text marks sentence parts as {s:我們}{tw:今天晚上}{v:要去看電影}: s subject, v verb, tw time word,
 // o thing or topic, k the grammar word the point is about.
-const ROLES = { s: 'Subject', v: 'Verb', tw: 'Time word', o: 'Thing / topic', k: 'Key word' };
 function rich(cls, str){
   const e = el('div', cls);
   str.split(/(\{(?:s|v|tw|o|k):[^}]*\})/).forEach(part => {
@@ -995,17 +996,18 @@ function openCard(p){
   const top = el('div','top');
   const h = el('h2', null, p.zh + ' '); h.append(el('small', null, p.en));
   const x = el('button','btn','Close'); x.type = 'button'; x.addEventListener('click', closeCard);
-  top.append(h, x); pane.append(top);
+  const py = el('button','btn','拼音'); py.type = 'button'; py.id = 'cardPy'; py.setAttribute('aria-label', 'Hold to show pinyin');
+  pane.classList.remove('showpy'); holdPy(py, pane, 'showpy');
+  const acts = el('div','acts'); acts.append(py, x);
+  top.append(h, acts); pane.append(top);
   p.card.patterns.forEach(s => pane.append(rich('pat', s)));
-  const used = Object.keys(ROLES).filter(k => p.card.patterns.concat(p.card.examples.map(e => e[0])).some(s => s.includes('{' + k + ':')));
-  if (used.length) { const lg = el('div','legend'); used.forEach(k => lg.append(el('span', 'r-' + k, ROLES[k]))); pane.append(lg); }
   const exs = el('div','exs');
   p.card.examples.forEach(e => { const d = el('div'); d.append(rich('zh', e[0]), el('div','py',e[1]), el('div','en',e[2])); exs.append(d); });
   pane.append(exs);
   if (p.card.tip) pane.append(el('p','tip',p.card.tip));
-  $('sheet').hidden = false; x.focus();
+  $('sheet').hidden = false; document.body.classList.add('sheetopen'); x.focus();
 }
-function closeCard(){ $('sheet').hidden = true; }
+function closeCard(){ $('sheet').hidden = true; document.body.classList.remove('sheetopen'); }
 $('sheet').addEventListener('click', e => { if (e.target === $('sheet')) closeCard(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('sheet').hidden) closeCard(); });
 

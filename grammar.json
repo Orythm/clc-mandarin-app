@@ -26,17 +26,13 @@
       "en": "不 changes its tone",
       "card": {
         "patterns": [
-          "{k:不} bù + 1st / 2nd / 3rd tone",
-          "{k:不} bú + 4th tone"
+          "{k:不} bú + 4th tone, otherwise bù"
         ],
         "examples": [
           ["{k:不}{v:吃}", "bù chī", "not eat"],
-          ["{k:不}{v:喜歡}", "bù xǐ huān", "not like"],
-          ["{k:不}{v:是}", "bú shì", "not be"],
-          ["{k:不}{v:要}", "bú yào", "not want"],
-          ["{k:不}客氣", "bú kè qì", "you're welcome"]
+          ["{k:不}{v:是}", "bú shì", "not be"]
         ],
-        "tip": "不 is bù, but it becomes bú when the next syllable is 4th tone (是 shì, 要 yào, 客 kè, 姓 xìng, 叫 jiào, 看 kàn)."
+        "tip": "不 becomes bú before a 4th tone."
       },
       "items": [
         {"type": "pick", "ask": "How is 不 said here?", "q": "不是 = ＿ shì", "opts": ["bú", "bù"], "en": "not be"},
@@ -66,16 +62,13 @@
       "en": "What do you like to eat and drink?",
       "card": {
         "patterns": [
-          "Q：{s:你}{k:喜歡}{v:喝 / 吃}{o:什麼}？",
-          "A：{s:我}{k:喜歡}{v:喝 / 吃}{o:＿}。",
-          "A：{s:我}{k:不喜歡}{v:喝 / 吃}{o:＿}。"
+          "{s:我}{k:喜歡}{v:喝 / 吃}{o:＿}。"
         ],
         "examples": [
           ["{s:你}{k:喜歡}{v:喝}{o:什麼}？", "nǐ xǐ huān hē shén me?", "What do you like to drink?"],
-          ["{s:我}{k:喜歡}{v:喝}{o:珍珠奶茶}。", "wǒ xǐ huān hē zhēn zhū nǎi chá.", "I like bubble tea."],
-          ["{s:我}{k:不喜歡}{v:吃}{o:漢堡}。", "wǒ bù xǐ huān chī hàn bǎo.", "I don't like hamburgers."]
+          ["{s:我}{k:喜歡}{v:喝}{o:珍珠奶茶}。", "wǒ xǐ huān hē zhēn zhū nǎi chá.", "I like bubble tea."]
         ],
-        "tip": "喝 is for drinks, 吃 for food. The answer keeps the question's word order: just put the thing where 什麼 was."
+        "tip": "喝 for drinks, 吃 for food."
       },
       "items": [
         {"type": "pick", "q": "我喜歡＿牛肉麵。", "opts": ["吃", "喝"], "en": "I like beef noodles."},
@@ -103,16 +96,13 @@
       "en": "Want, don't want",
       "card": {
         "patterns": [
-          "Q：{s:你}{k:要}{v:喝}{o:什麼}？",
-          "A：{s:我}{k:要}{v:喝}{o:＿}。",
-          "A：{s:我}{k:不要}{v:喝}{o:＿}。"
+          "{s:我}{k:要 / 不要}{v:喝}{o:＿}。"
         ],
         "examples": [
-          ["{s:你}{k:要}{v:喝}{o:什麼}？", "nǐ yào hē shén me?", "What would you like to drink?"],
           ["{s:我}{k:要}{v:喝}{o:果汁}。", "wǒ yào hē guǒ zhī.", "I'd like a juice."],
           ["{s:我}{k:不要}{v:喝}{o:可樂}。", "wǒ bú yào hē kě lè.", "I don't want cola."]
         ],
-        "tip": "要 = to want, right now (ordering, choosing). 喜歡 = to like, in general. Before 要, 不 is said bú: 不要 bú yào."
+        "tip": "要 = want now. 喜歡 = like in general."
       },
       "items": [
         {"type": "pick", "ctx": "A：你要喝什麼？", "q": "B：我＿喝牛奶。", "opts": ["要", "是", "很"], "en": "I'd like milk."},
@@ -137,16 +127,13 @@
       "en": "To think, to feel (an opinion)",
       "card": {
         "patterns": [
-          "Q：{s:你}{k:覺得}{o:什麼}很好喝？",
-          "A：{s:我}{k:覺得}{o:＿}很好喝。",
-          "A：{s:我}{k:覺得}{o:＿}不好喝。"
+          "{s:我}{k:覺得}{o:＿}很好喝。"
         ],
         "examples": [
-          ["{s:你}{k:覺得}{o:什麼}很好喝？", "nǐ jué de shén me hěn hǎo hē?", "What do you think tastes good?"],
           ["{s:我}{k:覺得}{o:烏龍茶}很好喝。", "wǒ jué de wū lóng chá hěn hǎo hē.", "I think oolong tea tastes good."],
           ["{s:我}{k:覺得}{o:啤酒}不好喝。", "wǒ jué de pí jiǔ bù hǎo hē.", "I don't think beer tastes good."]
         ],
-        "tip": "After 覺得 comes a whole little sentence: the thing + 很 / 不 + 好喝 (drinks), 好看 (looks), 好玩 (fun)."
+        "tip": "After 覺得 comes your opinion."
       },
       "items": [
         {"type": "pick", "q": "我覺得紅酒很＿。", "opts": ["好喝", "好看", "好玩"], "en": "I think red wine tastes good."},
@@ -171,15 +158,13 @@
       "en": "How many? (small numbers)",
       "card": {
         "patterns": [
-          "Q：{s:S.} + 有 + {k:幾} + MW + {o:N.}？",
-          "A：{s:S.} + 有 + Number + MW + {o:N.}。"
+          "{s:S.} + 有 + {k:幾} + MW + {o:N.}？"
         ],
         "examples": [
           ["{s:老師}有{k:幾}張{o:照片}？", "lǎo shī yǒu jǐ zhāng zhào piàn?", "How many photos does the teacher have?"],
-          ["{s:老師}有{k:三}張{o:照片}。", "lǎo shī yǒu sān zhāng zhào piàn.", "The teacher has three photos."],
-          ["{s:你}有{k:幾}個{o:哥哥}？", "nǐ yǒu jǐ ge gē ge?", "How many older brothers do you have?"]
+          ["{s:老師}有{k:三}張{o:照片}。", "lǎo shī yǒu sān zhāng zhào piàn.", "The teacher has three photos."]
         ],
-        "tip": "幾 asks \"how many\" when you expect a small number. Keep the measure word: 幾張照片, 幾個人, 幾本書. In the answer, put the number where 幾 was; 2 is 兩, not 二."
+        "tip": "In the answer, the number takes the place of 幾."
       },
       "items": [
         {"type": "pick", "ctx": "A：老師有幾張照片？", "q": "B：老師有＿照片。", "opts": ["三張", "三個", "三"], "en": "The teacher has three photos."},
@@ -204,16 +189,13 @@
       "en": "When you can drop 的",
       "card": {
         "patterns": [
-          "{s:Pronoun} + ({k:的}) + {o:family, 家, 學校, 班, 公司}",
-          "{s:Name / Pronoun} + {k:的} + {o:thing}"
+          "{s:Pronoun} + ({k:的}) + {o:family, group}"
         ],
         "examples": [
           ["{s:我}{o:姐姐}", "wǒ jiě jie", "my older sister"],
-          ["{s:我們}{o:學校}", "wǒ men xué xiào", "our school"],
-          ["{s:我}{k:的}{o:書}", "wǒ de shū", "my book"],
-          ["{s:張先生}{k:的}{o:太太}", "zhāng xiān shēng de tài tai", "Mr. Zhang's wife"]
+          ["{s:我}{k:的}{o:書}", "wǒ de shū", "my book"]
         ],
-        "tip": "的 means \"'s / of\". After a pronoun (我, 你們, 他們…) you can drop it before family and before groups you belong to (家, 學校, 班, 公司). Keep it before things (書, 房子, 車) and after names (張先生的…)."
+        "tip": "Drop 的 before family and groups (家, 學校), keep it before things."
       },
       "items": [
         {"type": "pick", "ask": "Can you drop 的 here?", "q": "我＿爸爸", "opts": ["Yes, 的 is optional", "No, 的 is needed"], "fill": "（的）", "en": "my dad"},
@@ -241,14 +223,13 @@
       "en": "Time words",
       "card": {
         "patterns": [
-          "{s:S.} + {tw:TW.} + {v:VO.}"
+          "{s:S.} + {tw:Time} + {v:Verb}"
         ],
         "examples": [
           ["{s:我們}{tw:今天晚上}{v:要去看電影}。", "wǒ men jīn tiān wǎn shàng yào qù kàn diàn yǐng.", "We're going to see a movie tonight."],
-          ["{s:他}{tw:星期一早上}{v:做什麼}？", "tā xīng qí yī zǎo shàng zuò shén me?", "What does he do on Monday mornings?"],
           ["{s:他}{tw:星期一早上}{v:學中文}。", "tā xīng qí yī zǎo shàng xué zhōng wén.", "He studies Chinese on Monday mornings."]
         ],
-        "tip": "The time word (今天晚上, 明天早上, 星期一, 週末) goes right after the subject, before the verb. Putting it first (今天晚上我們…) is also heard, but the handout teaches S + TW + VO."
+        "tip": "The time word goes before the verb."
       },
       "items": [
         {"type": "order", "tiles": ["我們", "今天晚上", "要", "去", "看電影", "。"], "alts": [["今天晚上", "我們", "要", "去", "看電影", "。"]], "en": "We're going to see a movie tonight."},
@@ -276,17 +257,14 @@
       "en": "also · all · often",
       "card": {
         "patterns": [
-          "{s:S.} + {k:也} + {v:V.}",
-          "{s:S.} + {k:都} + {v:V.}",
-          "{s:S.} + {k:常 / 不常} + {v:V.}"
+          "{s:S.} + {k:也 / 都 / 常} + {v:V.}"
         ],
         "examples": [
           ["{s:他}{k:也}{v:是日本人}。", "tā yě shì rì běn rén.", "He's Japanese too."],
           ["{s:我們}{k:都}很{v:喜歡打籃球}。", "wǒ men dōu hěn xǐ huān dǎ lán qiú.", "We all like playing basketball a lot."],
-          ["{s:我}{k:常}{v:去看電影}。", "wǒ cháng qù kàn diàn yǐng.", "I often go to the movies."],
-          ["{s:我}{k:不常}{v:打網球}。", "wǒ bù cháng dǎ wǎng qiú.", "I don't often play tennis."]
+          ["{s:我}{k:常}{v:去看電影}。", "wǒ cháng qù kàn diàn yǐng.", "I often go to the movies."]
         ],
-        "tip": "All three go after the subject and before the verb. 也 = also, too. 都 = all, both (the subject is plural: 我們, 他們, A和B). 常 = often; not often is 不常. Together: 也都, 都常."
+        "tip": "All three go right before the verb."
       },
       "items": [
         {"type": "pick", "ctx": "A：你是日本人，他呢？", "q": "B：他＿是日本人。", "opts": ["也", "都", "常"], "en": "He's Japanese too."},
@@ -312,16 +290,14 @@
       "en": "Liking two things, three ways",
       "card": {
         "patterns": [
-          "{s:S.} + {v:V.} + {o:A} {k:和} {o:B}。",
-          "{s:S.} + {v:V.} + {o:A}，{k:也} + {v:V.} + {o:B}。",
-          "{o:A} {k:和} {o:B}，{s:S.} + {k:都} + {v:V.}。"
+          "{s:S.} + {v:V.} + {o:A} {k:和} {o:B}"
         ],
         "examples": [
           ["{s:我}{v:喜歡}{o:聽音樂}{k:和}{o:打籃球}。", "wǒ xǐ huān tīng yīn yuè hàn dǎ lán qiú.", "I like listening to music and playing basketball."],
           ["{s:我}{v:喜歡}{o:聽音樂}，{k:也}{v:喜歡}{o:打籃球}。", "wǒ xǐ huān tīng yīn yuè, yě xǐ huān dǎ lán qiú.", "I like listening to music, and I also like playing basketball."],
           ["{o:聽音樂}{k:和}{o:打籃球}，{s:我}{k:都}{v:喜歡}。", "tīng yīn yuè hàn dǎ lán qiú, wǒ dōu xǐ huān.", "Music and basketball, I like both."]
         ],
-        "tip": "和 only joins two things (nouns or activities), never two sentences: for that use 也. With 都, the two things come first, because 都 points back to them."
+        "tip": "和 joins two things. 也 joins two sentences. 都 comes after both things."
       },
       "items": [
         {"type": "order", "ask": "Rewrite it using 也.", "src": "我喜歡看書和看電影。", "tiles": ["我", "喜歡", "看書", "，", "也", "喜歡", "看電影", "。"], "alts": [["我", "喜歡", "看電影", "，", "也", "喜歡", "看書", "。"]]},
@@ -346,14 +322,13 @@
       "en": "A or B? questions",
       "card": {
         "patterns": [
-          "{s:S.} + {v:V.} + {o:A} {k:還是} {o:B}？"
+          "{o:A} {k:還是} {o:B}？"
         ],
         "examples": [
           ["{s:你}{v:喜歡}{o:喝茶}{k:還是}{o:喝咖啡}？", "nǐ xǐ huān hē chá hái shì hē kā fēi?", "Do you like tea or coffee?"],
-          ["{s:你}{v:想吃}{o:越南菜}{k:還是}{o:美國菜}？", "nǐ xiǎng chī yuè nán cài hái shì měi guó cài?", "Do you want Vietnamese or American food?"],
-          ["{o:越南菜}{k:和}{o:美國菜}，{s:我}{k:都}{v:想吃}。", "yuè nán cài hàn měi guó cài, wǒ dōu xiǎng chī.", "Vietnamese and American food, I want both."]
+          ["{s:你}{v:想吃}{o:越南菜}{k:還是}{o:美國菜}？", "nǐ xiǎng chī yuè nán cài hái shì měi guó cài?", "Do you want Vietnamese or American food?"]
         ],
-        "tip": "還是 already makes it a question, so there's no 嗎 at the end. Answer with one of the two, or with 都 (both) or 都不 (neither)."
+        "tip": "還是 is already a question: no 嗎."
       },
       "items": [
         {"type": "pick", "ask": "Answer using the table.", "table": "likes", "q": "陳小姐喜歡喝啤酒還是喝咖啡？", "opts": ["她喜歡喝咖啡。", "她喜歡喝啤酒。", "喝啤酒和喝咖啡，她都喜歡。"], "en": "She likes coffee."},
@@ -378,15 +353,13 @@
       "en": "Topic sentences",
       "card": {
         "patterns": [
-          "{s:S.} + {v:V.} + {o:Topic}。",
           "{o:Topic}，{s:S.} + {v:V.}。"
         ],
         "examples": [
-          ["{s:你}常{v:吃}{o:臺灣菜}嗎？", "nǐ cháng chī tái wān cài ma?", "Do you often eat Taiwanese food?"],
           ["{s:我}不常{v:吃}{o:臺灣菜}。", "wǒ bù cháng chī tái wān cài.", "I don't often eat Taiwanese food."],
           ["{o:臺灣菜}，{s:我}不常{v:吃}。", "tái wān cài, wǒ bù cháng chī.", "Taiwanese food, I don't often eat it."]
         ],
-        "tip": "Put the thing you're talking about first, add a comma, then say the rest of the sentence without it. Very common when answering a question about that thing."
+        "tip": "Say the topic first, then a comma."
       },
       "items": [
         {"type": "order", "ask": "Rewrite it, starting with the topic 臺灣菜.", "src": "我不常吃臺灣菜。", "tiles": ["臺灣菜", "，", "我", "不", "常", "吃", "。"]},
@@ -411,15 +384,13 @@
       "en": "Making suggestions",
       "card": {
         "patterns": [
-          "{s:我們} + {v:V. + O.} + {k:吧}！",
-          "…，{k:好不好}？ / …，{k:怎麼樣}？"
+          "{s:我們} + {v:V.} + {k:吧}！"
         ],
         "examples": [
-          ["{tw:週末}{s:我們}{v:去游泳}，{k:好不好}？", "zhōu mò wǒ men qù yóu yǒng, hǎo bù hǎo?", "Shall we go swimming this weekend?"],
           ["我不喜歡游泳，{s:我們}{v:去打網球}{k:吧}！", "wǒ bù xǐ huān yóu yǒng, wǒ men qù dǎ wǎng qiú ba!", "I don't like swimming, let's go play tennis!"],
-          ["{k:好啊}！", "hǎo a!", "OK, sure!"]
+          ["{tw:週末}{s:我們}{v:去游泳}，{k:好不好}？", "zhōu mò wǒ men qù yóu yǒng, hǎo bù hǎo?", "Shall we go swimming this weekend?"]
         ],
-        "tip": "吧 at the end turns a sentence into a suggestion: \"let's…\". To ask what the other person thinks, end with 好不好？ or 怎麼樣？ Answer 好啊！ or 不好。"
+        "tip": "吧 = let's. 好不好？ asks what they think."
       },
       "items": [
         {"type": "pick", "ctx": "A：週末我們去游泳，好不好？", "q": "B：我不喜歡游泳，我們去打網球＿！", "opts": ["吧", "嗎", "呢"], "en": "I don't like swimming, let's go play tennis!"},
@@ -443,17 +414,13 @@
       "en": "…and more (二十多, 一千多)",
       "card": {
         "patterns": [
-          "{k:Number + 多} + MW + {o:N.}　(10 and up)",
-          "Number + MW + {k:多} + {o:N.}　(less than one more)"
+          "Number + {k:多} + MW · Number + MW + {k:多}"
         ],
         "examples": [
           ["{k:二十多}個{o:人}", "èr shí duō ge rén", "twenty-odd people"],
-          ["{k:一千多}塊{o:錢}", "yì qiān duō kuài qián", "a thousand-odd dollars"],
-          ["{k:一千三百多}塊{o:錢}", "yì qiān sān bǎi duō kuài qián", "1,300-odd dollars"],
-          ["兩個{k:多}{o:包子}", "liǎng ge duō bāo zi", "two and a bit buns"],
-          ["一杯{k:多}{o:咖啡}", "yì bēi duō kā fēi", "a cup and a bit of coffee"]
+          ["兩個{k:多}{o:包子}", "liǎng ge duō bāo zi", "two and a bit buns"]
         ],
-        "tip": "多 goes right after the last round number you say: 1378 → 一千多 (1001–1999), 一千三百多 (1301–1399), 一千三百七十多 (1371–1379). For less than one extra unit (2.5 buns), 多 goes after the measure word: 兩個多包子."
+        "tip": "二十多個 = 20-something. 兩個多 = 2 and a bit."
       },
       "items": [
         {"type": "pick", "ask": "Say the amount with 多.", "q": "1378 塊 (anything from 1001 to 1999) → ＿塊錢", "opts": ["一千多", "一千三百多", "一千多三百"], "en": "a thousand-odd dollars"},
@@ -479,15 +446,13 @@
       "en": "Asking the price",
       "card": {
         "patterns": [
-          "Q：Number + MW + {o:N.} + {k:多少錢}？",
-          "A：Number + MW + {o:N.} + ＿{k:塊錢}。"
+          "Number + MW + {o:N.} + {k:多少錢}？"
         ],
         "examples": [
           ["一杯{o:咖啡}{k:多少錢}？", "yì bēi kā fēi duō shǎo qián?", "How much is a cup of coffee?"],
-          ["一杯{o:咖啡}五十五{k:塊錢}。", "yì bēi kā fēi wǔ shí wǔ kuài qián.", "A cup of coffee is 55 dollars."],
-          ["兩本{o:書}一千八百{k:塊錢}。", "liǎng běn shū yì qiān bā bǎi kuài qián.", "Two books are 1,800 dollars."]
+          ["一杯{o:咖啡}五十五{k:塊錢}。", "yì bēi kā fēi wǔ shí wǔ kuài qián.", "A cup of coffee is 55 dollars."]
         ],
-        "tip": "多少 asks how much or how many for any amount (幾 is for small numbers). 塊 is the measure word for dollars. Measure words: 杯 cups, 張 flat things (照片), 本 books, 支 phones, 瓶 bottles, 個 most other things. You can also say 一杯咖啡要多少錢？"
+        "tip": "塊 = dollar."
       },
       "items": [
         {"type": "pick", "ask": "Answer using the table.", "table": "prices", "q": "一杯咖啡多少錢？", "opts": ["一杯咖啡五十五塊錢。", "一杯咖啡五百五塊錢。", "一個咖啡五十五塊錢。"], "en": "A cup of coffee is 55 dollars."},
@@ -512,19 +477,15 @@
       "en": "At the shop",
       "card": {
         "patterns": [
-          "老闆：請問您要{k:買}什麼？",
-          "客人：Number + MW + {o:N.} {k:賣}多少錢？",
-          "客人：請{k:幫}我{v:微波}。",
-          "老闆：{k:一共}＿塊錢。"
+          "{k:買} buy · {k:賣} sell · {k:幫} for · {k:一共} altogether"
         ],
         "examples": [
           ["請問您要{k:買}什麼？", "qǐng wèn nín yào mǎi shén me?", "What would you like to buy?"],
           ["一杯{o:咖啡}{k:賣}多少錢？", "yì bēi kā fēi mài duō shǎo qián?", "How much is a cup of coffee?"],
           ["{o:包子}，請{k:幫}我{v:微波}。", "bāo zi, qǐng bāng wǒ wéi bō.", "Please microwave the bun for me."],
-          ["{k:一共}八十五塊錢。", "yí gòng bā shí wǔ kuài qián.", "That's 85 dollars altogether."],
-          ["{k:好的}。", "hǎo de.", "OK, sure."]
+          ["{k:一共}八十五塊錢。", "yí gòng bā shí wǔ kuài qián.", "That's 85 dollars altogether."]
         ],
-        "tip": "買 mǎi (3rd tone) = to buy, 賣 mài (4th tone) = to sell: the customer 買, the shop 賣. 幫 + person + verb = do something for someone. 一共 = altogether."
+        "tip": "買 mǎi = buy, 賣 mài = sell."
       },
       "items": [
         {"type": "pick", "q": "老闆：請問您要＿什麼？", "opts": ["買", "賣", "幫"], "en": "What would you like to buy?"},
@@ -549,16 +510,13 @@
       "en": "Ordering: size, take away or eat in",
       "card": {
         "patterns": [
-          "{s:你}要{o:大杯}、{o:中杯}{k:還是}{o:小杯}？",
-          "{s:你}要{o:外帶}{k:還是}{o:內用}？"
+          "{o:A}、{o:B}{k:還是}{o:C}？"
         ],
         "examples": [
           ["咖啡，{s:你}要{o:大杯}、{o:中杯}{k:還是}{o:小杯}？", "kā fēi, nǐ yào dà bēi, zhōng bēi hái shì xiǎo bēi?", "Coffee: large, medium or small?"],
-          ["{s:我}要{o:中杯}。", "wǒ yào zhōng bēi.", "Medium, please."],
-          ["{s:你}要{o:外帶}{k:還是}{o:內用}？", "nǐ yào wài dài hái shì nèi yòng?", "Take away or eat in?"],
-          ["{s:你}喜歡{o:大車}{k:還是}{o:小車}？", "nǐ xǐ huān dà chē hái shì xiǎo chē?", "Do you like big cars or small cars?"]
+          ["{s:你}要{o:外帶}{k:還是}{o:內用}？", "nǐ yào wài dài hái shì nèi yòng?", "Take away or eat in?"]
         ],
-        "tip": "大 / 中 / 小 go before the measure word or noun: 大杯, 小車. With three choices, put 、 between the first two and 還是 before the last. 外帶 = take away, 內用 = eat in."
+        "tip": "外帶 = take away, 內用 = eat in."
       },
       "items": [
         {"type": "pick", "ctx": "A：咖啡，你要大杯、中杯還是小杯？", "q": "B：＿", "opts": ["我要小杯。", "我要杯小。", "我小杯要嗎？"], "en": "Small, please."},
@@ -582,16 +540,14 @@
       "en": "Can: three ways to say two things",
       "card": {
         "patterns": [
-          "{s:S.} + {k:能} + {v:A} {k:和} {v:B}",
-          "{s:S.} + {k:能} + {v:A}，{k:也能} + {v:B}",
-          "{v:A} {k:和} {v:B}，{s:S.} + {k:都能}"
+          "{s:S.} + {k:能} + {v:V.}"
         ],
         "examples": [
           ["{s:這支手機}{k:能}{v:上網}{k:和}{v:照相}。", "zhè zhī shǒu jī néng shàng wǎng hàn zhào xiàng.", "This phone can go online and take photos."],
           ["{s:這支手機}{k:能}{v:上網}，{k:也能}{v:照相}。", "zhè zhī shǒu jī néng shàng wǎng, yě néng zhào xiàng.", "This phone can go online, and it can also take photos."],
           ["{v:上網}{k:和}{v:照相}，{s:這支手機}{k:都能}。", "shàng wǎng hàn zhào xiàng, zhè zhī shǒu jī dōu néng.", "Going online and taking photos, this phone can do both."]
         ],
-        "tip": "能 = can, to be able to. It works like 喜歡 A 和 B: 也 and 都 go before 能 (也能, 都能)."
+        "tip": "也 and 都 go before 能: 也能, 都能."
       },
       "items": [
         {"type": "pick", "q": "這支手機能上網，＿能照相。", "opts": ["也", "都", "和"], "en": "This phone can go online, and it can also take photos."},

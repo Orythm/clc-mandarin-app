@@ -12,10 +12,9 @@
         ],
         "examples": [
           ["{s:你}{v:是}{o:臺灣人}{k:嗎}？", "nǐ shì tái wān rén ma?", "Are you Taiwanese?"],
-          ["{s:你}{v:喜歡喝}{o:茶}{k:嗎}？", "nǐ xǐ huān hē chá ma?", "Do you like tea?"],
-          ["是的，{s:我}{v:喜歡喝}{o:茶}。", "shì de, wǒ xǐ huān hē chá.", "Yes, I like tea."]
+          ["{s:你}{v:喜歡喝}{o:茶}{k:嗎}？", "nǐ xǐ huān hē chá ma?", "Do you like tea?"]
         ],
-        "tip": "Put 嗎 at the end of a statement to make a yes / no question. Don't add 嗎 when the question already has a question word (什麼, 哪, 誰, 幾, 多少, 還是, 好不好…)."
+        "tip": "No 嗎 if there's already a question word."
       },
       "items": [
         {"type": "pick", "q": "你是日本人＿？", "opts": ["嗎", "什麼", "呢"], "en": "Are you Japanese?"},
@@ -33,15 +32,13 @@
       "en": "What? Do what?",
       "card": {
         "patterns": [
-          "{s:S.} + {v:V.} + {k:什麼}？",
-          "{s:S.} + {k:做什麼}？"
+          "{s:S.} + {v:V.} + {k:什麼}？"
         ],
         "examples": [
           ["{s:你}{v:喜歡喝}{k:什麼}？", "nǐ xǐ huān hē shén me?", "What do you like to drink?"],
-          ["{s:你}{v:叫}{k:什麼}名字？", "nǐ jiào shén me míng zi?", "What's your name?"],
           ["{tw:週末}{s:你}常{k:做什麼}？", "zhōu mò nǐ cháng zuò shén me?", "What do you usually do on weekends?"]
         ],
-        "tip": "什麼 = what. It sits where the answer goes: 你喜歡喝什麼？ → 我喜歡喝茶。 做什麼 = do what: 你明天要做什麼？ → 我明天要去游泳。"
+        "tip": "什麼 sits where the answer goes."
       },
       "items": [
         {"type": "pick", "ask": "Complete the question that this answers: 我喜歡吃炒飯。", "q": "你喜歡吃＿？", "opts": ["什麼", "哪", "幾"], "en": "What do you like to eat?"},
@@ -59,15 +56,13 @@
       "en": "Which? Which country?",
       "card": {
         "patterns": [
-          "{s:S.} + {v:是} + {k:哪國}人？",
           "{k:哪} + MW + {o:N.}？"
         ],
         "examples": [
           ["{s:你}{v:是}{k:哪國}人？", "nǐ shì nǎ guó rén?", "Where are you from?"],
-          ["{s:我}{v:是}美國人。", "wǒ shì měi guó rén.", "I'm American."],
           ["{s:你}{v:要}{k:哪}支{o:手機}？", "nǐ yào nǎ zhī shǒu jī?", "Which phone do you want?"]
         ],
-        "tip": "哪 nǎ = which. 哪國人 = a person of which country, i.e. where are you from. Don't mix up 哪 nǎ (which, 3rd tone) and 那 nà (that, 4th tone)."
+        "tip": "哪 nǎ = which. 那 nà = that."
       },
       "items": [
         {"type": "pick", "ask": "Complete the question that this answers: 我是日本人。", "q": "你是＿人？", "opts": ["哪國", "什麼", "誰"], "en": "Where are you from?"},
@@ -84,17 +79,13 @@
       "en": "Who? Whose?",
       "card": {
         "patterns": [
-          "{k:誰} + {v:V.}？",
-          "{s:S.} + {v:是} + {k:誰}？",
-          "{k:誰}的 + {o:N.}？"
+          "{s:S.} + {v:是} + {k:誰}？"
         ],
         "examples": [
           ["{s:她}{v:是}{k:誰}？", "tā shì shéi?", "Who is she?"],
-          ["{s:她}{v:是}我姐姐。", "tā shì wǒ jiě jie.", "She's my older sister."],
-          ["{k:誰}{v:喜歡打}{o:籃球}？", "shéi xǐ huān dǎ lán qiú?", "Who likes playing basketball?"],
           ["這是{k:誰}的{o:書}？", "zhè shì shéi de shū?", "Whose book is this?"]
         ],
-        "tip": "誰 shéi = who. Like 什麼, it sits where the answer goes. 誰的 = whose."
+        "tip": "誰的 = whose."
       },
       "items": [
         {"type": "pick", "ask": "Complete the question that this answers: 他是我哥哥。", "q": "他是＿？", "opts": ["誰", "什麼", "哪"], "en": "Who is he?"},
@@ -111,15 +102,13 @@
       "en": "How many? How much?",
       "card": {
         "patterns": [
-          "{k:幾} + MW + {o:N.}？　(small numbers)",
-          "{k:多少} (+ MW) + {o:N.}？　(any number)"
+          "{k:幾} + MW + {o:N.}？ · {k:多少} + {o:N.}？"
         ],
         "examples": [
           ["{s:你}{v:有}{k:幾}個{o:妹妹}？", "nǐ yǒu jǐ ge mèi mei?", "How many younger sisters do you have?"],
-          ["這支{o:手機}{k:多少}錢？", "zhè zhī shǒu jī duō shǎo qián?", "How much is this phone?"],
-          ["{s:你們學校}{v:有}{k:多少}{o:人}？", "nǐ men xué xiào yǒu duō shǎo rén?", "How many people are at your school?"]
+          ["這支{o:手機}{k:多少}錢？", "zhè zhī shǒu jī duō shǎo qián?", "How much is this phone?"]
         ],
-        "tip": "幾 expects a small number and always takes a measure word: 幾個, 幾張. 多少 works for any number, with or without a measure word. Prices always use 多少錢."
+        "tip": "幾 for small numbers, 多少 for any."
       },
       "items": [
         {"type": "pick", "ask": "Complete the question that this answers: 我有兩個妹妹。", "q": "你有＿個妹妹？", "opts": ["幾", "多少錢", "什麼"], "en": "How many younger sisters do you have?"},
@@ -141,10 +130,9 @@
         ],
         "examples": [
           ["{s:我}{v:是}美國人，{s:你}{k:呢}？", "wǒ shì měi guó rén, nǐ ne?", "I'm American, and you?"],
-          ["{s:我}{v:喜歡喝}{o:咖啡}，{s:你}{k:呢}？", "wǒ xǐ huān hē kā fēi, nǐ ne?", "I like coffee, what about you?"],
-          ["{s:我}也{v:喜歡喝}{o:咖啡}。", "wǒ yě xǐ huān hē kā fēi.", "I like coffee too."]
+          ["{s:我}{v:喜歡喝}{o:咖啡}，{s:你}{k:呢}？", "wǒ xǐ huān hē kā fēi, nǐ ne?", "I like coffee, what about you?"]
         ],
-        "tip": "呢 after a person or thing asks the same question back: \"and you?\", \"what about…?\". No need to repeat the verb."
+        "tip": "呢 asks the same question back."
       },
       "items": [
         {"type": "pick", "q": "我是日本人，你＿？", "opts": ["呢", "嗎", "什麼"], "en": "I'm Japanese, and you?"},
@@ -161,16 +149,13 @@
       "en": "Shall we…? How about…?",
       "card": {
         "patterns": [
-          "Suggestion + ，{k:好不好}？",
-          "Suggestion + ，{k:怎麼樣}？",
-          "{o:N.} + {k:怎麼樣}？"
+          "Suggestion，{k:好不好 / 怎麼樣}？"
         ],
         "examples": [
           ["{s:我們}{v:去看}{o:電影}，{k:好不好}？", "wǒ men qù kàn diàn yǐng, hǎo bù hǎo?", "Shall we go see a movie?"],
-          ["{tw:明天}{v:去游泳}，{k:怎麼樣}？", "míng tiān qù yóu yǒng, zěn me yàng?", "How about swimming tomorrow?"],
           ["{o:臺灣菜}{k:怎麼樣}？", "tái wān cài zěn me yàng?", "How is Taiwanese food?"]
         ],
-        "tip": "Put 好不好？ or 怎麼樣？ after a suggestion to ask what the other person thinks; answer 好啊！ or 不好。 怎麼樣 after a thing asks for an opinion. No 嗎 with either."
+        "tip": "No 嗎 with either."
       },
       "items": [
         {"type": "pick", "q": "我們一起去吃晚飯，＿？", "opts": ["好不好", "誰", "幾"], "en": "Shall we go have dinner together?"},
@@ -191,10 +176,9 @@
         ],
         "examples": [
           ["{s:你}{k:為什麼}{v:學}{o:中文}？", "nǐ wèi shén me xué zhōng wén?", "Why are you learning Chinese?"],
-          ["{s:你}{k:為什麼}不{v:喜歡喝}{o:咖啡}？", "nǐ wèi shén me bù xǐ huān hē kā fēi?", "Why don't you like coffee?"],
-          ["太貴了。", "tài guì le.", "It's too expensive."]
+          ["{s:你}{k:為什麼}不{v:喜歡喝}{o:咖啡}？", "nǐ wèi shén me bù xǐ huān hē kā fēi?", "Why don't you like coffee?"]
         ],
-        "tip": "為什麼 = why. It goes after the subject, before the verb (and before 不). A short answer can be 太貴了。 or 我覺得…"
+        "tip": "為什麼 goes before the verb."
       },
       "items": [
         {"type": "pick", "ask": "Complete the question that this answers: 太貴了。", "q": "你＿不買那支手機？", "opts": ["為什麼", "什麼", "怎麼樣"], "en": "Why aren't you buying that phone?"},
