@@ -130,6 +130,24 @@ button.card:hover{border-color:var(--accent)}
 /* Grammar: one page with a Practice button and the list of points; a card popup opens over any question */
 .gpoints{display:grid;gap:8px}
 .gtop{display:grid;gap:14px}
+/* Flashcards: one card, hold to flip, swipe right for the next */
+.fc{display:grid;gap:10px;justify-items:center}
+.fcstage{width:100%;display:grid;place-items:center;perspective:1200px;overflow:hidden;padding:6px 0 10px}
+.fcard{position:relative;width:min(100%,340px);aspect-ratio:3/4;max-height:62dvh;touch-action:pan-y;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;cursor:grab;outline:none}
+.fcard:focus-visible .face{outline:2px solid var(--accent);outline-offset:2px}
+.fcin{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .35s}
+.fcard.flip .fcin{transform:rotateY(180deg)}
+.fcard .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--paper);border:1px solid var(--line);border-radius:18px;box-shadow:0 10px 28px -14px rgba(0,0,0,.4);display:grid;align-content:center;justify-items:center;gap:6px;padding:20px;text-align:center;box-sizing:border-box}
+.fcard .back{transform:rotateY(180deg)}
+.fcard .front .fzh{font-family:var(--f-hand);font-size:clamp(7rem,38vw,10rem);line-height:1;color:var(--accent)}
+.fcard .back .fzh{font-family:var(--f-hand);font-size:clamp(4rem,22vw,5.5rem);line-height:1.1;color:var(--accent)}
+.fcard .fpy{font-size:1.7rem;font-style:italic}
+.fcard .fen{color:var(--muted);font-size:1.15rem;margin-bottom:14px}
+.fcard .fex{border-top:1px solid var(--line);padding-top:14px;display:grid;gap:2px;width:100%}
+.fcard .fex .zh{font-family:var(--f-hand);font-size:2.2rem}
+.fcard .fex .xpy{font-style:italic}
+.fcard .fex .en{color:var(--muted)}
+.fchint{color:var(--muted);font-size:.95rem;margin:0;text-align:center}
 .gh{font-family:var(--f-py);font-size:1.05rem;margin:6px 0 0}
 .gh small{color:var(--muted);font-weight:400;font-size:.9rem}
 .gpt{display:flex;align-items:stretch;background:var(--bg);border:1px solid var(--line);border-radius:12px}
@@ -263,6 +281,7 @@ button.card:hover{border-color:var(--accent)}
 
   <section class="menu gtop" id="mmenu" hidden>
     <button class="btn primary play" id="mPractice" type="button">Practice · all measure words</button>
+    <button class="btn play" id="mFlash" type="button">Flashcards</button>
     <h2 class="gh">Cards <small>what each one counts</small></h2>
     <div class="gpoints" id="mList"></div>
   </section>
@@ -323,6 +342,17 @@ button.card:hover{border-color:var(--accent)}
     <div class="tools mwtools"><span><button class="btn" id="mwPeek" type="button">📖 Cards</button> <button class="btn" id="mwPy" type="button" aria-label="Hold to show pinyin">拼音</button></span><button class="btn primary" id="mwGo" type="button" hidden>Next</button></div>
   </section>
 
+  <section class="fc" id="fcBox" hidden>
+    <div class="meta" id="fcCount"></div>
+    <div class="fcstage"><div class="fcard" id="fcCard" role="button" tabindex="0" aria-label="Hold to flip the card, swipe right for the next one">
+      <div class="fcin">
+        <div class="face front"><div class="fzh" id="fcFront"></div></div>
+        <div class="face back"><div class="fzh" id="fcZh"></div><div class="fpy" id="fcPy"></div><div class="fen" id="fcEn"></div><div class="fex" id="fcEx"></div></div>
+      </div>
+    </div></div>
+    <p class="fchint">Hold the card to flip it · swipe right for the next one</p>
+  </section>
+
   <section class="results" id="results" hidden>
     <h2>結果</h2>
     <div class="score" id="final"></div>
@@ -373,7 +403,7 @@ function buildMenu(boxId, sets, pathOf){
 function hideAll(){
   stopAudio(); closeCard();
   $('restartBtn').textContent = 'Start over (all words)';
-  ['home','menu','xmenu','tmenu','gmenu','mmenu','grBox','meta','rail','promptBox','results','board','dict','mwBox'].forEach(id => $(id).hidden = true);
+  ['home','menu','xmenu','tmenu','gmenu','mmenu','grBox','meta','rail','promptBox','results','board','dict','mwBox','fcBox'].forEach(id => $(id).hidden = true);
 }
 function showHome(){
   hideAll(); $('modeBtn').hidden = true;
@@ -822,6 +852,70 @@ function openMwAll(){
 }
 $('mwPeek').addEventListener('click', openMwAll);
 $('mPractice').addEventListener('click', () => go('/measure/practice'));
+$('mFlash').addEventListener('click', () => go('/measure/flashcards'));
+
+// Flashcards: the measure word alone; hold the card to flip it (pinyin, what it counts, one example);
+// swipe right for the next card. The deck reshuffles after the last card.
+let fcDeck = [], fcI = 0;
+function startFc(){
+  hideAll(); $('modeBtn').hidden = false; $('modeBtn').textContent = '← Measure words';
+  $('title').textContent = '量詞 · Flashcards'; $('fcBox').hidden = false;
+  fcDeck = shuffle(MW); fcI = 0; showFc(); window.scrollTo(0,0);
+}
+function showFc(){
+  const m = fcDeck[fcI], w = m.nouns[Math.floor(Math.random() * m.nouns.length)];
+  const card = $('fcCard'), inner = card.querySelector('.fcin');
+  inner.style.transition = 'none'; card.classList.remove('flip');
+  $('fcFront').textContent = m.mw; $('fcZh').textContent = m.mw; $('fcPy').textContent = m.py; $('fcEn').textContent = 'for ' + m.en;
+  const ex = $('fcEx'); ex.textContent = '';
+  ex.append(el('div','zh', '一' + m.mw + w[0]), el('div','xpy', numPy(NUMS[0], m) + ' ' + m.py + ' ' + w[1]), el('div','en', 'one ' + w[2]));
+  $('fcCount').textContent = (fcI + 1) + ' / ' + fcDeck.length;
+  card.style.transition = 'none'; card.style.transform = 'scale(.94)'; card.style.opacity = '0';
+  void card.offsetWidth;
+  inner.style.transition = ''; card.style.transition = 'transform .2s, opacity .2s'; card.style.transform = ''; card.style.opacity = '';
+}
+function nextFc(){
+  if (++fcI >= fcDeck.length) {
+    const last = fcDeck[fcDeck.length - 1];
+    do fcDeck = shuffle(MW); while (MW.length > 1 && fcDeck[0] === last);
+    fcI = 0;
+  }
+  showFc();
+}
+(function(){
+  const card = $('fcCard');
+  let x0 = 0, y0 = 0, dx = 0, down = false, drag = false, holdT = 0;
+  const fly = () => {
+    card.style.transition = 'transform .25s ease-in, opacity .25s';
+    card.style.transform = 'translateX(120vw) rotate(25deg)'; card.style.opacity = '0';
+    setTimeout(nextFc, 250);
+  };
+  card.addEventListener('pointerdown', e => {
+    if (e.button > 0) return;
+    down = true; drag = false; dx = 0; x0 = e.clientX; y0 = e.clientY;
+    card.setPointerCapture(e.pointerId);
+    holdT = setTimeout(() => card.classList.add('flip'), 150);
+  });
+  card.addEventListener('pointermove', e => {
+    if (!down) return;
+    dx = e.clientX - x0; const dy = e.clientY - y0;
+    if (!drag && Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy)) { drag = true; clearTimeout(holdT); }
+    if (drag) { card.style.transition = 'none'; card.style.transform = 'translateX(' + dx + 'px) rotate(' + dx / 20 + 'deg)'; }
+  });
+  const up = () => {
+    if (!down) return; down = false; clearTimeout(holdT);
+    if (drag && dx > 80) return fly();
+    card.classList.remove('flip');
+    card.style.transition = 'transform .2s'; card.style.transform = '';
+  };
+  ['pointerup','pointercancel','lostpointercapture'].forEach(t => card.addEventListener(t, up));
+  card.addEventListener('contextmenu', e => e.preventDefault());
+  card.addEventListener('keydown', e => {
+    if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); card.classList.add('flip'); }
+    if (e.key === 'ArrowRight') { e.preventDefault(); fly(); }
+  });
+  card.addEventListener('keyup', e => { if (e.key === ' ' || e.key === 'Enter') card.classList.remove('flip'); });
+})();
 function finishMw(){
   // The results screen lists misses as [characters, pinyin, english]: show the phrase with 一.
   misses = mwMisses.map(({ m, w }) => [ '一' + m.mw + w[0], numPy(NUMS[0], m) + ' ' + m.py + ' ' + w[1], m.en ]);
@@ -1137,6 +1231,7 @@ function route(){
   if (MW_ITEMS.length && (path === '/measure' || path.startsWith('/measure/'))) {
     if (path === '/measure') return showMwMenu();
     if (path === '/measure/practice') return startMw(MW_ITEMS);
+    if (path === '/measure/flashcards') return startFc();
   }
   for (const k in SETS) {
     const S = SETS[k]; if (!S.data.points.length || !(path === S.base || path.startsWith(S.base + '/'))) continue;
