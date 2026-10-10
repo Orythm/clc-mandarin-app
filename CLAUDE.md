@@ -48,6 +48,10 @@ When the user sends a photo of a vocabulary list:
 
 Fixing a typo works the same way: edit the word in `lessons.json`, confirm with the user, commit, push.
 
+## Extra vocabulary
+
+Handout words that aren't in any lesson live in **`extra-vocab.json`**, grouped by topic: `[{"id": "food", "zh": "吃的喝的", "en": "Food & drinks", "words": [[characters, pinyin, english]]}]`. Same word format rules; show milo the table before adding words (first 25 approved 2026-10-10). The home card 補充 Vocabulary opens `/extra`, one section per topic with the same two quiz modes as the lessons (`/extra/<id>-py-zh`, `/extra/<id>-zh-py`). When a word is added here, also add it to `pinyin.json` so grammar sentences can use it.
+
 ## Measure words
 
 The 量詞 exercise (`/measure`) reads **`measure-words.json`**: a list of `{"mw": "本", "py": "běn", "en": "books", "nouns": [["書","shū","book"]]}`. Same word format rules as above. milo chooses which measure words go in (first set approved 2026-10-10: 個 張 杯 瓶 本 支 塊); prefer nouns from the lessons and show milo the table before pushing. A noun may be listed under two measure words (可樂 under 杯 and 瓶): it's asked once and either answer counts. The page at `/measure` has Practice (`/measure/practice`, every noun once, Next button to move on) and a card per measure word (pattern, every noun with pinyin, which nouns also take another measure word), built from the file. During a question, 📖 Cards shows every measure word and what it counts, without the nouns. The home card stays hidden while the file is empty.

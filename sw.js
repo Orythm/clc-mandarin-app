@@ -1,4 +1,4 @@
-const VERSION = 'v39';
+const VERSION = 'v40';
 const CACHE = `clc-vocab-${VERSION}`;
 // Recordings get their own cache that survives version bumps: each file is downloaded the
 // first time it is played and then kept for offline use. Bump AUDIO_CACHE only if files change.
@@ -10,6 +10,7 @@ const PRECACHE = [
   '/grammar.json',
   '/questions.json',
   '/pinyin.json',
+  '/extra-vocab.json',
   '/manifest.webmanifest',
   '/icons/icon-192.png',
   '/icons/icon-512.png',
@@ -44,7 +45,7 @@ self.addEventListener('fetch', (event) => {
   // Navigations and lesson / measure-word data: network-first so updates show up right away,
   // keep the latest copy in the cache, fall back to it offline.
   const path = new URL(req.url).pathname;
-  const isData = path === '/lessons.json' || path === '/measure-words.json' || path === '/grammar.json' || path === '/questions.json' || path === '/pinyin.json' || path === '/audio/index.json';
+  const isData = path === '/lessons.json' || path === '/measure-words.json' || path === '/grammar.json' || path === '/questions.json' || path === '/pinyin.json' || path === '/extra-vocab.json' || path === '/audio/index.json';
   if (req.mode === 'navigate' || isData) {
     const key = isData ? path : '/';
     event.respondWith(

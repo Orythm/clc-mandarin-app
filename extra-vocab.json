@@ -1,0 +1,48 @@
+[
+  {
+    "id": "food",
+    "zh": "吃的喝的",
+    "en": "Food & drinks",
+    "words": [
+      ["珍珠奶茶","zhēn zhū nǎi chá","bubble tea"],
+      ["水","shuǐ","water"],
+      ["果汁","guǒ zhī","juice"],
+      ["牛奶","niú nǎi","milk"],
+      ["可樂","kě lè","cola"],
+      ["啤酒","pí jiǔ","beer"],
+      ["紅酒","hóng jiǔ","red wine"],
+      ["炒飯","chǎo fàn","fried rice"],
+      ["牛肉麵","niú ròu miàn","beef noodles"],
+      ["小籠包","xiǎo lóng bāo","soup dumplings"],
+      ["漢堡","hàn bǎo","hamburger"],
+      ["巧克力","qiǎo kè lì","chocolate"],
+      ["沙拉","shā lā","salad"],
+      ["壽司","shòu sī","sushi"]
+    ]
+  },
+  {
+    "id": "activities",
+    "zh": "活動",
+    "en": "Activities",
+    "words": [
+      ["逛街","guàng jiē","to go shopping"],
+      ["騎腳踏車","qí jiǎo tà chē","to ride a bike"],
+      ["爬山","pá shān","to go hiking"],
+      ["約會","yuē huì","date (to go out)"]
+    ]
+  },
+  {
+    "id": "people-places",
+    "zh": "人和地方",
+    "en": "People, places, time",
+    "words": [
+      ["朋友","péng yǒu","friend"],
+      ["太太","tài tai","wife, Mrs."],
+      ["女兒","nǚ ér","daughter"],
+      ["學校","xué xiào","school"],
+      ["班","bān","class"],
+      ["公司","gōng sī","company"],
+      ["星期","xīng qí","week"]
+    ]
+  }
+]

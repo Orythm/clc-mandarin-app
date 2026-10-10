@@ -206,6 +206,11 @@ button.card:hover{border-color:var(--accent)}
       <span class="lbl">Vocab quiz</span>
       <span class="sub" id="vocabSub">Match pinyin and characters, lesson by lesson</span>
     </button>
+    <button class="card" id="xCard" type="button" hidden>
+      <span class="ic">補充</span>
+      <span class="lbl">Vocabulary</span>
+      <span class="sub" id="xSub">Words from the class handouts, by topic</span>
+    </button>
     <button class="card" id="tonesCard" type="button">
       <span class="ic">聽寫</span>
       <span class="wip">WIP</span>
@@ -236,6 +241,10 @@ button.card:hover{border-color:var(--accent)}
 
   <section class="menu" id="menu" hidden>
     <div class="lessons" id="lessons"></div>
+  </section>
+
+  <section class="menu" id="xmenu" hidden>
+    <div class="lessons" id="xlessons"></div>
   </section>
 
   <section class="menu" id="tmenu" hidden>
@@ -339,21 +348,23 @@ let ex = 'vocab', endless = false, WORDS = [], lesson = null, mode = 'py2zh', qu
 function shuffle(a){ a = a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]} return a; }
 function el(tag, cls, text){ const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
 
-function buildMenu(){
-  const box = $('lessons');
-  LESSONS.forEach(L => {
+// One section per word set: the lessons (/vocab) or the extra handout topics (/extra).
+const setName = L => L.zh + ' · ' + (L.n ? 'Lesson ' + L.n : L.en);
+function buildMenu(boxId, sets, pathOf){
+  const box = $(boxId || 'lessons'); box.textContent = '';
+  (sets || LESSONS).forEach(L => {
     const sec = el('section','lesson');
-    const h = el('h2', null, L.zh + ' · Lesson ' + L.n + ' ');
+    const h = el('h2', null, setName(L) + ' ');
     h.append(el('small', null, L.words.length + ' words'));
     const modes = el('div','modes');
-    const ex = L.words[L.words.length > 17 ? 17 : 0];
+    const ex = L.n ? L.words[L.words.length > 17 ? 17 : 0] : L.words.find(w => [...w[0]].length === 2) || L.words[0];
     [['py2zh','Pinyin → Characters'],['zh2py','Characters → Pinyin']].forEach(([m,label]) => {
       const b = el('button','mode'); b.type = 'button';
       const e = el('span','ex');
       const py = document.createTextNode(ex[1]); const zh = el('span','h',ex[0]); const arr = el('span','arr','→');
       if (m === 'py2zh') e.append(py,' ',arr,' ',zh); else e.append(zh,' ',arr,' ',py);
       b.append(e, el('span','lbl',label));
-      b.addEventListener('click', () => go(lessonPath(L.n, m)));
+      b.addEventListener('click', () => go((pathOf || (L => lessonPath(L.n, m)))(L, m)));
       modes.append(b);
     });
     sec.append(h, modes); box.append(sec);
@@ -362,7 +373,7 @@ function buildMenu(){
 function hideAll(){
   stopAudio(); closeCard();
   $('restartBtn').textContent = 'Start over (all words)';
-  ['home','menu','tmenu','gmenu','mmenu','grBox','meta','rail','promptBox','results','board','dict','mwBox'].forEach(id => $(id).hidden = true);
+  ['home','menu','xmenu','tmenu','gmenu','mmenu','grBox','meta','rail','promptBox','results','board','dict','mwBox'].forEach(id => $(id).hidden = true);
 }
 function showHome(){
   hideAll(); $('modeBtn').hidden = true;
@@ -371,6 +382,10 @@ function showHome(){
 function showMenu(){
   hideAll(); $('modeBtn').hidden = false; $('modeBtn').textContent = '← Home';
   $('menu').hidden = false; $('title').textContent = '華語詞彙 · Vocab Quiz';
+}
+function showXMenu(){
+  hideAll(); $('modeBtn').hidden = false; $('modeBtn').textContent = '← Home';
+  $('xmenu').hidden = false; $('title').textContent = '補充 · Vocabulary';
 }
 function buildBoard(){
   const b = $('board'); b.textContent = '';
@@ -384,9 +399,9 @@ function buildBoard(){
 }
 function start(list){
   ex = 'vocab'; endless = false; queue = shuffle(list); idx = 0; score = 0; misses = [];
-  $('title').textContent = lesson.zh + ' · Lesson ' + lesson.n;
-  $('home').hidden = true; $('menu').hidden = true; $('results').hidden = true;
-  $('modeBtn').textContent = '← Lessons';
+  $('title').textContent = setName(lesson);
+  hideAll();
+  $('modeBtn').textContent = lesson.n ? '← Lessons' : '← Vocabulary';
   ['meta','rail','promptBox','board','modeBtn'].forEach(id => $(id).hidden = false);
   $('qt').textContent = queue.length;
   $('py').className = mode === 'zh2py' ? 'py zhq' : 'py';
@@ -1102,16 +1117,22 @@ $('gBrowse').addEventListener('click', () => go(GRS().base + '/cards'));
 // instead of closing the app. Old "/lesson-..." links are redirected to "/vocab/lesson-...".
 const SLUG = { py2zh: 'py-zh', zh2py: 'zh-py' };
 function lessonPath(n, m){ return '/vocab/lesson-' + n + '-' + SLUG[m]; }
+const extraPath = (L, m) => '/extra/' + L.id + '-' + SLUG[m];
 function parentOf(path){
-  if (path === '/vocab' || path === '/tones' || path === '/measure' || path === '/grammar' || path === '/questions') return '/';
+  if (path === '/vocab' || path === '/extra' || path === '/tones' || path === '/measure' || path === '/grammar' || path === '/questions') return '/';
   // Grammar and question pages nest: /grammar/cards/<id> → /grammar/cards → /grammar
   if (/^\/(grammar|questions)\/cards\/./.test(path)) return path.replace(/\/[^/]+$/, '');
   if (path.startsWith('/measure/')) return '/measure';
+  if (path.startsWith('/extra/')) return '/extra';
   return path.startsWith('/vocab/') ? '/vocab' : path.startsWith('/tones/') ? '/tones' : path.startsWith('/grammar/') ? '/grammar' : path.startsWith('/questions/') ? '/questions' : null;
 }
 function route(){
   const path = location.pathname.replace(/\/+$/, '') || '/';
   if (path === '/vocab') return showMenu();
+  if (path === '/extra' && EXTRA.length) return showXMenu();
+  const xr = path.match(/^\/extra\/([\w-]+)-(py-zh|zh-py)$/);
+  const XL = xr && EXTRA.find(x => x.id === xr[1]);
+  if (XL) { lesson = XL; WORDS = XL.words; mode = xr[2] === 'zh-py' ? 'zh2py' : 'py2zh'; return start(WORDS); }
   if (path === '/tones') return showTonesMenu();
   if (MW_ITEMS.length && (path === '/measure' || path.startsWith('/measure/'))) {
     if (path === '/measure') return showMwMenu();
@@ -1148,6 +1169,7 @@ window.addEventListener('popstate', route);
 $('menuBtn').addEventListener('click', goUp);
 $('modeBtn').addEventListener('click', goUp);
 $('vocabCard').addEventListener('click', () => go('/vocab'));
+$('xCard').addEventListener('click', () => go('/extra'));
 $('tonesCard').addEventListener('click', () => go('/tones'));
 $('mwCard').addEventListener('click', () => go('/measure'));
 $('grCard').addEventListener('click', () => go('/grammar'));
@@ -1167,8 +1189,16 @@ const mwLoad = fetch('/measure-words.json', {cache: 'no-cache'})
 const clipsLoad = fetch('/audio/index.json', {cache: 'no-cache'})
   .then(r => r.ok ? r.json() : {}).catch(() => ({}))
   .then(data => { CLIPS = data && typeof data === 'object' ? data : {}; });
+// Extra vocabulary (handout words outside the lessons), by topic: same quiz as the lessons.
+let EXTRA = [];
+const xLoad = fetch('/extra-vocab.json', {cache: 'no-cache'}).then(r => r.ok ? r.json() : []).catch(() => [])
+  .then(data => {
+    EXTRA = Array.isArray(data) ? data.filter(x => x.id && x.words && x.words.length) : [];
+    $('xCard').hidden = !EXTRA.length;
+    if (EXTRA.length) { buildMenu('xlessons', EXTRA, extraPath); $('xSub').textContent = EXTRA.reduce((n, x) => n + x.words.length, 0) + ' words from the class handouts, by topic'; }
+  });
 const pyLoad = fetch('/pinyin.json', {cache: 'no-cache'}).then(r => r.ok ? r.json() : {}).catch(() => ({}));
-Promise.all([fetch('/lessons.json', {cache: 'no-cache'}), mwLoad, clipsLoad, grLoad, pyLoad])
+Promise.all([fetch('/lessons.json', {cache: 'no-cache'}), mwLoad, clipsLoad, grLoad, pyLoad, xLoad])
   .then(([r, , , , py]) => { if (!r.ok) throw new Error(r.status); return r.json().then(d => [d, py]); })
   .then(([data, py]) => {
     LESSONS = data; buildMenu(); buildTonesMenu(); buildPy(py);
