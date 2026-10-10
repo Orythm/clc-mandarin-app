@@ -132,6 +132,12 @@ button.card:hover{border-color:var(--accent)}
 @media (max-width:560px){.board.mwb{grid-template-columns:repeat(3,1fr)} .board.mwb .tile{font-size:1.9rem}}
 /* Grammar: one page with a Practice button and the list of points; a card popup opens over any question */
 .gpoints{display:grid;gap:8px}
+/* Measure words: one small tile per measure word; tap for its card with every noun */
+.mwgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(4.5em,1fr));gap:.5em}
+.mwgrid .mwt{background:var(--bg);border:1px solid var(--line);border-radius:.75em;color:var(--fg);padding:.6em .2em;display:grid;gap:.15em;justify-items:center}
+.mwgrid .mwt:hover{border-color:var(--accent)}
+.mwgrid .mwt .h{font-family:var(--f-hand);font-size:2em;line-height:1.1}
+.mwgrid .mwt .sub{color:var(--muted);font-size:.9em;font-style:italic}
 .gtop{display:grid;gap:14px}
 /* Flashcards: one card, hold to flip, swipe either way for the next */
 .fc{display:grid;gap:.6em;justify-items:center;grid-template-rows:auto minmax(0,1fr) auto;flex:1;min-height:0}
@@ -295,8 +301,8 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
   <section class="menu gtop" id="mmenu" hidden>
     <button class="btn primary play" id="mPractice" type="button">Practice · all measure words</button>
     <button class="btn play" id="mFlash" type="button">Flashcards</button>
-    <h2 class="gh">Cards <small>what each one counts</small></h2>
-    <div class="gpoints" id="mList"></div>
+    <h2 class="gh">Cards <small>tap one for its nouns</small></h2>
+    <div class="mwgrid" id="mList"></div>
   </section>
 
   <div class="rail" id="rail" hidden><i id="bar"></i></div>
@@ -824,11 +830,10 @@ function showMwMenu(){
   $('title').textContent = '量詞 · Measure Words'; $('mmenu').hidden = false;
   const list = $('mList'); list.textContent = '';
   MW.forEach(m => {
-    const row = el('div','gpt');
-    const b = el('button','go'); b.type = 'button';
-    b.append(el('span','h', m.mw + ' ' ), el('span','sub', m.py + ' · for ' + m.en));
+    const b = el('button','mwt'); b.type = 'button'; b.setAttribute('aria-label', m.mw + ' ' + m.py + ', for ' + m.en);
+    b.append(el('span','h', m.mw), el('span','sub', m.py));
     b.addEventListener('click', () => openMwCard(m));
-    row.append(b); list.append(row);
+    list.append(b);
   });
   window.scrollTo(0,0);
 }
