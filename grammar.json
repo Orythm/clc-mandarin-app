@@ -218,7 +218,7 @@
     },
     {
       "id": "time-words",
-      "zh": "時間詞",
+      "zh": "今天晚上",
       "en": "Time words",
       "card": {
         "patterns": [
@@ -347,7 +347,7 @@
     },
     {
       "id": "topic",
-      "zh": "主題句",
+      "zh": "臺灣菜，我不常吃",
       "en": "Topic sentences",
       "card": {
         "patterns": [

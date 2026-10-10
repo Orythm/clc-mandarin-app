@@ -940,7 +940,7 @@ $('mFlash').addEventListener('click', () => go('/measure/flashcards'));
 // Flashcards: the measure word alone; hold the card to flip it (pinyin, what it counts, one example);
 // swipe left or right for the next card. The deck reshuffles after the last card.
 // The meaning of a flashcard's words from the word lists: 也 → "also", 大/中/小 → "big / medium / small".
-// Empty when a word isn't in any list (時間詞, 主題句): the card then shows the topic's English name.
+// Empty when a word isn't in any list (今天晚上, a sentence): the card then shows the topic's English name.
 function glossOf(text){
   const words = LESSONS.concat(EXTRA).flatMap(L => L.words);
   const en = w => { const f = words.find(x => x[0] === w); return f && f[2]; };
