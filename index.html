@@ -90,7 +90,8 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .mode{padding:14px}
 .mode .ex{font-size:1.3rem}
 .mode .ex .h{font-size:1.6rem}
-.wip{display:inline-block;vertical-align:middle;font-family:var(--f-py);font-size:.7rem;font-weight:600;letter-spacing:.05em;padding:2px 7px;border-radius:999px;background:var(--bad-soft);color:var(--bad)}
+.card{position:relative}
+.wip{position:absolute;top:12px;right:12px;font-family:var(--f-py);font-size:.7rem;font-weight:600;letter-spacing:.05em;padding:2px 7px;border-radius:999px;background:var(--bad-soft);color:var(--bad)}
 .home{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
 .card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:20px 16px;text-align:left;color:var(--fg);display:grid;gap:6px;align-content:start}
 button.card:hover{border-color:var(--accent)}
@@ -206,7 +207,8 @@ button.card:hover{border-color:var(--accent)}
     </button>
     <button class="card" id="tonesCard" type="button">
       <span class="ic">聽寫</span>
-      <span class="lbl">Pinyin dictation <span class="wip">WIP</span></span>
+      <span class="wip">WIP</span>
+      <span class="lbl">Pinyin dictation</span>
       <span class="sub">Hear a word, type its pinyin, add the tone marks</span>
     </button>
     <button class="card" id="mwCard" type="button" hidden>
