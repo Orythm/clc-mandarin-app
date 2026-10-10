@@ -176,15 +176,18 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
 .fcard .fex .en{color:var(--muted);font-size:5.5cqw}
 .fcard .fex:empty,.fcard .fgr:empty,.fcard .fen:empty,.fcard .fpy:empty,.fcard .back .fzh:empty{display:none}
 .fcard.gr .front .fzh{white-space:nowrap}
-.fgr .gtitle{color:var(--muted);font-size:5cqw;text-align:center}
-.fgr .gex .py{font-style:italic;font-size:4.3cqw;font-weight:400;letter-spacing:0}
+.fcard.gr .back .fzh,.fcard.gr .back .fpy,.fcard.gr .back .fen{text-align:center}
+.fcard.gr .back .fzh{line-height:1.1;white-space:nowrap}
+.fcard.gr .back .fpy{font-size:6cqw}
+.fcard.gr .back .fen{font-size:5cqw;margin-bottom:1cqw}
+.fgr .gex .py{font-style:italic;font-size:1em;font-weight:400;letter-spacing:0}
 .fgr .r-k{font-weight:400}
 .fcard.gr .back{align-content:center;justify-items:stretch;text-align:left}
-.fgr{display:grid;gap:2.6cqw}
-.fgr .pat{font-family:var(--f-hand);font-size:5.6cqw;background:var(--bg);border:1px solid var(--line);border-radius:2cqw;padding:2cqw 3cqw}
-.fgr .gex .zh{font-family:var(--f-hand);font-size:6.6cqw;line-height:1.25}
-.fgr .gex .en{color:var(--muted);font-style:italic;font-size:4.3cqw}
-.fgr .tip{margin:0;font-size:4.3cqw;line-height:1.35}
+.fgr{display:grid;gap:.6em;font-size:4.3cqw}
+.fgr .pat{font-family:var(--f-hand);font-size:1.3em;background:var(--bg);border:1px solid var(--line);border-radius:2cqw;padding:2cqw 3cqw}
+.fgr .gex .zh{font-family:var(--f-hand);font-size:1.53em;line-height:1.25}
+.fgr .gex .en{color:var(--muted);font-style:italic}
+.fgr .tip{margin:0;line-height:1.35}
 .fgr .lat{font-family:var(--f-py);font-size:.8em}
 .fgr .r-s,.fgr .r-v,.fgr .r-tw,.fgr .r-o{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}
 .fchint{color:var(--muted);font-size:.95rem;margin:0;text-align:center}
@@ -936,6 +939,14 @@ $('mFlash').addEventListener('click', () => go('/measure/flashcards'));
 
 // Flashcards: the measure word alone; hold the card to flip it (pinyin, what it counts, one example);
 // swipe left or right for the next card. The deck reshuffles after the last card.
+// The meaning of a flashcard's words from the word lists: 也 → "also", 大/中/小 → "big / medium / small".
+// Empty when a word isn't in any list (時間詞, 主題句): the card then shows the topic's English name.
+function glossOf(text){
+  const words = LESSONS.concat(EXTRA).flatMap(L => L.words);
+  const en = w => { const f = words.find(x => x[0] === w); return f && f[2]; };
+  const groups = text.split('·').map(g => g.split('/').map(en));
+  return groups.every(g => g.every(Boolean)) ? groups.map(g => g.join(' / ')).join(' · ') : '';
+}
 // A topic about several words (和 · 也 · 都) becomes one flashcard per word when it has one example per word;
 // the pattern and the tip are split the same way when they have one part per word, else the pattern is left out.
 // The whole tip stays unless it is about the other words only (買 / 賣 on the 幫 card).
@@ -981,16 +992,20 @@ function showFc(){
     const front = m.zh.replace(/ ?([/·]) ?/g, '$1');
     $('fcFront').textContent = front; $('fcFront').style.fontSize = Math.min(45, 86 / [...front].reduce((n, c) => n + (c === ' ' ? .3 : 1), 0)) + 'cqw';
     $('fcSub').textContent = '';
-    // Back: the English name, the pattern, examples with pinyin and English, the tip.
-    $('fcZh').textContent = ''; $('fcPy').textContent = ''; $('fcEn').textContent = '';
-    g.append(el('div','gtitle', m.en));
+    // Back: the characters, their pinyin and meaning first; then the pattern, examples with pinyin and English, the tip.
+    $('fcZh').textContent = front; $('fcZh').style.fontSize = Math.min(18, 70 / [...front].length) + 'cqw';
+    $('fcPy').textContent = pinyinSegs(front).map(x => typeof x === 'string' ? x.trim() : x.py).filter(Boolean).join(' ');
+    $('fcEn').textContent = glossOf(front) || m.en;
     m.card.patterns.forEach(t => g.append(rich('pat', t)));
     m.card.examples.forEach(e => { const d = el('div','gex'); d.append(rich('zh', e[0]), el('div','py', e[1]), el('div','en', e[2])); g.append(d); });
     if (m.card.tip) g.append(el('p','tip', m.card.tip));
+    // A busy back (three examples) gets smaller text until it fits on the card.
+    const back = card.querySelector('.back'); g.style.fontSize = '';
+    for (let f = 4.3; f > 2.8 && back.scrollHeight > back.clientHeight + 1; f -= .2) g.style.fontSize = f.toFixed(1) + 'cqw';
   } else {
     const w = m.nouns[Math.floor(Math.random() * m.nouns.length)];
     $('fcFront').textContent = m.mw; $('fcFront').style.fontSize = ''; $('fcSub').textContent = '';
-    $('fcZh').textContent = m.mw; $('fcPy').textContent = m.py; $('fcEn').textContent = 'for ' + m.en;
+    $('fcZh').textContent = m.mw; $('fcZh').style.fontSize = ''; $('fcPy').textContent = m.py; $('fcEn').textContent = 'for ' + m.en;
     ex.append(el('div','zh', '一' + m.mw + w[0]), el('div','xpy', numPy(NUMS[0], m) + ' ' + m.py + ' ' + w[1]), el('div','en', 'one ' + w[2]));
   }
   $('fcCount').textContent = (fcI + 1) + ' / ' + fcDeck.length;
