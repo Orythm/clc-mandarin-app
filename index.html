@@ -34,6 +34,7 @@ h1{font-family:var(--f-hand);font-size:1.8rem;margin:0}
 .fb.ok{color:var(--ok)} .fb.bad{color:var(--bad)}
 .fb .zh{font-family:var(--f-hand);font-size:1.6rem}
 .tools{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+@media (max-width:560px){.prompt .tools{flex-wrap:nowrap;gap:.4em} .prompt .tools .btn{padding:.5em .7em;font-size:.95rem;white-space:nowrap}}
 button{font:inherit;cursor:pointer}
 /* No text selection, callout menu or blue tap highlight on long press; typing fields stay selectable */
 body{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
@@ -400,6 +401,7 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
       <button class="btn toggle" id="hintBtn" type="button" aria-pressed="false">English</button>
       <button class="btn toggle" id="lenBtn" type="button" aria-pressed="false">Same length</button>
       <button class="btn" id="sayBtn" type="button" aria-label="Hear the word">🔊</button>
+      <button class="btn" id="skipBtn" type="button">Skip</button>
     </div>
   </section>
 
@@ -581,6 +583,15 @@ function pick(t){
     setTimeout(() => t.classList.remove('bad'), 450);
   }
 }
+// Skip counts the word as missed and shows the right tile before moving on.
+function skip(){
+  if (answered) return;
+  const w = queue[idx]; answered = true;
+  if (firstTry) { misses.push(w); firstTry = false; rec('py:' + wid(w), false); }
+  const t = [...document.querySelectorAll('.tile')].find(x => x.dataset.key === w[0]);
+  if (t) t.classList.add('ok');
+  setTimeout(next, 900);
+}
 function next(){ idx++; if (idx >= queue.length) return finish(); show(); }
 function finish(){
   $('bar').style.width = '100%'; $('promptBox').hidden = true; $('board').hidden = true; $('results').hidden = false;
@@ -597,6 +608,7 @@ function finish(){
   }
 }
 $('hintBtn').addEventListener('click', () => { showEn = !showEn; save(); applyAids(); });
+$('skipBtn').addEventListener('click', skip);
 $('lenBtn').addEventListener('click', () => { showLen = !showLen; save(); applyAids(); });
 $('retryBtn').addEventListener('click', () => ex === 'gr' ? startGr(shuffle(grMisses), $('title').textContent, grBack) : ex === 'tones' ? startTones(misses) : ex === 'mw' ? startMw(mwMisses) : start(misses));
 $('restartBtn').addEventListener('click', () => ex === 'gr' ? (grKindOf === 'exam' ? startMock() : grKindOf === 'review' ? startReview() : startGr(shuffle(grItems), $('title').textContent, grBack)) : ex === 'tones' ? startTones(WORDS) : ex === 'mw' ? startMw(mwList) : start(WORDS));
