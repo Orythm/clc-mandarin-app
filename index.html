@@ -1399,10 +1399,12 @@ function showGr(){
   // Questions about an answer show the question and the answer as two lines in the same type, Q then A
   // (milo, 2026-10-11): the answer comes out of the instruction line.
   grCur.qq = null; $('grA').hidden = true; $('grA').textContent = '';
-  const qa = it.type === 'pick' && (ask.match(/^Complete the question that this answers:\s*(.+)$/) || (it.q === 'Which question is right?' && ask.match(/^The answer is\s*(.+)$/)));
+  // "Which question is right?", "Which asks the price?"…: any pick whose instruction gives the answer.
+  const pickQ = it.type === 'pick' && /^Which /.test(it.q) && /^The answer is/.test(ask);
+  const qa = it.type === 'pick' && (ask.match(/^Complete the question that this answers:\s*(.+)$/) || (pickQ && ask.match(/^The answer is\s*(.+)$/)));
   if (qa) {
-    ask = it.q === 'Which question is right?' ? 'Which question is right?' : 'Complete the question.';
-    grCur.qq = 'Q：' + (it.q === 'Which question is right?' ? '＿' : it.q);
+    ask = pickQ ? it.q : 'Complete the question.';
+    grCur.qq = 'Q：' + (pickQ ? '＿' : it.q);
     $('grA').append(el('span','qal','A：'), rubyText(qa[1])); $('grA').hidden = false;
   }
   $('grAsk').textContent = ask; $('grAsk').hidden = !ask;
