@@ -238,6 +238,7 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
 .gq .ctx.zh{font-family:var(--f-hand);font-size:var(--zh-size);line-height:1.5;color:var(--fg)}
 .gq .q{font-family:var(--f-hand);font-size:var(--zh-size);line-height:1.5}
 .gq .q.qa{margin-top:-.3em}
+.gq .ctx.qline{margin-bottom:-.3em}
 .gq .qal{color:var(--muted)}
 .gq .q.en{font-family:var(--f-py);font-size:1.15rem}
 .gq .gap{display:inline-block;min-width:2em;border-bottom:3px solid var(--accent);color:var(--accent);text-align:center}
@@ -1385,7 +1386,7 @@ function grGapQ(q, fill){
   const box = $('grQ'); box.textContent = '';
   box.className = isZh(q) || /^[A-Z]：/.test(q) ? 'q' : 'q en';   // "B：＿" is a Chinese line too
   const line = el('span');
-  if (q.startsWith('Q：')) { line.append(el('span','qal','Q：')); q = q.slice(2); }
+  if (/^[QA]：/.test(q)) { line.append(el('span','qal',q.slice(0, 2))); q = q.slice(2); }
   q.split('＿').forEach((part, i) => { if (i) line.append(fill ? withPy(el('span','gap', fill), fill) : el('span','gap','\u00a0')); line.append(isZh(part) ? rubyText(part) : part); });
   box.append(line);
 }
@@ -1407,9 +1408,19 @@ function showGr(){
     grCur.qq = 'Q：' + (pickQ ? '＿' : it.q);
     $('grA').append(el('span','qal','A：'), rubyText(qa[1])); $('grA').hidden = false;
   }
+  // A question and its answer in a dialogue (A：…？ / B：我＿…, 客人：…？ / 老闆：…, or "Which answer fits?") read as
+  // Q then A too; speaker labels go, as A would read as "answer". Dialogues that aren't a question keep theirs.
+  const c = it.ctx || '', unlabel = t => t.replace(/^[^：]{1,3}：/, '');
+  let qLine = null;
+  if (!qa && it.type === 'pick' && /？\s*(\([^)]*\))?$/.test(c)) {
+    qLine = unlabel(c);
+    if (/^Which /.test(it.q)) { ask = it.ask || it.q; grCur.qq = 'A：＿'; }
+    else grCur.qq = 'A：' + unlabel(it.q);
+  } else if (!qa && !c && it.type === 'pick' && /^A：.*？$/.test(it.q)) grCur.qq = 'Q：' + unlabel(it.q);
   $('grAsk').textContent = ask; $('grAsk').hidden = !ask;
-  const c = it.ctx || '';
   $('grCtx').textContent = c; $('grCtx').className = isZh(c) ? 'ctx zh' : 'ctx'; $('grCtx').hidden = !c; withPy($('grCtx'), c);
+  $('grCtx').classList.toggle('qline', !!qLine);
+  if (qLine) { $('grCtx').textContent = ''; $('grCtx').append(el('span','qal','Q：'), rubyText(qLine)); }
   $('grSrc').textContent = it.src || ''; $('grSrc').hidden = !it.src; withPy($('grSrc'), it.src || '');
   const tw = $('grTable'); tw.textContent = ''; const tables = Object.assign({}, ...Object.values(SETS).map(S => S.data.tables), GRS().data.tables); if (it.table && tables[it.table]) tw.append(grTableEl(tables[it.table]));
   $('grFb').textContent = ''; $('grFb').className = 'fb';
