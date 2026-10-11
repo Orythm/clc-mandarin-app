@@ -53,6 +53,8 @@ input,textarea{user-select:text;-webkit-user-select:text}
 button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .results{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:20px 16px;display:grid;gap:12px}
 .results h2{font-family:var(--f-hand);font-size:1.6rem;margin:0}
+.results .more{display:flex;flex-wrap:wrap;align-items:center;gap:.6em 1em;margin-bottom:.8em}
+.results .more p{margin:0;font-size:1.1em}
 .score{font-size:2.6rem;font-weight:600;font-variant-numeric:tabular-nums}
 .miss{display:grid;grid-template-columns:auto 1fr auto;gap:4px 14px;align-items:baseline}
 .miss .zh{font-family:var(--f-hand);font-size:1.7rem}
@@ -573,6 +575,7 @@ function buildMenu(boxId, sets, pathOf){
 function hideAll(){
   stopAudio(); closeCard();
   $('restartBtn').textContent = 'Start over (all words)';
+  $('restartBtn').hidden = false;
   ['home','clearWrap','menu','xmenu','tmenu','gmenu','mmenu','grBox','meta','rail','promptBox','results','board','dict','mwBox','fcBox'].forEach(id => $(id).hidden = true);
   $('credit').hidden = false; // the credits footer shows on menus only; exercises hide it
 }
@@ -739,7 +742,7 @@ $('pauseBtn').addEventListener('change', () => { pauseOk = $('pauseBtn').checked
 $('skipBtn').addEventListener('click', reveal);
 $('lenBtn').addEventListener('click', () => { showLen = !showLen; save(); applyAids(); });
 $('retryBtn').addEventListener('click', () => ex === 'gr' ? startGr(shuffle(grMisses), $('title').textContent, grBack) : ex === 'tones' ? startTones(misses) : ex === 'mw' ? startMw(mwMisses) : start(misses));
-$('restartBtn').addEventListener('click', () => allRound() ? startAll(lesson.m, lesson.extra) : ex === 'gr' ? (grKindOf === 'exam' ? startMock() : grKindOf === 'review' ? startReview() : startGr(shuffle(grItems), $('title').textContent, grBack)) : ex === 'tones' ? startTones(WORDS) : ex === 'mw' ? startMw(mwList) : start(WORDS));
+$('restartBtn').addEventListener('click', () => ex === 'gr' && grRedraw ? grRedraw() : allRound() ? startAll(lesson.m, lesson.extra) : ex === 'gr' ? (grKindOf === 'exam' ? startMock() : grKindOf === 'review' ? startReview() : startGr(shuffle(grItems), $('title').textContent, grBack)) : ex === 'tones' ? startTones(WORDS) : ex === 'mw' ? startMw(mwList) : start(WORDS));
 
 // ---- Pinyin dictation: hear a word, type its pinyin, then tap vowels to add tone marks ----
 
@@ -1255,7 +1258,10 @@ const SETS = {
 let grSet = 'grammar';
 const GRS = () => SETS[grSet];
 let grItems = [], grMisses = [], grCur = null, grPeeked = false, grDone = false, grPlaced = [];
-const ROUND = 10;
+// Grammar and question-word practice rounds: 20 questions drawn at random, new and weak ones first;
+// the end of a round offers another 20 right away (milo, 2026-10-11).
+const ROUND = 20;
+let grRedraw = null;
 function grPool(){ return grPoolOf(grSet); }
 // A grammar item's key is a hash of its wording, so editing a sentence starts its history afresh.
 function hashStr(t){ let h = 5381; for (let i = 0; i < t.length; i++) h = (h * 33 + t.charCodeAt(i)) >>> 0; return h.toString(36); }
@@ -1347,7 +1353,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('sheet'
 // kind: 'exam' (the mock: no cards, scores kept) or 'review'; "Start over" makes a new round of either.
 let grBack = null, grExam = false, grKindOf = null;
 function startGr(items, title, back, kind){
-  ex = 'gr'; endless = false; grItems = items; grBack = back || null; grKindOf = kind || null; grExam = kind === 'exam';
+  ex = 'gr'; endless = false; grRedraw = null; grItems = items; grBack = back || null; grKindOf = kind || null; grExam = kind === 'exam';
   queue = items.map(x => ({ ...x, again: false })); idx = 0; score = 0; grMisses = []; misses = []; grHist = []; grViewI = -1;
   hideAll();
   $('title').textContent = title;
@@ -1658,11 +1664,19 @@ function finishGr(){
     $('missWrap').prepend(t);
   }
   $('restartBtn').textContent = allRound() ? 'New ' + ALL_ROUND + ' words' : 'Start over';
+  $('restartBtn').hidden = !!grRedraw;
+  if (grRedraw) {
+    const more = el('div','more'), b = el('button','btn primary','Yes, another ' + ROUND); b.type = 'button';
+    b.addEventListener('click', () => grRedraw());
+    more.append(el('p', null, 'Another ' + ROUND + ' questions right away?'), b);
+    $('missWrap').prepend(more);
+  }
 }
 function grStartPoint(p){ startGr(shuffle(p.items).map(it => ({ p, it })), GRS().zh + ' · ' + p.zh); }
 function grStartPractice(kind){
   const pool = grPool().filter(x => !kind || grKind(x.it) === kind);
   startGr(freshFirst(pool, itemKey).slice(0, ROUND), GRS().zh + ' · ' + (kind ? KINDS.find(k => k[0] === kind)[1] : 'Practice'));
+  grRedraw = () => grStartPractice(kind);
 }
 $('gPractice').addEventListener('click', () => go(GRS().base + '/practice'));
 $('gSay').addEventListener('click', () => go(GRS().base + '/say'));
@@ -1750,6 +1764,7 @@ const sayItem = x => ({ type: 'recall', ask: 'Say it in Chinese, or write it on 
 function startSay(){
   const S = GRS();
   startGr(asItems(freshFirst(sentencesOf(grSet).map(sayItem), x => x.key).slice(0, ROUND)), S.zh + ' · English → Chinese');
+  grRedraw = startSay;
 }
 // A word set's Meaning round (every word once, English → characters or characters → English at random) and Write it round.
 function startMeaning(L){ startGr(asItems(shuffle(L.words).map(w => meaningItem(w, L.words.length >= 8 && !L.all ? L.words : L.extra ? extraWords() : lessonWords(), Math.random() < .5))), setName(L).split(' · ')[0] + ' · Meaning', L.n || (L.all && !L.extra) ? '← Lessons' : '← Vocabulary'); }
