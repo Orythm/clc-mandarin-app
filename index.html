@@ -657,7 +657,8 @@ function pick(t){
     if (firstTry) { score++; rec('py:' + wid(w), true); }
     $('sc').textContent = score;
     // With Pause on, a right answer also shows the word and waits for a tap.
-    if (pauseOk) showAnswer(w); else setTimeout(next, 450);
+    // Without Pause, the word and its English show for a moment before the next one (milo, 2026-10-11).
+    if (pauseOk) showAnswer(w); else { showWord(w); setTimeout(next, 750); }
   } else {
     // The wrong tile gets a small label with the other side of that word (its pinyin, or its characters
     // in Characters → Pinyin), laid over the tile's bottom edge so nothing moves.
@@ -678,10 +679,12 @@ function reveal(){
   if (t) t.classList.add('ok');
   showAnswer(w);
 }
-function showAnswer(w){
-  paused = true;
+function showWord(w){
   const h = $('hint'); h.textContent = ''; h.className = 'hint reveal';
   h.append(el('span', 'zh', w[0]), ' ' + w[1] + ' · ' + w[2]);
+}
+function showAnswer(w){
+  paused = true; showWord(w);
   $('skipBtn').textContent = 'Next';
   playWord(w);
 }
