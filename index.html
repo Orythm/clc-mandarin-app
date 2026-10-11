@@ -586,24 +586,27 @@ function showMenu(){
   $('menu').hidden = false; $('title').textContent = '華語詞彙 · Vocab Quiz';
   buildMenu(null, [{ zh: '全部', en: 'All lessons', all: true, words: lessonWords() }].concat(LESSONS), (L, m) => L.all ? '/vocab/all-' + SLUG[m] : lessonPath(L.n, m));
 }
-// All lessons mixed: a round of 20 words, missed ones first, then ones never asked in this mode, then the rest.
+// All lessons (or all handout topics) mixed: a round of 20 words, missed ones first, then ones never asked
+// in this mode, then the rest.
 const ALL_ROUND = 20;
-const allRound = () => !!(lesson && lesson.all && location.pathname.startsWith('/vocab/all-'));
-function allLesson(m){
+const allRound = () => !!(lesson && lesson.all && /^\/(vocab|extra)\/all-/.test(location.pathname));
+function extraWords(){ const by = new Map(); EXTRA.forEach(L => L.words.forEach(w => by.set(w[0], w))); return [...by.values()]; }
+const xSets = () => [{ zh: '全部', en: 'All topics', all: true, extra: true, words: extraWords() }].concat(EXTRA);
+function allLesson(m, extra){
   const kind = m === 'meaning' ? 'mean' : m === 'write' ? 'write' : 'py';
   const rank = w => { const r = PROG[kind + ':' + wid(w)]; return !r ? 1 : r.w ? 0 : 2; };
-  const words = shuffle(lessonWords()).map(w => [rank(w), w]).sort((a, b) => a[0] - b[0]).map(a => a[1]).slice(0, ALL_ROUND);
-  return { zh: '全部', en: 'All lessons', all: true, m, words };
+  const words = shuffle(extra ? extraWords() : lessonWords()).map(w => [rank(w), w]).sort((a, b) => a[0] - b[0]).map(a => a[1]).slice(0, ALL_ROUND);
+  return { zh: '全部', en: extra ? 'All topics' : 'All lessons', all: true, extra: !!extra, m, words };
 }
-function startAll(m){
-  lesson = allLesson(m); WORDS = lesson.words;
+function startAll(m, extra){
+  lesson = allLesson(m, extra); WORDS = lesson.words;
   if (m === 'meaning') return startMeaning(lesson);
   if (m === 'write') return startWrite(lesson);
   mode = m; start(WORDS);
 }
 function showXMenu(){
   hideAll(); $('modeBtn').hidden = false; $('modeBtn').textContent = '← Home';
-  $('xmenu').hidden = false; $('title').textContent = '補充 · Vocabulary'; buildMenu('xlessons', EXTRA, extraPath);
+  $('xmenu').hidden = false; $('title').textContent = '補充 · Vocabulary'; buildMenu('xlessons', xSets(), extraPath);
 }
 function buildBoard(){
   const b = $('board'); b.textContent = '';
@@ -621,7 +624,7 @@ function start(list){
   ex = 'vocab'; endless = false; queue = shuffle(list); idx = 0; score = 0; misses = [];
   $('title').textContent = setName(lesson);
   hideAll();
-  $('modeBtn').textContent = lesson.n || lesson.all ? '← Lessons' : '← Vocabulary';
+  $('modeBtn').textContent = lesson.n || (lesson.all && !lesson.extra) ? '← Lessons' : '← Vocabulary';
   ['meta','rail','promptBox','board','modeBtn'].forEach(id => $(id).hidden = false); $('credit').hidden = true;
   $('qt').textContent = queue.length;
   $('py').className = mode === 'zh2py' ? 'py zhq' : 'py';
@@ -736,7 +739,7 @@ $('pauseBtn').addEventListener('change', () => { pauseOk = $('pauseBtn').checked
 $('skipBtn').addEventListener('click', reveal);
 $('lenBtn').addEventListener('click', () => { showLen = !showLen; save(); applyAids(); });
 $('retryBtn').addEventListener('click', () => ex === 'gr' ? startGr(shuffle(grMisses), $('title').textContent, grBack) : ex === 'tones' ? startTones(misses) : ex === 'mw' ? startMw(mwMisses) : start(misses));
-$('restartBtn').addEventListener('click', () => allRound() ? startAll(lesson.m) : ex === 'gr' ? (grKindOf === 'exam' ? startMock() : grKindOf === 'review' ? startReview() : startGr(shuffle(grItems), $('title').textContent, grBack)) : ex === 'tones' ? startTones(WORDS) : ex === 'mw' ? startMw(mwList) : start(WORDS));
+$('restartBtn').addEventListener('click', () => allRound() ? startAll(lesson.m, lesson.extra) : ex === 'gr' ? (grKindOf === 'exam' ? startMock() : grKindOf === 'review' ? startReview() : startGr(shuffle(grItems), $('title').textContent, grBack)) : ex === 'tones' ? startTones(WORDS) : ex === 'mw' ? startMw(mwList) : start(WORDS));
 
 // ---- Pinyin dictation: hear a word, type its pinyin, then tap vowels to add tone marks ----
 
@@ -1749,8 +1752,8 @@ function startSay(){
   startGr(asItems(freshFirst(sentencesOf(grSet).map(sayItem), x => x.key).slice(0, ROUND)), S.zh + ' · English → Chinese');
 }
 // A word set's Meaning round (every word once, English → characters or characters → English at random) and Write it round.
-function startMeaning(L){ startGr(asItems(shuffle(L.words).map(w => meaningItem(w, L.words.length >= 8 && !L.all ? L.words : lessonWords(), Math.random() < .5))), setName(L).split(' · ')[0] + ' · Meaning', L.n || L.all ? '← Lessons' : '← Vocabulary'); }
-function startWrite(L){ startGr(asItems(shuffle(L.words).map(writeItem)), setName(L).split(' · ')[0] + ' · Write it', L.n || L.all ? '← Lessons' : '← Vocabulary'); }
+function startMeaning(L){ startGr(asItems(shuffle(L.words).map(w => meaningItem(w, L.words.length >= 8 && !L.all ? L.words : L.extra ? extraWords() : lessonWords(), Math.random() < .5))), setName(L).split(' · ')[0] + ' · Meaning', L.n || (L.all && !L.extra) ? '← Lessons' : '← Vocabulary'); }
+function startWrite(L){ startGr(asItems(shuffle(L.words).map(writeItem)), setName(L).split(' · ')[0] + ' · Write it', L.n || (L.all && !L.extra) ? '← Lessons' : '← Vocabulary'); }
 // Mock midterm: 30 questions from every lesson, in sections like a paper test; no cards, one score per section.
 function startMock(){
   const words = lessonWords(), take = (a, n, kf) => (kf ? freshFirst(a, kf) : shuffle(a)).slice(0, n);
@@ -1819,7 +1822,7 @@ $('clearProg').addEventListener('click', () => {
 // instead of closing the app. Old "/lesson-..." links are redirected to "/vocab/lesson-...".
 const SLUG = { py2zh: 'py-zh', zh2py: 'zh-py', meaning: 'meaning', write: 'write' };
 function lessonPath(n, m){ return '/vocab/lesson-' + n + '-' + SLUG[m]; }
-const extraPath = (L, m) => '/extra/' + L.id + '-' + SLUG[m];
+const extraPath = (L, m) => '/extra/' + (L.all ? 'all' : L.id) + '-' + SLUG[m];
 function parentOf(path){
   if (path === '/vocab' || path === '/extra' || path === '/mock' || path === '/review' || path === '/tones' || path === '/measure' || path === '/grammar' || path === '/questions') return '/';
   // Grammar and question pages nest: /grammar/cards/<id> → /grammar/cards → /grammar
@@ -1834,6 +1837,8 @@ function route(){
   if (path === '/extra' && EXTRA.length) return showXMenu();
   if (path === '/mock' && LESSONS.length) return startMock();
   if (path === '/review' && LESSONS.length) return startReview();
+  const xa = path.match(/^\/extra\/all-(py-zh|zh-py|meaning|write)$/);
+  if (xa && EXTRA.length) return startAll(Object.keys(SLUG).find(k => SLUG[k] === xa[1]), true);
   const xr = path.match(/^\/extra\/([\w-]+)-(py-zh|zh-py|meaning|write)$/);
   const XL = xr && EXTRA.find(x => x.id === xr[1]);
   if (XL && xr[2] === 'meaning') return startMeaning(XL);
@@ -1911,7 +1916,7 @@ const xLoad = fetch('/extra-vocab.json', {cache: 'no-cache'}).then(r => r.ok ? r
   .then(data => {
     EXTRA = Array.isArray(data) ? data.filter(x => x.id && x.words && x.words.length) : [];
     $('xCard').hidden = !EXTRA.length;
-    if (EXTRA.length) { buildMenu('xlessons', EXTRA, extraPath); $('xSub').textContent = EXTRA.reduce((n, x) => n + x.words.length, 0) + ' words from the class handouts, by topic'; }
+    if (EXTRA.length) { buildMenu('xlessons', xSets(), extraPath); $('xSub').textContent = EXTRA.reduce((n, x) => n + x.words.length, 0) + ' words from the class handouts, by topic'; }
   });
 const pyLoad = fetch('/pinyin.json', {cache: 'no-cache'}).then(r => r.ok ? r.json() : {}).catch(() => ({}));
 Promise.all([fetch('/lessons.json', {cache: 'no-cache'}), mwLoad, clipsLoad, grLoad, pyLoad, xLoad])
