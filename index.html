@@ -447,7 +447,7 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
     <div class="py" id="py"></div>
     <div class="hint" id="hint"></div>
     <div class="tools">
-      <button class="btn" id="hintBtn" type="button" aria-label="Hold to show the English">English</button>
+      <button class="btn" id="hintBtn" type="button" aria-label="Hold to show the English (counts as missed)" title="Hold to show the English. The word then counts as missed.">English</button>
       <button class="btn toggle" id="lenBtn" type="button" aria-pressed="false">Same length</button>
       <button class="btn" id="sayBtn" type="button" aria-label="Hear the word">🔊</button>
       <button class="btn" id="skipBtn" type="button">Skip</button>
@@ -715,7 +715,13 @@ function finish(){
 (function(){
   // Letting go keeps it up for half a second more (milo, 2026-10-11).
   let offT = 0;
-  const btn = $('hintBtn'), on = v => { clearTimeout(offT); if (showEn === v) return; showEn = v; btn.classList.toggle('on', v); applyAids(); };
+  // Peeking at the English counts the word as missed, though it can still be answered (milo, 2026-10-11).
+  const btn = $('hintBtn'), on = v => {
+    clearTimeout(offT); if (showEn === v) return; showEn = v; btn.classList.toggle('on', v);
+    const w = queue[idx];
+    if (v && ex === 'vocab' && w && !answered && firstTry) { misses.push(w); firstTry = false; rec('py:' + wid(w), false); }
+    applyAids();
+  };
   const off = () => { clearTimeout(offT); offT = setTimeout(() => on(false), 500); };
   btn.addEventListener('pointerdown', e => { e.preventDefault(); btn.setPointerCapture(e.pointerId); on(true); });
   ['pointerup','pointercancel','lostpointercapture'].forEach(t => btn.addEventListener(t, off));
