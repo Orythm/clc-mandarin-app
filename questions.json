@@ -31,13 +31,14 @@
       "en": "What? Do what?",
       "card": {
         "patterns": [
-          "{s:S.} + {v:V.} + {k:什麼}？"
+          "{s:S.} + {v:V.} + {k:什麼} (+ {o:N.})？"
         ],
         "examples": [
           ["{s:你}{v:喜歡喝}{k:什麼}？", "nǐ xǐ huān hē shén me?", "What do you like to drink?"],
+          ["{s:你}{v:喜歡聽}{k:什麼}{o:音樂}？", "nǐ xǐ huān tīng shén me yīn yuè?", "What music do you like?"],
           ["{tw:週末}{s:你}常{k:做什麼}？", "zhōu mò nǐ cháng zuò shén me?", "What do you usually do on weekends?"]
         ],
-        "tip": "什麼 sits where the answer goes."
+        "tip": "什麼 sits where the answer goes; a noun after it asks \"what kind of\"."
       },
       "items": [
         {"type": "pick", "ask": "Complete the question that this answers: 我喜歡吃炒飯。", "q": "你喜歡吃＿？", "opts": ["什麼", "哪", "幾"], "en": "What do you like to eat?"},

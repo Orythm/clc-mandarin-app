@@ -232,7 +232,7 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
 .grview > .ask{color:var(--accent)}
 .gq{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:18px 16px;display:grid;gap:12px}
 .gq .ask{color:var(--muted);font-size:1rem}
-.gq{--zh-size:clamp(1.4rem,4.6vw,1.8rem)}
+.gq{--zh-size:clamp(1.6rem,5.4vw,2.3rem)}
 .gq .src{font-family:var(--f-hand);font-size:var(--zh-size);line-height:1.5;background:var(--bg);border-radius:8px;padding:8px 12px}
 .gq .ctx{color:var(--muted);font-size:1.05rem}
 .gq .ctx.zh{font-family:var(--f-hand);font-size:var(--zh-size);line-height:1.5;color:var(--fg)}
@@ -250,12 +250,14 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
 .ans.ok{border-bottom-color:var(--ok)} .ans.bad{border-bottom-color:var(--bad)}
 .opts{display:flex;flex-wrap:wrap;gap:8px}
 .opts.col{flex-direction:column;align-items:stretch}
-.wt{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-family:var(--f-hand);font-size:1.45rem;color:var(--fg);text-align:left}
+.wt{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-family:var(--f-hand);font-size:clamp(1.6rem,5.4vw,2.1rem);color:var(--fg);text-align:left}
 .wt:hover{border-color:var(--muted)}
 .wt.ok{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
 .wt.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
 .wt:disabled{cursor:default}
 .wt.slot{visibility:hidden}
+/* Phones: keep the smaller sizes so exercises still fit. */
+@media (max-width:560px) and (max-height:800px){.gq{--zh-size:1.4rem} .wt{font-size:1.45rem}}
 .gq .tools{justify-content:space-between}
 /* Pinyin under the Chinese: its space is always kept, it only becomes visible while 拼音 is held, so nothing moves */
 .rb{display:inline-flex;flex-direction:column;align-items:center;padding:0 .08em}
