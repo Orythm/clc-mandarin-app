@@ -286,6 +286,10 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
 .gq .reveal{display:grid;gap:.2em;justify-items:center}
 .gq .reveal .zh{font-family:var(--f-hand);font-size:2.4rem;color:var(--fg)}
 .gq .reveal .rpy{font-style:italic;font-size:1.15rem}
+.gq .q.en.sent{font-size:1.4em;text-align:center}
+.gq .reveal.sent .zh{font-size:1.8em;text-align:center}
+.gq .reveal .also{color:var(--muted);text-align:center}
+.gq .reveal .also .zh{font-size:1.3em;color:var(--fg)}
 .gq .say{padding:.1em .5em;margin-left:.4em;font-size:1rem;vertical-align:middle}
 .sec{display:grid;grid-template-columns:1fr auto;gap:.2em 1.2em;max-width:22em}
 .sec .n{font-variant-numeric:tabular-nums;text-align:right}
@@ -391,6 +395,8 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
       <button class="btn play" id="gFlash" type="button">Flashcards</button>
       <h2 class="gh">By exercise type <small>all topics mixed</small></h2>
       <div class="modes" id="gTypes"></div>
+      <h2 class="gh">Say it in Chinese <small>English → Chinese</small></h2>
+      <div class="modes"><button class="mode" id="gSay" type="button"><span class="lbl">English → Chinese</span><span class="sub" id="gSaySub"></span></button></div>
       <button class="mode" id="gBrowse" type="button"><span class="ex"><span class="h">📖</span></span><span class="lbl">Browse the cards</span><span class="sub" id="gBrowseSub"></span></button>
     </div>
     <div class="gpoints" id="gList" hidden></div>
@@ -1256,6 +1262,8 @@ function buildGrammar(){
     types.append(b);
   });
   $('gBrowseSub').textContent = 'The pattern, examples and a tip for each point';
+  const sents = sentencesOf(grSet), sayDone = sents.filter(x => PROG['say:' + grSet + ':' + hashStr(x.zh)]).length;
+  $('gSaySub').textContent = 'An English sentence: say or write it, then check · ' + (sayDone ? sayDone + ' of ' : '') + sents.length + ' sentences';
   const list = $('gList'); list.textContent = '';
   S.data.points.forEach(p => {
     const row = el('div','gpt');
@@ -1414,7 +1422,7 @@ function showGr(){
   const opts = $('grOpts'); opts.textContent = '';
   if (it.type === 'recall') {
     // Write it: the English (pinyin while 拼音 is held), write the characters on paper, then check yourself.
-    $('grAns').hidden = true; $('grQ').hidden = false; grGapQ(it.q); $('grQ').classList.add('big');
+    $('grAns').hidden = true; $('grQ').hidden = false; grGapQ(it.q); $('grQ').classList.add(it.sent ? 'sent' : 'big');
     opts.className = 'opts';
     const b = el('button','btn primary','Show the answer'); b.type = 'button';
     b.addEventListener('click', revealRecall);
@@ -1447,12 +1455,20 @@ function showGr(){
   }
 }
 function revealRecall(){
-  const w = grCur.it.word, opts = $('grOpts'); opts.textContent = '';
+  const it = grCur.it, x = it.sent, w = it.word || [x.zh], opts = $('grOpts'); opts.textContent = '';
   const fb = $('grFb'); fb.textContent = ''; fb.className = 'fb';
-  const r = el('div','reveal'); r.append(el('span','zh',w[0]), el('span','rpy',w[1])); opts.before(r);
+  const r = el('div','reveal');
+  // A sentence keeps its pinyin behind the 拼音 button; other right word orders are shown under it.
+  if (x) {
+    r.classList.add('sent'); r.append(withPy(el('span','zh',x.zh), x.zh));
+    if (x.also.length) { const a = el('div','also'); a.append(el('span','lbl','Also right: ')); x.also.forEach((z, i) => a.append(i ? ' / ' : '', withPy(el('span','zh',z), z))); r.append(a); }
+    const say = el('button','btn say','🔊'); say.type = 'button'; say.setAttribute('aria-label', 'Hear it');
+    say.addEventListener('click', () => playWord(w)); r.append(say);
+  } else r.append(el('span','zh',w[0]), el('span','rpy',w[1]));
+  opts.before(r);
   $('grPyHint').hidden = true;
   playWord(w);
-  [['✓ I wrote it right', true], ['✗ Not quite', false]].forEach(([t, ok]) => {
+  [[x ? '✓ I got it right' : '✓ I wrote it right', true], ['✗ Not quite', false]].forEach(([t, ok]) => {
     const b = el('button','wt',t); b.type = 'button';
     b.addEventListener('click', () => {
       if (grDone) return;
@@ -1583,7 +1599,7 @@ holdPy($('mwPy'), document.body, 'mwpy');
 $('mwGo').addEventListener('click', () => { idx++; if (idx >= queue.length) finishMw(); else showMw(); });
 $('grPeek').addEventListener('click', () => { if (!grDone) grPeeked = true; openCard(grCur.p); });
 function finishGr(){
-  misses = grMisses.map(({ it }) => it.word || [grAnswer(it), '', '']);
+  misses = grMisses.map(({ it }) => it.word || (it.sent ? [it.sent.zh, '', it.sent.en] : [grAnswer(it), '', '']));
   $('grBox').hidden = true;
   finish();
   $('final').textContent = score + ' / ' + queue.filter(x => !x.again).length;
@@ -1607,6 +1623,7 @@ function grStartPractice(kind){
   startGr(freshFirst(pool, itemKey).slice(0, ROUND), GRS().zh + ' · ' + (kind ? KINDS.find(k => k[0] === kind)[1] : 'Practice'));
 }
 $('gPractice').addEventListener('click', () => go(GRS().base + '/practice'));
+$('gSay').addEventListener('click', () => go(GRS().base + '/say'));
 $('gBrowse').addEventListener('click', () => go(GRS().base + '/cards'));
 $('gFlash').addEventListener('click', () => go(GRS().base + '/flashcards'));
 
@@ -1670,6 +1687,28 @@ function freshFirst(list, keyOf){
 }
 const wordKeys = w => WORD_KINDS.map(k => k + ':' + wid(w));
 const asItems = its => its.map(it => ({ p: null, it }));
+// English → Chinese: every whole sentence in a set (the answers of its questions and the card examples) with
+// its English. Sentences with the same English (another accepted word order) are shown together as also right.
+function sentencesOf(k){
+  const S = SETS[k]; if (S._sents) return S._sents;
+  const byEn = new Map(), seen = new Set();
+  const add = (zh, en, also) => {
+    if (!en || !/^[^A-Za-z（）=]+[。？！]$/.test(zh)) return;
+    let x = byEn.get(en);
+    if (!x) byEn.set(en, x = { zh, en, also: [], set: k });
+    [zh].concat(also || []).forEach(z => { if (!seen.has(z)) { seen.add(z); if (z !== x.zh) x.also.push(z); } });
+  };
+  S.data.points.forEach(p => {
+    p.items.forEach(it => add(grAnswer(it), it.en, (it.alts || []).map(a => a.join(''))));
+    p.card.examples.forEach(e => add(e[0].replace(/\{\w+:([^}]*)\}/g, '$1'), e[2]));
+  });
+  return S._sents = [...byEn.values()].filter(x => seen.has(x.zh));
+}
+const sayItem = x => ({ type: 'recall', ask: 'Say it in Chinese, or write it on paper, then check.', q: x.en, sent: x, show: x.zh, sec: 'Speaking', key: 'say:' + x.set + ':' + hashStr(x.zh) });
+function startSay(){
+  const S = GRS();
+  startGr(asItems(freshFirst(sentencesOf(grSet).map(sayItem), x => x.key).slice(0, ROUND)), S.zh + ' · English → Chinese');
+}
 // A word set's Meaning round (every word once, English → characters or characters → English at random) and Write it round.
 function startMeaning(L){ startGr(asItems(shuffle(L.words).map(w => meaningItem(w, L.words.length >= 8 ? L.words : lessonWords(), Math.random() < .5))), setName(L).split(' · ')[0] + ' · Meaning', L.n ? '← Lessons' : '← Vocabulary'); }
 function startWrite(L){ startGr(asItems(shuffle(L.words).map(writeItem)), setName(L).split(' · ')[0] + ' · Write it', L.n ? '← Lessons' : '← Vocabulary'); }
@@ -1703,6 +1742,10 @@ function itemFromKey(k){
   if (kind === 'g') {
     const [set, h] = rest.split(':');
     return SETS[set] ? grPoolOf(set).find(x => grHash(x.it) === h) || null : null;
+  }
+  if (kind === 'say') {
+    const [set, h] = rest.split(':'), x = SETS[set] && sentencesOf(set).find(x => hashStr(x.zh) === h);
+    return x ? { p: null, it: sayItem(x) } : null;
   }
   if (kind === 'mw') { const x = MW_ITEMS.find(x => x.w[0] === rest); return x ? { p: null, it: mwItem(x) } : null; }
   const f = wordById(rest); if (!f) return null;
@@ -1770,6 +1813,7 @@ function route(){
     if (path === S.base + '/practice') return grStartPractice();
     if (path === S.base + '/cards') return showGrammar(true);
     if (path === S.base + '/flashcards') return startFc(true);
+    if (path === S.base + '/say') return startSay();
     const ty = path.match(/\/type\/(\w+)$/);
     if (ty && KINDS.some(k => k[0] === ty[1])) return grStartPractice(ty[1]);
     const gp = S.data.points.find(p => path === S.base + '/' + p.id || path === S.base + '/cards/' + p.id);
