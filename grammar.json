@@ -168,7 +168,7 @@
       "items": [
         {"type": "pick", "ctx": "A：老師有幾張照片？", "q": "B：老師有＿照片。", "opts": ["三張", "三個", "三"], "en": "The teacher has three photos."},
         {"type": "pick", "ctx": "A：你有幾個姐姐？", "q": "B：我有＿姐姐。", "opts": ["兩個", "二個", "兩張"], "en": "I have two older sisters."},
-        {"type": "pick", "q": "你有＿本書？", "opts": ["幾", "什麼", "誰"], "en": "How many books do you have?"},
+        {"type": "pick", "q": "你有＿個妹妹？", "opts": ["幾", "什麼", "誰"], "en": "How many younger sisters do you have?"},
         {"type": "pick", "q": "他家有幾＿人？", "opts": ["個", "張", "本"], "en": "How many people are in his family?"},
         {"type": "pick", "q": "你有幾＿照片？", "opts": ["張", "個", "本"], "en": "How many photos do you have?"},
         {"type": "order", "tiles": ["你", "有", "幾", "個", "弟弟", "？"], "en": "How many younger brothers do you have?"},
