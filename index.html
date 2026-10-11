@@ -1473,10 +1473,11 @@ function grRight(){
 function grMiss(){
   if (firstTry) { firstTry = false; grCur.res = false; grMisses.push({ p: grCur.p, it: grCur.it }); rec(itemKey(grCur), false); }
 }
-function grShowDone(ok){
+// mine: the learner's own right answer (another accepted word order), shown instead of the usual one.
+function grShowDone(ok, mine){
   grDone = true;
   const it = grCur.it, fb = $('grFb'); fb.textContent = ''; fb.className = 'fb ' + (ok ? 'ok' : 'bad');
-  const ans = grAnswer(it);
+  const ans = mine || grAnswer(it);
   fb.append(ok ? '對！ ' : 'Answer: ', withPy(el('span','zh', ans), ans));
   // Questions made from a word also show its pinyin and meaning; anything in Chinese can be heard.
   if (it.word) fb.append(' ' + it.word[1] + ' · ' + it.word[2]);
@@ -1521,7 +1522,7 @@ function checkOrder(){
   grPlaced.forEach(b => b.disabled = true);
   $('grAns').classList.add(ok ? 'ok' : 'bad');
   if (ok) grRight(); else grMiss();
-  grShowDone(ok);
+  grShowDone(ok, ok ? got : null);
 }
 // After an answer there's no Next button: a tap anywhere goes on (milo, 2026-10-11).
 function grReady(){ $('grGo').hidden = true; }
