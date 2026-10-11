@@ -238,8 +238,10 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
 .gq .qal{color:var(--muted)}
 .gq .q.en{font-family:var(--f-py);font-size:1.15rem}
 .gq .gap{display:inline-block;min-width:2em;border-bottom:3px solid var(--accent);color:var(--accent);text-align:center}
-.gtable{border-collapse:collapse;font-family:var(--f-hand);font-size:1.15rem;justify-self:start}
-.gtable td,.gtable th{border:1px solid var(--line);padding:4px 10px;text-align:left}
+.gtable{border-collapse:collapse;font-family:var(--f-hand);font-size:1.15rem;justify-self:center}
+.gtable td,.gtable th{border:1px solid var(--line);padding:.3em .6em;text-align:center;vertical-align:middle;white-space:nowrap}
+.gtable .rb{padding:0 .2em}
+@media (max-width:560px){.gtable{font-size:1rem} .gtable td,.gtable th{padding:.3em .3em}}
 .gtable th{color:var(--muted);font-weight:400}
 .ans{min-height:58px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;border-bottom:2px dashed var(--line);padding:4px 0 8px}
 .ans.ok{border-bottom-color:var(--ok)} .ans.bad{border-bottom-color:var(--bad)}
@@ -253,9 +255,9 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
 .wt.slot{visibility:hidden}
 .gq .tools{justify-content:space-between}
 /* Pinyin under the Chinese: its space is always kept, it only becomes visible while 拼音 is held, so nothing moves */
-.rb{display:inline-flex;flex-direction:column;align-items:center}
+.rb{display:inline-flex;flex-direction:column;align-items:center;padding:0 .08em}
 .nw{white-space:nowrap}
-.rt{visibility:hidden;font-family:var(--f-py);font-size:max(.7rem,.4em);font-weight:400;color:var(--muted);letter-spacing:0;line-height:1.2;font-style:normal;white-space:nowrap;padding:0 .1em}
+.rt{visibility:hidden;font-family:var(--f-py);font-size:max(.58rem,.36em);font-weight:400;color:var(--muted);letter-spacing:-.02em;line-height:1.2;font-style:normal;white-space:nowrap;width:0;display:flex;justify-content:center}
 .showpy .rt{visibility:visible}
 .mwq .part{display:inline-flex;flex-direction:column;align-items:center}
 .mwq .part>span:first-child:not(.gap){border-bottom:3px solid transparent}

@@ -542,25 +542,25 @@
         ],
         "examples": [
           ["{s:這支手機}{k:能}{v:上網}{k:和}{v:照相}。", "zhè zhī shǒu jī néng shàng wǎng hàn zhào xiàng.", "This phone can go online and take photos."],
-          ["{s:這支手機}{k:能}{v:上網}，{k:也能}{v:照相}。", "zhè zhī shǒu jī néng shàng wǎng, yě néng zhào xiàng.", "This phone can go online, and it can also take photos."],
-          ["{v:上網}{k:和}{v:照相}，{s:這支手機}{k:都能}。", "shàng wǎng hàn zhào xiàng, zhè zhī shǒu jī dōu néng.", "Going online and taking photos, this phone can do both."]
+          ["{s:我}{k:能}{v:打籃球}，{k:也能}{v:踢足球}。", "wǒ néng dǎ lán qiú, yě néng tī zú qiú.", "I can play basketball, and I can also play soccer."],
+          ["{v:游泳}{k:和}{v:爬山}，{s:他}{k:都能}。", "yóu yǒng hàn pá shān, tā dōu néng.", "Swimming and hiking, he can do both."]
         ],
         "tip": "也 and 都 go before 能: 也能, 都能."
       },
       "items": [
-        {"type": "pick", "q": "這支手機能上網，＿能照相。", "opts": ["也", "都", "和"], "en": "This phone can go online, and it can also take photos."},
-        {"type": "pick", "q": "上網和照相，這支手機＿能。", "opts": ["都", "也", "和"], "en": "Going online and taking photos, this phone can do both."},
+        {"type": "pick", "q": "週末我能去爬山，＿能去逛街。", "opts": ["也", "都", "和"], "en": "On the weekend I can go hiking, and I can also go shopping."},
+        {"type": "pick", "q": "游泳和打網球，他＿能。", "opts": ["都", "也", "和"], "en": "Swimming and playing tennis, he can do both."},
         {"type": "pick", "q": "這支手機能上網＿照相。", "opts": ["和", "也", "都"], "en": "This phone can go online and take photos."},
-        {"type": "pick", "q": "Which sentence is right?", "opts": ["這支手機能上網，也能照相。", "這支手機能上網，能也照相。", "這支手機也上網，能照相。"], "en": "This phone can go online, and it can also take photos."},
-        {"type": "order", "ask": "Rewrite it using 也.", "src": "我的手機能上網和照相。", "tiles": ["我", "的", "手機", "能", "上網", "，", "也", "能", "照相", "。"], "alts": [["我", "的", "手機", "能", "照相", "，", "也", "能", "上網", "。"]]},
+        {"type": "pick", "q": "Which sentence is right?", "opts": ["他也能踢足球。", "他能也踢足球。", "他也踢足球能。"], "en": "He can also play soccer."},
+        {"type": "order", "ask": "Rewrite it using 也.", "src": "我週末能去爬山和逛街。", "tiles": ["我", "週末", "能", "去", "爬山", "，", "也", "能", "去", "逛街", "。"], "alts": [["我", "週末", "能", "去", "逛街", "，", "也", "能", "去", "爬山", "。"], ["週末", "我", "能", "去", "爬山", "，", "也", "能", "去", "逛街", "。"], ["週末", "我", "能", "去", "逛街", "，", "也", "能", "去", "爬山", "。"]], "en": "On the weekend I can go hiking, and I can also go shopping."},
         {"type": "order", "ask": "Rewrite it using 都, starting with the two things.", "src": "這支手機能上網和照相。", "tiles": ["上網", "和", "照相", "，", "這", "支", "手機", "都", "能", "。"], "alts": [["照相", "和", "上網", "，", "這", "支", "手機", "都", "能", "。"]]},
-        {"type": "order", "tiles": ["你", "的", "手機", "能", "照相", "嗎", "？"], "en": "Can your phone take photos?"},
-        {"type": "pick", "ask": "Complete the question that this answers: 能，我的手機能上網。", "q": "你的手機能上網＿？", "opts": ["嗎", "呢", "還是"], "en": "Can your phone go online?"},
-        {"type": "pick", "ctx": "A：這支手機能照相嗎？", "q": "Which answer fits?", "opts": ["能，這支手機能照相。", "能，這支手機照相能。", "不能，這支手機能照相。"], "en": "Yes, this phone can take photos."},
-        {"type": "pick", "q": "你的手機＿上網嗎？", "opts": ["能", "都", "和"], "en": "Can your phone go online?"},
+        {"type": "order", "tiles": ["你", "明天晚上", "能", "來", "嗎", "？"], "alts": [["明天晚上", "你", "能", "來", "嗎", "？"]], "en": "Can you come tomorrow evening?"},
+        {"type": "pick", "ask": "Complete the question that this answers: 能，我週末能去爬山。", "q": "你週末能去爬山＿？", "opts": ["嗎", "呢", "還是"], "en": "Can you go hiking on the weekend?"},
+        {"type": "pick", "ctx": "A：你今天晚上能來我家吃晚飯嗎？", "q": "Which answer fits?", "opts": ["不能，我今天晚上要學中文。", "能，我今天晚上不能去。", "不能，我今天晚上能去。"], "en": "No, I have to study Chinese tonight."},
+        {"type": "pick", "q": "你明天＿來我家嗎？", "opts": ["能", "都", "和"], "en": "Can you come to my house tomorrow?"},
         {"type": "pick", "ask": "The answer is 能，這支手機能上網。", "q": "Which question is right?", "opts": ["這支手機能上網嗎？", "這支手機上網能嗎？", "這支手機能不能上網嗎？"], "en": "Can this phone go online?"},
-        {"type": "order", "ask": "Rewrite it using 也.", "src": "這支新手機能上網和照相。", "tiles": ["這", "支", "新", "手機", "能", "上網", "，", "也", "能", "照相", "。"], "alts": [["這", "支", "新", "手機", "能", "照相", "，", "也", "能", "上網", "。"]], "en": "This new phone can go online and also take photos."},
-        {"type": "order", "tiles": ["我", "的", "手機", "不", "能", "上網", "。"], "en": "My phone can't go online."}
+        {"type": "order", "ask": "Rewrite it using 也.", "src": "我哥哥能打籃球和踢足球。", "tiles": ["我", "哥哥", "能", "打", "籃球", "，", "也", "能", "踢", "足球", "。"], "alts": [["我", "哥哥", "能", "踢", "足球", "，", "也", "能", "打", "籃球", "。"]], "en": "My older brother can play basketball and also soccer."},
+        {"type": "order", "tiles": ["我", "今天晚上", "不", "能", "去", "看", "電影", "。"], "alts": [["今天晚上", "我", "不", "能", "去", "看", "電影", "。"]], "en": "I can't go to the movies tonight."}
       ]
     }
   ]
