@@ -227,6 +227,9 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
 .gpt .go .sub{color:var(--muted);font-size:.95rem}
 .pane .practise{justify-self:start}
 .empty{color:var(--muted)}
+.grlive:not([hidden]),.grview:not([hidden]){display:contents}
+.grview .grlive{pointer-events:none}
+.grview > .ask{color:var(--accent)}
 .gq{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:18px 16px;display:grid;gap:12px}
 .gq .ask{color:var(--muted);font-size:1rem}
 .gq{--zh-size:clamp(1.4rem,4.6vw,1.8rem)}
@@ -401,6 +404,8 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
   <div class="rail" id="rail" hidden><i id="bar"></i></div>
 
   <section class="gq" id="grBox" aria-live="polite" hidden>
+    <div class="grview" id="grView" hidden><div class="ask" id="grViewLbl"></div><div class="grlive" id="grViewBody"></div></div>
+    <div class="grlive" id="grLive">
     <div class="ask" id="grAsk"></div>
     <div class="ctx" id="grCtx"></div>
     <div class="src" id="grSrc"></div>
@@ -412,8 +417,10 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
     <div class="ans" id="grAns" hidden></div>
     <div class="opts" id="grOpts"></div>
     <div class="fb" id="grFb"></div>
+    </div>
     <div class="tools">
       <span>
+        <button class="btn" id="grPrev" type="button" hidden>← Previous</button>
         <button class="btn" id="grPeek" type="button">📖 Card</button>
         <button class="btn" id="grPy" type="button" aria-label="Hold to show pinyin">拼音</button>
       </span>
@@ -1301,7 +1308,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('sheet'
 let grBack = null, grExam = false, grKindOf = null;
 function startGr(items, title, back, kind){
   ex = 'gr'; endless = false; grItems = items; grBack = back || null; grKindOf = kind || null; grExam = kind === 'exam';
-  queue = items.map(x => ({ ...x, again: false })); idx = 0; score = 0; grMisses = []; misses = [];
+  queue = items.map(x => ({ ...x, again: false })); idx = 0; score = 0; grMisses = []; misses = []; grHist = []; grViewI = -1;
   hideAll();
   $('title').textContent = title;
   $('modeBtn').textContent = grBack || (/\/cards$/.test(parentOf(location.pathname) || '') ? '← Cards' : '← ' + GRS().en);
@@ -1398,6 +1405,7 @@ function showGr(){
   $('grBox').querySelectorAll('.reveal').forEach(x => x.remove());
   // Cards can't be opened in the mock exam, or on questions made from the word lists (they have none).
   $('grPeek').hidden = grExam || !(grCur.p && grCur.p.card);
+  grViewI = -1; $('grLive').hidden = false; $('grView').hidden = true; $('grPrev').hidden = grExam || !grHist.length;
   // Listening questions play the word as they open; ▶ plays it again.
   $('grPlay').hidden = !it.audio; if (it.audio) playWord(it.audio);
   $('grPyHint').hidden = !it.pyHint; $('grPyHint').textContent = it.pyHint || '';
@@ -1515,7 +1523,29 @@ function checkOrder(){
 }
 // After an answer there's no Next button: a tap anywhere goes on (milo, 2026-10-11).
 function grReady(){ $('grGo').hidden = true; }
+// Previous: past questions of the round can be looked at again, as they were left (milo, 2026-10-11).
+// A copy of each question is kept when moving on; a tap anywhere goes back to the current one.
+let grHist = [], grViewI = -1;
+function grSnap(){
+  const c = $('grLive').cloneNode(true); c.removeAttribute('id');
+  c.querySelectorAll('[id]').forEach(x => x.removeAttribute('id'));
+  grHist.push({ node: c, n: idx + 1 });
+}
+function grView(i){
+  grViewI = i;
+  const live = i < 0;
+  $('grLive').hidden = !live; $('grView').hidden = live;
+  $('grPeek').hidden = !live || grExam || !(grCur.p && grCur.p.card);
+  $('grPrev').hidden = grExam || !grHist.length || (!live && i === 0);
+  if (live) { $('qn').textContent = idx + 1; return; }
+  const h = grHist[i];
+  $('grViewLbl').textContent = 'Question ' + h.n + ' · tap anywhere to go back';
+  $('grViewBody').replaceChildren(h.node);
+  $('qn').textContent = h.n;
+}
+$('grPrev').addEventListener('click', () => grView(grViewI < 0 ? grHist.length - 1 : grViewI - 1));
 function grNext(){
+  grSnap();
   idx++;
   if (idx >= queue.length) return finishGr();
   showGr(); window.scrollTo(0,0);
@@ -1523,8 +1553,14 @@ function grNext(){
 $('grGo').addEventListener('click', () => grDone ? grNext() : checkOrder());
 // Capture phase, so the tap that goes on does nothing else; 🔊, 拼音, the card and the back button still work.
 document.addEventListener('click', e => {
-  if (ex !== 'gr' || !grDone || $('grBox').hidden) return;
-  if (e.target.closest('.say, #grPy, #grPeek, #grPlay, #sheet, #modeBtn')) return;
+  if (ex !== 'gr' || $('grBox').hidden) return;
+  if (grViewI >= 0) {
+    if (e.target.closest('#grPrev, #grPy, #modeBtn')) return;
+    e.stopPropagation(); e.preventDefault();
+    return grView(-1);
+  }
+  if (!grDone) return;
+  if (e.target.closest('.say, #grPy, #grPeek, #grPrev, #grPlay, #sheet, #modeBtn')) return;
   e.stopPropagation(); e.preventDefault();
   grNext();
 }, true);
