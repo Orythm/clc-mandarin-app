@@ -234,6 +234,8 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
 .gq .ctx{color:var(--muted);font-size:1.05rem}
 .gq .ctx.zh{font-family:var(--f-hand);font-size:var(--zh-size);line-height:1.5;color:var(--fg)}
 .gq .q{font-family:var(--f-hand);font-size:var(--zh-size);line-height:1.5}
+.gq .q.qa{margin-top:-.3em}
+.gq .qal{color:var(--muted)}
 .gq .q.en{font-family:var(--f-py);font-size:1.15rem}
 .gq .gap{display:inline-block;min-width:2em;border-bottom:3px solid var(--accent);color:var(--accent);text-align:center}
 .gtable{border-collapse:collapse;font-family:var(--f-hand);font-size:1.15rem;justify-self:start}
@@ -403,6 +405,7 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
     <div id="grTable"></div>
     <button class="btn primary play" id="grPlay" type="button" hidden>▶ Play</button>
     <div class="q" id="grQ"></div>
+    <div class="q qa" id="grA" hidden></div>
     <div class="pyhint" id="grPyHint" hidden></div>
     <div class="ans" id="grAns" hidden></div>
     <div class="opts" id="grOpts"></div>
@@ -1363,6 +1366,7 @@ function grGapQ(q, fill){
   const box = $('grQ'); box.textContent = '';
   box.className = isZh(q) || /^[A-Z]：/.test(q) ? 'q' : 'q en';   // "B：＿" is a Chinese line too
   const line = el('span');
+  if (q.startsWith('Q：')) { line.append(el('span','qal','Q：')); q = q.slice(2); }
   q.split('＿').forEach((part, i) => { if (i) line.append(fill ? withPy(el('span','gap', fill), fill) : el('span','gap','\u00a0')); line.append(isZh(part) ? rubyText(part) : part); });
   box.append(line);
 }
@@ -1372,7 +1376,16 @@ function showGr(){
   $('qt').textContent = queue.length; $('qn').textContent = idx + 1; $('sc').textContent = score;
   $('bar').style.width = (idx / queue.length * 100) + '%';
   // The instruction line says what to do; questions without one get a default from their type.
-  const ask = it.ask || (it.type === 'order' ? 'Put the words in the right order.' : it.q.includes('＿') ? 'Fill the gap.' : '');
+  let ask = it.ask || (it.type === 'order' ? 'Put the words in the right order.' : it.q.includes('＿') ? 'Fill the gap.' : '');
+  // Questions about an answer show the question and the answer as two lines in the same type, Q then A
+  // (milo, 2026-10-11): the answer comes out of the instruction line.
+  grCur.qq = null; $('grA').hidden = true; $('grA').textContent = '';
+  const qa = it.type === 'pick' && (ask.match(/^Complete the question that this answers:\s*(.+)$/) || (it.q === 'Which question is right?' && ask.match(/^The answer is\s*(.+)$/)));
+  if (qa) {
+    ask = it.q === 'Which question is right?' ? 'Which question is right?' : 'Complete the question.';
+    grCur.qq = 'Q：' + (it.q === 'Which question is right?' ? '＿' : it.q);
+    $('grA').append(el('span','qal','A：'), rubyText(qa[1])); $('grA').hidden = false;
+  }
   $('grAsk').textContent = ask; $('grAsk').hidden = !ask;
   const c = it.ctx || '';
   $('grCtx').textContent = c; $('grCtx').className = isZh(c) ? 'ctx zh' : 'ctx'; $('grCtx').hidden = !c; withPy($('grCtx'), c);
@@ -1396,7 +1409,7 @@ function showGr(){
     opts.append(b);
   } else if (it.type === 'pick') {
     $('grAns').hidden = true; $('grQ').hidden = !it.q;
-    grGapQ(it.q);
+    grGapQ(grCur.qq || it.q);
     $('grQ').classList.toggle('big', !!it.word);
     const long = it.opts.some(o => [...o].length > 4);
     opts.className = long ? 'opts col' : 'opts';
@@ -1469,7 +1482,8 @@ function pickGr(b, o){
   if (o === it.opts[0]) {
     b.classList.add('ok');
     $('grOpts').querySelectorAll('.wt').forEach(x => x.disabled = true);
-    if (it.q.includes('＿')) grGapQ(it.q, it.fill || o);
+    const shown = grCur.qq || it.q;
+    if (shown.includes('＿')) grGapQ(shown, it.fill || o);
     grRight(); grShowDone(true);
   } else {
     grMiss(); b.classList.add('bad'); b.disabled = true;
