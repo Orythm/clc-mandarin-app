@@ -30,6 +30,8 @@ h1{font-family:var(--f-hand);font-size:1.8rem;margin:0}
 .prompt{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:20px 16px;text-align:center;display:grid;gap:6px;min-height:150px;align-content:center}
 .py{font-size:clamp(2.2rem,7vw,3.2rem);font-weight:600;letter-spacing:.01em}
 .hint{color:var(--muted);font-style:italic;font-size:1.05rem;min-height:1.4em}
+.hint.reveal{font-style:normal;color:var(--fg);line-height:1.4em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hint.reveal .zh{font-family:var(--f-hand);font-size:1.25em;line-height:1;color:var(--ok)}
 .fb{font-size:1.15rem;min-height:1.6em}
 .fb.ok{color:var(--ok)} .fb.bad{color:var(--bad)}
 .fb .zh{font-family:var(--f-hand);font-size:1.6rem}
@@ -550,7 +552,8 @@ function start(list){
   buildBoard(); show(); window.scrollTo(0,0);
 }
 function show(){
-  const w = queue[idx]; answered = false; firstTry = true;
+  const w = queue[idx]; answered = false; firstTry = true; paused = false;
+  $('hint').className = 'hint'; $('skipBtn').textContent = 'Skip';
   $('py').textContent = mode === 'zh2py' ? w[0] : w[1];
   $('qn').textContent = idx + 1; $('sc').textContent = score;
   $('bar').style.width = (idx / queue.length * 100) + '%';
@@ -578,20 +581,34 @@ function pick(t){
     $('sc').textContent = score;
     setTimeout(next, 450);
   } else {
-    if (firstTry) { misses.push(w); firstTry = false; rec('py:' + wid(w), false); }
     t.classList.add('bad');
-    setTimeout(() => t.classList.remove('bad'), 450);
+    reveal();
   }
 }
-// Skip counts the word as missed and shows the right tile before moving on.
-function skip(){
+// A wrong tile or Skip counts the word as missed, then shows the answer (right tile in green,
+// characters, pinyin and meaning in the hint line) and waits: a tap anywhere goes on.
+let paused = false;
+function reveal(){
   if (answered) return;
-  const w = queue[idx]; answered = true;
+  const w = queue[idx]; answered = true; paused = true;
   if (firstTry) { misses.push(w); firstTry = false; rec('py:' + wid(w), false); }
   const t = [...document.querySelectorAll('.tile')].find(x => x.dataset.key === w[0]);
   if (t) t.classList.add('ok');
-  setTimeout(next, 900);
+  const h = $('hint'); h.textContent = ''; h.className = 'hint reveal';
+  h.append(el('span', 'zh', w[0]), ' ' + w[1] + ' · ' + w[2]);
+  $('skipBtn').textContent = 'Next';
+  playWord(w);
 }
+// Capture phase, so the tap that ends the pause does nothing else (🔊 still plays).
+document.addEventListener('click', e => {
+  if (!paused) return;
+  if ($('promptBox').hidden) { paused = false; return; }
+  if (e.target.closest('#sayBtn')) return;
+  paused = false;
+  if (e.target.closest('#modeBtn')) return;
+  e.stopPropagation(); e.preventDefault();
+  next();
+}, true);
 function next(){ idx++; if (idx >= queue.length) return finish(); show(); }
 function finish(){
   $('bar').style.width = '100%'; $('promptBox').hidden = true; $('board').hidden = true; $('results').hidden = false;
@@ -608,7 +625,7 @@ function finish(){
   }
 }
 $('hintBtn').addEventListener('click', () => { showEn = !showEn; save(); applyAids(); });
-$('skipBtn').addEventListener('click', skip);
+$('skipBtn').addEventListener('click', reveal);
 $('lenBtn').addEventListener('click', () => { showLen = !showLen; save(); applyAids(); });
 $('retryBtn').addEventListener('click', () => ex === 'gr' ? startGr(shuffle(grMisses), $('title').textContent, grBack) : ex === 'tones' ? startTones(misses) : ex === 'mw' ? startMw(mwMisses) : start(misses));
 $('restartBtn').addEventListener('click', () => ex === 'gr' ? (grKindOf === 'exam' ? startMock() : grKindOf === 'review' ? startReview() : startGr(shuffle(grItems), $('title').textContent, grBack)) : ex === 'tones' ? startTones(WORDS) : ex === 'mw' ? startMw(mwList) : start(WORDS));
