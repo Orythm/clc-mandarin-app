@@ -554,7 +554,7 @@ function buildMenu(boxId, sets, pathOf){
   (sets || LESSONS).forEach(L => {
     const sec = el('section','lesson');
     const h = el('h2', null, setName(L) + ' ');
-    h.append(el('small', null, L.words.length + ' words'));
+    h.append(el('small', null, L.all ? ALL_ROUND + ' mixed words per round' : L.words.length + ' words'));
     const st = statText(wordStats(L.words), L.words.length).replace(/^ · /, '');
     const modes = el('div','modes');
     const ex = L.n ? L.words[L.words.length > 17 ? 17 : 0] : L.words.find(w => [...w[0]].length === 2) || L.words[0];
@@ -583,7 +583,23 @@ function showHome(){
 }
 function showMenu(){
   hideAll(); $('modeBtn').hidden = false; $('modeBtn').textContent = '← Home';
-  $('menu').hidden = false; $('title').textContent = '華語詞彙 · Vocab Quiz'; buildMenu();
+  $('menu').hidden = false; $('title').textContent = '華語詞彙 · Vocab Quiz';
+  buildMenu(null, [{ zh: '全部', en: 'All lessons', all: true, words: lessonWords() }].concat(LESSONS), (L, m) => L.all ? '/vocab/all-' + SLUG[m] : lessonPath(L.n, m));
+}
+// All lessons mixed: a round of 20 words, missed ones first, then ones never asked in this mode, then the rest.
+const ALL_ROUND = 20;
+const allRound = () => !!(lesson && lesson.all && location.pathname.startsWith('/vocab/all-'));
+function allLesson(m){
+  const kind = m === 'meaning' ? 'mean' : m === 'write' ? 'write' : 'py';
+  const rank = w => { const r = PROG[kind + ':' + wid(w)]; return !r ? 1 : r.w ? 0 : 2; };
+  const words = shuffle(lessonWords()).map(w => [rank(w), w]).sort((a, b) => a[0] - b[0]).map(a => a[1]).slice(0, ALL_ROUND);
+  return { zh: '全部', en: 'All lessons', all: true, m, words };
+}
+function startAll(m){
+  lesson = allLesson(m); WORDS = lesson.words;
+  if (m === 'meaning') return startMeaning(lesson);
+  if (m === 'write') return startWrite(lesson);
+  mode = m; start(WORDS);
 }
 function showXMenu(){
   hideAll(); $('modeBtn').hidden = false; $('modeBtn').textContent = '← Home';
@@ -605,7 +621,7 @@ function start(list){
   ex = 'vocab'; endless = false; queue = shuffle(list); idx = 0; score = 0; misses = [];
   $('title').textContent = setName(lesson);
   hideAll();
-  $('modeBtn').textContent = lesson.n ? '← Lessons' : '← Vocabulary';
+  $('modeBtn').textContent = lesson.n || lesson.all ? '← Lessons' : '← Vocabulary';
   ['meta','rail','promptBox','board','modeBtn'].forEach(id => $(id).hidden = false); $('credit').hidden = true;
   $('qt').textContent = queue.length;
   $('py').className = mode === 'zh2py' ? 'py zhq' : 'py';
@@ -683,6 +699,7 @@ function next(){ idx++; if (idx >= queue.length) return finish(); show(); }
 function finish(){
   $('bar').style.width = '100%'; $('promptBox').hidden = true; $('board').hidden = true; $('results').hidden = false;
   $('final').textContent = score + ' / ' + (endless ? idx : queue.length);
+  if (allRound()) $('restartBtn').textContent = 'New ' + ALL_ROUND + ' words';
   const m = $('missWrap'); m.textContent = '';
   if (!misses.length) { m.textContent = 'No mistakes. 太棒了！'; $('retryBtn').hidden = true; }
   else {
@@ -710,7 +727,7 @@ $('pauseBtn').addEventListener('change', () => { pauseOk = $('pauseBtn').checked
 $('skipBtn').addEventListener('click', reveal);
 $('lenBtn').addEventListener('click', () => { showLen = !showLen; save(); applyAids(); });
 $('retryBtn').addEventListener('click', () => ex === 'gr' ? startGr(shuffle(grMisses), $('title').textContent, grBack) : ex === 'tones' ? startTones(misses) : ex === 'mw' ? startMw(mwMisses) : start(misses));
-$('restartBtn').addEventListener('click', () => ex === 'gr' ? (grKindOf === 'exam' ? startMock() : grKindOf === 'review' ? startReview() : startGr(shuffle(grItems), $('title').textContent, grBack)) : ex === 'tones' ? startTones(WORDS) : ex === 'mw' ? startMw(mwList) : start(WORDS));
+$('restartBtn').addEventListener('click', () => allRound() ? startAll(lesson.m) : ex === 'gr' ? (grKindOf === 'exam' ? startMock() : grKindOf === 'review' ? startReview() : startGr(shuffle(grItems), $('title').textContent, grBack)) : ex === 'tones' ? startTones(WORDS) : ex === 'mw' ? startMw(mwList) : start(WORDS));
 
 // ---- Pinyin dictation: hear a word, type its pinyin, then tap vowels to add tone marks ----
 
@@ -1612,7 +1629,7 @@ holdPy($('mwPy'), document.body, 'mwpy');
 $('mwGo').addEventListener('click', () => { idx++; if (idx >= queue.length) finishMw(); else showMw(); });
 $('grPeek').addEventListener('click', () => { if (!grDone) grPeeked = true; openCard(grCur.p); });
 function finishGr(){
-  misses = grMisses.map(({ it }) => it.word || (it.sent ? [it.sent.zh, '', it.sent.en] : [grAnswer(it), '', '']));
+  misses = grMisses.map(({ it }) => it.word || [grAnswer(it), '', '']);
   $('grBox').hidden = true;
   finish();
   $('final').textContent = score + ' / ' + queue.filter(x => !x.again).length;
@@ -1628,7 +1645,7 @@ function finishGr(){
     secs.forEach(s => t.append(el('span', s.ok / s.n < .7 ? 'low' : null, s.name), el('span','n' + (s.ok / s.n < .7 ? ' low' : ''), s.ok + ' / ' + s.n)));
     $('missWrap').prepend(t);
   }
-  $('restartBtn').textContent = 'Start over';
+  $('restartBtn').textContent = allRound() ? 'New ' + ALL_ROUND + ' words' : 'Start over';
 }
 function grStartPoint(p){ startGr(shuffle(p.items).map(it => ({ p, it })), GRS().zh + ' · ' + p.zh); }
 function grStartPractice(kind){
@@ -1723,8 +1740,8 @@ function startSay(){
   startGr(asItems(freshFirst(sentencesOf(grSet).map(sayItem), x => x.key).slice(0, ROUND)), S.zh + ' · English → Chinese');
 }
 // A word set's Meaning round (every word once, English → characters or characters → English at random) and Write it round.
-function startMeaning(L){ startGr(asItems(shuffle(L.words).map(w => meaningItem(w, L.words.length >= 8 ? L.words : lessonWords(), Math.random() < .5))), setName(L).split(' · ')[0] + ' · Meaning', L.n ? '← Lessons' : '← Vocabulary'); }
-function startWrite(L){ startGr(asItems(shuffle(L.words).map(writeItem)), setName(L).split(' · ')[0] + ' · Write it', L.n ? '← Lessons' : '← Vocabulary'); }
+function startMeaning(L){ startGr(asItems(shuffle(L.words).map(w => meaningItem(w, L.words.length >= 8 && !L.all ? L.words : lessonWords(), Math.random() < .5))), setName(L).split(' · ')[0] + ' · Meaning', L.n || L.all ? '← Lessons' : '← Vocabulary'); }
+function startWrite(L){ startGr(asItems(shuffle(L.words).map(writeItem)), setName(L).split(' · ')[0] + ' · Write it', L.n || L.all ? '← Lessons' : '← Vocabulary'); }
 // Mock midterm: 30 questions from every lesson, in sections like a paper test; no cards, one score per section.
 function startMock(){
   const words = lessonWords(), take = (a, n, kf) => (kf ? freshFirst(a, kf) : shuffle(a)).slice(0, n);
@@ -1836,6 +1853,8 @@ function route(){
   const t = path.match(/^\/tones\/lesson-(\d+)$/);
   const TL = t && LESSONS.find(x => x.n === +t[1]);
   if (TL) { lesson = TL; WORDS = TL.words; return startTones(WORDS); }
+  const am = path.match(/^\/vocab\/all-(py-zh|zh-py|meaning|write)$/);
+  if (am && LESSONS.length) return startAll(Object.keys(SLUG).find(k => SLUG[k] === am[1]));
   const r = path.match(/^\/vocab\/lesson-(\d+)-(py-zh|zh-py|meaning|write)$/);
   const L = r && LESSONS.find(x => x.n === +r[1]);
   if (L && r[2] === 'meaning') return startMeaning(L);
