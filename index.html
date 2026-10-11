@@ -1471,12 +1471,8 @@ function checkOrder(){
   if (ok) grRight(); else grMiss();
   grShowDone(ok);
 }
-// After an answer: a Next button, except in Review, where a tap anywhere goes on (milo, 2026-10-11).
-function grReady(){
-  if (grKindOf === 'review') { $('grGo').hidden = true; return; }
-  $('grGo').hidden = false; $('grGo').textContent = idx + 1 < queue.length ? 'Next' : 'See results';
-  $('grGo').focus({ preventScroll: true });
-}
+// After an answer there's no Next button: a tap anywhere goes on (milo, 2026-10-11).
+function grReady(){ $('grGo').hidden = true; }
 function grNext(){
   idx++;
   if (idx >= queue.length) return finishGr();
@@ -1485,7 +1481,7 @@ function grNext(){
 $('grGo').addEventListener('click', () => grDone ? grNext() : checkOrder());
 // Capture phase, so the tap that goes on does nothing else; 🔊, 拼音, the card and the back button still work.
 document.addEventListener('click', e => {
-  if (ex !== 'gr' || grKindOf !== 'review' || !grDone || $('grBox').hidden) return;
+  if (ex !== 'gr' || !grDone || $('grBox').hidden) return;
   if (e.target.closest('.say, #grPy, #grPeek, #grPlay, #sheet, #modeBtn')) return;
   e.stopPropagation(); e.preventDefault();
   grNext();
