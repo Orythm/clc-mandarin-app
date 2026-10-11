@@ -368,14 +368,14 @@
         {"type": "order", "ask": "Rewrite it, starting with the topic 棒球.", "src": "我不喜歡打棒球。", "tiles": ["棒球", "，", "我", "不", "喜歡", "打", "。"]},
         {"type": "order", "ask": "Answer yes, starting with 烏龍茶.", "src": "你喜歡喝烏龍茶嗎？", "tiles": ["烏龍茶", "，", "我", "很", "喜歡", "喝", "。"]},
         {"type": "order", "ask": "Answer yes, starting with 書.", "src": "你常看書嗎？", "tiles": ["書", "，", "我", "常", "看", "。"]},
-        {"type": "pick", "ctx": "Q：你想學中文嗎？", "q": "Which answer is a topic sentence?", "opts": ["中文，我想學。", "我想學中文。", "中文，想學我。"], "en": "Chinese, I want to learn it."},
+        {"type": "pick", "ctx": "Q：你想學中文嗎？", "q": "Which answer puts the topic first?", "opts": ["中文，我想學。", "我想學中文。", "中文，想學我。"], "en": "Chinese, I want to learn it."},
         {"type": "pick", "q": "Which word order is right?", "opts": ["湯，我不常喝。", "湯，不常我喝。", "湯，我喝不常。"], "en": "Soup, I don't often have it."},
         {"type": "pick", "ctx": "Q：你喜歡越南菜嗎？", "q": "越南菜，我＿喜歡。", "opts": ["很", "和", "還是"], "en": "Vietnamese food, I like it a lot."},
         {"type": "order", "ask": "Rewrite it, starting with the topic 空心菜.", "src": "我很喜歡空心菜。", "tiles": ["空心菜", "，", "我", "很", "喜歡", "。"], "en": "Water spinach, I really like it."},
         {"type": "order", "ask": "Rewrite it, starting with the topic 這本書.", "src": "我不想看這本書。", "tiles": ["這本書", "，", "我", "不", "想", "看", "。"], "en": "This book, I don't want to read it."},
         {"type": "order", "ask": "Answer no, starting with 啤酒.", "src": "你喜歡喝啤酒嗎？", "tiles": ["啤酒", "，", "我", "不", "喜歡", "喝", "。"], "en": "Beer, I don't like it."},
         {"type": "order", "ask": "Answer yes, starting with 數學.", "src": "你想學數學嗎？", "tiles": ["數學", "，", "我", "很", "想", "學", "。"], "en": "Math, I really want to learn it."},
-        {"type": "pick", "ctx": "Q：你常喝咖啡嗎？", "q": "Which answer is a topic sentence?", "opts": ["咖啡，我常喝。", "我常喝咖啡。", "咖啡，常我喝。"], "en": "Coffee, I drink it often."},
+        {"type": "pick", "ctx": "Q：你常喝咖啡嗎？", "q": "Which answer puts the topic first?", "opts": ["咖啡，我常喝。", "我常喝咖啡。", "咖啡，常我喝。"], "en": "Coffee, I drink it often."},
         {"type": "pick", "q": "網球，我＿打。", "opts": ["不常", "也都", "還是"], "en": "Tennis, I don't play it often."},
         {"type": "order", "ask": "Answer yes, starting with 新手機.", "src": "你想買新手機嗎？", "tiles": ["新", "手機", "，", "我", "很", "想", "買", "。"], "en": "A new phone, I really want to buy one."}
       ]
