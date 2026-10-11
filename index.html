@@ -36,7 +36,7 @@ h1{font-family:var(--f-hand);font-size:1.8rem;margin:0}
 .fb.ok{color:var(--ok)} .fb.bad{color:var(--bad)}
 .fb .zh{font-family:var(--f-hand);font-size:1.6rem}
 .tools{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
-@media (max-width:560px){.prompt .tools{flex-wrap:nowrap;gap:.4em} .prompt .tools .btn{padding:.5em .7em;font-size:.95rem;white-space:nowrap}}
+@media (max-width:560px){.prompt .tools{flex-wrap:nowrap;gap:.3em} .prompt .tools .btn{padding:.5em .5em;font-size:.85rem;white-space:nowrap}}
 button{font:inherit;cursor:pointer}
 /* No text selection, callout menu or blue tap highlight on long press; typing fields stay selectable */
 body{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
@@ -411,6 +411,7 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
       <button class="btn toggle" id="hintBtn" type="button" aria-pressed="false">English</button>
       <button class="btn toggle" id="lenBtn" type="button" aria-pressed="false">Same length</button>
       <button class="btn" id="sayBtn" type="button" aria-label="Hear the word">🔊</button>
+      <button class="btn toggle" id="pauseBtn" type="button" aria-pressed="false">Pause</button>
       <button class="btn" id="skipBtn" type="button">Skip</button>
     </div>
   </section>
@@ -466,8 +467,8 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
 <script>
 let LESSONS = [];
 const $ = id => document.getElementById(id);
-let showEn = false, showLen = false;
-try { showEn = localStorage.getItem('q_en') === '1'; showLen = localStorage.getItem('q_len') === '1'; } catch(e) {}
+let showEn = false, showLen = false, pauseOk = false;
+try { showEn = localStorage.getItem('q_en') === '1'; showLen = localStorage.getItem('q_len') === '1'; pauseOk = localStorage.getItem('q_pause') === '1'; } catch(e) {}
 let ex = 'vocab', endless = false, WORDS = [], lesson = null, mode = 'py2zh', queue = [], idx = 0, score = 0, misses = [], answered = false, firstTry = true;
 
 // ---- Progress: every answer is kept on this phone (no account), keyed by what was asked ----
@@ -584,7 +585,7 @@ function show(){
 function applyAids(){
   const w = queue[idx]; if (!w) return;
   $('hint').textContent = showEn ? w[2] : '';
-  $('hintBtn').setAttribute('aria-pressed', showEn); $('lenBtn').setAttribute('aria-pressed', showLen);
+  $('hintBtn').setAttribute('aria-pressed', showEn); $('pauseBtn').setAttribute('aria-pressed', pauseOk); $('lenBtn').setAttribute('aria-pressed', showLen);
   const n = [...w[0]].length;
   document.querySelectorAll('.tile').forEach(t => {
     const same = [...t.dataset.key].length === n;
@@ -592,7 +593,7 @@ function applyAids(){
     t.classList.toggle('dim', showLen && !same);
   });
 }
-function save(){ try { localStorage.setItem('q_en', showEn ? '1' : '0'); localStorage.setItem('q_len', showLen ? '1' : '0'); } catch(e) {} }
+function save(){ try { localStorage.setItem('q_en', showEn ? '1' : '0'); localStorage.setItem('q_len', showLen ? '1' : '0'); localStorage.setItem('q_pause', pauseOk ? '1' : '0'); } catch(e) {} }
 function pick(t){
   if (answered) return;
   const w = queue[idx];
@@ -600,7 +601,8 @@ function pick(t){
     answered = true; t.classList.add('ok');
     if (firstTry) { score++; rec('py:' + wid(w), true); }
     $('sc').textContent = score;
-    setTimeout(next, 450);
+    // With Pause on, a right answer also shows the word and waits for a tap.
+    if (pauseOk) showAnswer(w); else setTimeout(next, 450);
   } else {
     // The wrong tile gets a small label with the other side of that word (its pinyin, or its characters
     // in Characters → Pinyin), laid over the tile's bottom edge so nothing moves.
@@ -619,6 +621,10 @@ function reveal(){
   if (firstTry) { misses.push(w); firstTry = false; rec('py:' + wid(w), false); }
   const t = [...document.querySelectorAll('.tile')].find(x => x.dataset.key === w[0]);
   if (t) t.classList.add('ok');
+  showAnswer(w);
+}
+function showAnswer(w){
+  paused = true;
   const h = $('hint'); h.textContent = ''; h.className = 'hint reveal';
   h.append(el('span', 'zh', w[0]), ' ' + w[1] + ' · ' + w[2]);
   $('skipBtn').textContent = 'Next';
@@ -628,7 +634,7 @@ function reveal(){
 document.addEventListener('click', e => {
   if (!paused) return;
   if ($('promptBox').hidden) { paused = false; return; }
-  if (e.target.closest('#sayBtn')) return;
+  if (e.target.closest('#sayBtn, #pauseBtn')) return;
   paused = false;
   if (e.target.closest('#modeBtn')) return;
   e.stopPropagation(); e.preventDefault();
@@ -650,6 +656,7 @@ function finish(){
   }
 }
 $('hintBtn').addEventListener('click', () => { showEn = !showEn; save(); applyAids(); });
+$('pauseBtn').addEventListener('click', () => { pauseOk = !pauseOk; save(); $('pauseBtn').setAttribute('aria-pressed', pauseOk); });
 $('skipBtn').addEventListener('click', reveal);
 $('lenBtn').addEventListener('click', () => { showLen = !showLen; save(); applyAids(); });
 $('retryBtn').addEventListener('click', () => ex === 'gr' ? startGr(shuffle(grMisses), $('title').textContent, grBack) : ex === 'tones' ? startTones(misses) : ex === 'mw' ? startMw(mwMisses) : start(misses));
