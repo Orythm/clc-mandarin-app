@@ -1407,8 +1407,7 @@ function revealRecall(){
       if (grDone) return;
       if (ok) grRight(); else grMiss();
       grDone = true; opts.querySelectorAll('button').forEach(x => x.disabled = true); b.classList.add(ok ? 'ok' : 'bad');
-      $('grGo').hidden = false; $('grGo').textContent = idx + 1 < queue.length ? 'Next' : 'See results';
-      $('grGo').focus({ preventScroll: true });
+      grReady();
     });
     opts.append(b);
   });
@@ -1436,8 +1435,7 @@ function grShowDone(ok){
     fb.append(say);
   }
   $('grUndo').hidden = true;
-  $('grGo').hidden = false; $('grGo').textContent = idx + 1 < queue.length ? 'Next' : 'See results';
-  $('grGo').focus({ preventScroll: true });
+  grReady();
 }
 function pickGr(b, o){
   if (grDone) return;
@@ -1473,12 +1471,25 @@ function checkOrder(){
   if (ok) grRight(); else grMiss();
   grShowDone(ok);
 }
-$('grGo').addEventListener('click', () => {
-  if (!grDone) return checkOrder();
+// After an answer: a Next button, except in Review, where a tap anywhere goes on (milo, 2026-10-11).
+function grReady(){
+  if (grKindOf === 'review') { $('grGo').hidden = true; return; }
+  $('grGo').hidden = false; $('grGo').textContent = idx + 1 < queue.length ? 'Next' : 'See results';
+  $('grGo').focus({ preventScroll: true });
+}
+function grNext(){
   idx++;
   if (idx >= queue.length) return finishGr();
   showGr(); window.scrollTo(0,0);
-});
+}
+$('grGo').addEventListener('click', () => grDone ? grNext() : checkOrder());
+// Capture phase, so the tap that goes on does nothing else; 🔊, 拼音, the card and the back button still work.
+document.addEventListener('click', e => {
+  if (ex !== 'gr' || grKindOf !== 'review' || !grDone || $('grBox').hidden) return;
+  if (e.target.closest('.say, #grPy, #grPeek, #grPlay, #sheet, #modeBtn')) return;
+  e.stopPropagation(); e.preventDefault();
+  grNext();
+}, true);
 $('grUndo').addEventListener('click', () => { [...grPlaced].forEach(b => b._slot.replaceWith(b)); grPlaced = []; $('grGo').hidden = true; $('grUndo').hidden = true; });
 // 拼音: hold to show pinyin, let go to hide it.
 // Hold-to-show pinyin: while the button is held, `cls` is set on `target`.
