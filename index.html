@@ -641,7 +641,7 @@ function show(){
   $('qn').textContent = idx + 1; $('sc').textContent = score;
   $('bar').style.width = (idx / queue.length * 100) + '%';
   document.querySelectorAll('.tile').forEach(t => { t.classList.remove('ok', 'bad'); t.querySelectorAll('.tpy').forEach(x => x.remove()); });
-  applyAids();
+  applyAids(); saveRun(0);
 }
 function applyAids(){
   const w = queue[idx]; if (!w) return;
@@ -664,6 +664,7 @@ function pick(t){
     $('sc').textContent = score;
     // With Pause on, a right answer also shows the word and waits for a tap.
     // Without Pause, the word and its English show for a moment before the next one (milo, 2026-10-11).
+    saveRun(1);
     if (pauseOk) showAnswer(w); else { showHint(w); setTimeout(next, 750); }
   } else {
     // The wrong tile gets a small label with the other side of that word (its pinyin, or its characters
@@ -683,7 +684,7 @@ function reveal(){
   if (firstTry) { misses.push(w); firstTry = false; rec('py:' + wid(w), false); }
   const t = [...document.querySelectorAll('.tile')].find(x => x.dataset.key === w[0]);
   if (t) t.classList.add('ok');
-  showAnswer(w);
+  showAnswer(w); saveRun(1);
 }
 function showHint(w){
   const h = $('hint'); h.textContent = ''; h.className = 'hint reveal';
@@ -706,6 +707,7 @@ document.addEventListener('click', e => {
 }, true);
 function next(){ idx++; if (idx >= queue.length) return finish(); show(); }
 function finish(){
+  clearRun();
   $('bar').style.width = '100%'; $('promptBox').hidden = true; $('board').hidden = true; $('results').hidden = false;
   $('final').textContent = score + ' / ' + (endless ? idx : queue.length);
   if (allRound()) $('restartBtn').textContent = 'New ' + ALL_ROUND + ' words';
@@ -1039,6 +1041,7 @@ function showMw(){
   $('qn').textContent = idx + 1; $('sc').textContent = score;
   $('bar').style.width = (idx / queue.length * 100) + '%';
   document.querySelectorAll('#board .tile').forEach(t => { t.className = 'tile'; t.disabled = false; });
+  saveRun(0);
 }
 function pickMw(t){
   if (answered) return;
@@ -1053,6 +1056,7 @@ function pickMw(t){
     $('mwQ').querySelector('.gap').textContent = m.mw;
     pys[0].textContent = numPy(q.n, m); pys[1].textContent = m.py; $('mwBox').classList.add('done');
     $('mwFb').className = 'fb ok'; $('mwFb').textContent = '對！ ' + m.mw + ' is for ' + m.en + (others.length ? ' (' + others.join(', ') + ' works too)' : '');
+    saveRun(1);
     $('mwGo').textContent = idx + 1 < queue.length ? 'Next' : 'See results'; $('mwGo').hidden = false; $('mwGo').focus({ preventScroll: true });
   } else {
     if (firstTry) { mwMisses.push({ m: q.m, w: q.w }); firstTry = false; rec('mw:' + q.w[0], false); }
@@ -1468,6 +1472,7 @@ function showGr(){
   $('grPlay').hidden = !it.audio; if (it.audio) playWord(it.audio);
   $('grPyHint').hidden = !it.pyHint; $('grPyHint').textContent = it.pyHint || '';
   const opts = $('grOpts'); opts.textContent = '';
+  saveRun(0);
   if (it.type === 'recall') {
     // Write it: the English (pinyin while 拼音 is held), write the characters on paper, then check yourself.
     $('grAns').hidden = true; $('grQ').hidden = false; grGapQ(it.q); $('grQ').classList.add(it.sent ? 'sent' : 'big');
@@ -1589,7 +1594,7 @@ function checkOrder(){
   grShowDone(ok, ok ? got : null);
 }
 // After an answer there's no Next button: a tap anywhere goes on (milo, 2026-10-11).
-function grReady(){ $('grGo').hidden = true; }
+function grReady(){ $('grGo').hidden = true; saveRun(1); }
 // Previous: past questions of the round can be looked at again, as they were left (milo, 2026-10-11).
 // A copy of each question is kept when moving on; a tap anywhere goes back to the current one.
 let grHist = [], grViewI = -1;
@@ -1832,6 +1837,40 @@ $('clearProg').addEventListener('click', () => {
   try { localStorage.removeItem(CARD_KEY); } catch(e) {}
 });
 
+// ---- A round in progress is kept on the device (clc_run_v1): which page, the questions, where you are, the score ----
+// Saved as each question opens and after each answer (then pointing at the next question, so a reload never asks
+// an answered one again). Rounds over a day old are dropped. Grammar points are stored by set and id.
+const RUN_KEY = 'clc_run_v1';
+function saveRun(ahead){
+  if (!['vocab', 'mw', 'gr'].includes(ex) || endless) return;
+  const i = idx + ahead;
+  if (i >= queue.length) return clearRun();
+  const pref = p => p ? { set: p._set, id: p.id } : null;
+  const run = { path: location.pathname, t: Date.now(), ex, idx: i, score, misses,
+    queue: ex === 'gr' ? queue.map(x => ({ ...x, p: pref(x.p) })) : queue };
+  if (ex === 'vocab') run.words = WORDS;
+  if (ex === 'mw') run.mwMisses = mwMisses;
+  if (ex === 'gr') run.grMisses = grMisses.map(x => ({ ...x, p: pref(x.p) }));
+  try { localStorage.setItem(RUN_KEY, JSON.stringify(run)); } catch(e) {}
+}
+function clearRun(){ try { localStorage.removeItem(RUN_KEY); } catch(e) {} }
+// Read before the page is opened, as opening it deals a new round and saves that.
+function loadRun(){ try { return JSON.parse(localStorage.getItem(RUN_KEY) || 'null'); } catch(e) { return null; } }
+function resumeRun(run){
+  if ( run.path !== location.pathname || run.ex !== ex || Date.now() - run.t > 864e5 || !(run.idx < run.queue.length)) return;
+  const point = r => r && SETS[r.set] ? SETS[r.set].data.points.find(p => p.id === r.id) || null : null;
+  idx = run.idx; score = run.score || 0; misses = run.misses || [];
+  if (ex === 'vocab') {
+    queue = run.queue; WORDS = run.words || WORDS; if (lesson && lesson.all) lesson.words = WORDS;
+    buildBoard(); show();
+  } else if (ex === 'mw') {
+    queue = run.queue; mwMisses = run.mwMisses || []; showMw();
+  } else {
+    queue = run.queue.map(x => ({ ...x, p: point(x.p) })); grMisses = (run.grMisses || []).map(x => ({ ...x, p: point(x.p) }));
+    grHist = []; showGr();
+  }
+}
+
 // URLs: "/" is the home menu, "/vocab" the lesson list, "/vocab/lesson-<n>-py-zh" and
 // "/vocab/lesson-<n>-zh-py" open a quiz, "/tones" and "/tones/lesson-<n>" are the pinyin dictation, so the phone's back gesture moves between screens
 // instead of closing the app. Old "/lesson-..." links are redirected to "/vocab/lesson-...".
@@ -1846,7 +1885,14 @@ function parentOf(path){
   if (path.startsWith('/extra/')) return '/extra';
   return path.startsWith('/vocab/') ? '/vocab' : path.startsWith('/tones/') ? '/tones' : path.startsWith('/grammar/') ? '/grammar' : path.startsWith('/questions/') ? '/questions' : null;
 }
-function route(){
+// Reloading the page (or the phone dropping the app in the background) carries on with the round in progress
+// instead of dealing a new one (milo, 2026-10-12); a menu tap still starts a fresh round.
+function route(fresh){
+  const run = fresh === true ? null : loadRun();
+  routeTo();
+  if (run) resumeRun(run);
+}
+function routeTo(){
   const path = location.pathname.replace(/\/+$/, '') || '/';
   if (path === '/vocab') return showMenu();
   if (path === '/extra' && EXTRA.length) return showXMenu();
@@ -1891,7 +1937,7 @@ function route(){
   if (!L) { if (location.pathname !== '/') history.replaceState(null, '', '/'); showHome(); return; }
   lesson = L; WORDS = L.words; mode = r[2] === 'zh-py' ? 'zh2py' : 'py2zh'; start(WORDS);
 }
-function go(path){ history.pushState({ parent: location.pathname }, '', path); route(); }
+function go(path){ history.pushState({ parent: location.pathname }, '', path); route(true); }
 function goUp(){
   // Opened from the parent screen: step back so the history doesn't pile up. Otherwise replace.
   const parent = parentOf(location.pathname) || '/';
