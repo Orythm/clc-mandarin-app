@@ -61,6 +61,8 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .miss .en{color:var(--muted);font-style:italic}
 .prompt{position:sticky;top:env(safe-area-inset-top,0px);z-index:2;box-shadow:0 6px 16px -10px rgba(0,0,0,.35)}
 .pausebox{position:absolute;top:.6em;right:.8em;display:flex;align-items:center;gap:.3em;font-size:.85rem;color:var(--muted);cursor:pointer;user-select:none;-webkit-user-select:none}
+.pausebox.left{right:auto;left:.8em}
+.pausebox.left:hover::after,.pausebox.left:focus-within::after{right:auto;left:0}
 .pausebox input{margin:0;width:1.1em;height:1.1em;accent-color:var(--accent);cursor:pointer}
 .pausebox:hover::after,.pausebox:focus-within::after{content:attr(data-tip);position:absolute;top:calc(100% + .4em);right:0;width:max-content;max-width:16em;background:var(--fg);color:var(--paper);font-size:.8rem;line-height:1.35;text-align:left;padding:.45em .65em;border-radius:.5em;z-index:5;pointer-events:none}
 @media (max-width:560px){
@@ -445,6 +447,7 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
   <div class="sheet" id="sheet" hidden><div class="pane" id="sheetPane" role="dialog" aria-modal="true"></div></div>
 
   <section class="prompt" id="promptBox" aria-live="polite" hidden>
+    <label class="pausebox left" data-tip="Tap English to show it, tap again to hide it, instead of holding the button. It still counts the word as missed."><input type="checkbox" id="enTapBtn"> Tap English</label>
     <label class="pausebox" data-tip="Also stop after a right answer: see the word, then tap anywhere to go on"><input type="checkbox" id="pauseBtn"> Pause</label>
     <div class="py" id="py"></div>
     <div class="hint" id="hint"></div>
@@ -507,8 +510,8 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
 <script>
 let LESSONS = [];
 const $ = id => document.getElementById(id);
-let showEn = false, showLen = false, pauseOk = false;
-try { showLen = localStorage.getItem('q_len') === '1'; pauseOk = localStorage.getItem('q_pause') === '1'; } catch(e) {}
+let showEn = false, showLen = false, pauseOk = false, enTap = false;
+try { showLen = localStorage.getItem('q_len') === '1'; pauseOk = localStorage.getItem('q_pause') === '1'; enTap = localStorage.getItem('q_entap') === '1'; } catch(e) {}
 let ex = 'vocab', endless = false, WORDS = [], lesson = null, mode = 'py2zh', queue = [], idx = 0, score = 0, misses = [], answered = false, firstTry = true;
 
 // ---- Progress: every answer is kept on this phone (no account), keyed by what was asked ----
@@ -635,6 +638,7 @@ function start(list){
 }
 function show(){
   const w = queue[idx]; answered = false; firstTry = true; paused = false;
+  if (enTap && showEn) { showEn = false; $('hintBtn').classList.remove('on'); }
   if (showEn && !$('hintBtn').classList.contains('on')) showEn = false;
   $('hint').className = 'hint'; $('skipBtn').textContent = 'Skip';
   $('py').textContent = mode === 'zh2py' ? w[0] : w[1];
@@ -646,7 +650,7 @@ function show(){
 function applyAids(){
   const w = queue[idx]; if (!w) return;
   if (!paused) $('hint').textContent = showEn ? w[2] : '';
-  $('pauseBtn').checked = pauseOk; $('lenBtn').setAttribute('aria-pressed', showLen);
+  $('pauseBtn').checked = pauseOk; $('enTapBtn').checked = enTap; $('lenBtn').setAttribute('aria-pressed', showLen);
   const n = [...w[0]].length;
   document.querySelectorAll('.tile').forEach(t => {
     const same = [...t.dataset.key].length === n;
@@ -654,7 +658,7 @@ function applyAids(){
     t.classList.toggle('dim', showLen && !same);
   });
 }
-function save(){ try { localStorage.setItem('q_len', showLen ? '1' : '0'); localStorage.setItem('q_pause', pauseOk ? '1' : '0'); } catch(e) {} }
+function save(){ try { localStorage.setItem('q_len', showLen ? '1' : '0'); localStorage.setItem('q_pause', pauseOk ? '1' : '0'); localStorage.setItem('q_entap', enTap ? '1' : '0'); } catch(e) {} }
 function pick(t){
   if (answered) return;
   const w = queue[idx];
@@ -734,13 +738,18 @@ function finish(){
     applyAids();
   };
   const off = () => { clearTimeout(offT); offT = setTimeout(() => on(false), 500); };
-  btn.addEventListener('pointerdown', e => { e.preventDefault(); btn.setPointerCapture(e.pointerId); on(true); });
-  ['pointerup','pointercancel','lostpointercapture'].forEach(t => btn.addEventListener(t, off));
+  // With "Tap English" ticked, a tap shows it and another tap hides it; it hides again on the next word (milo, 2026-10-12).
+  btn.addEventListener('pointerdown', e => { e.preventDefault(); if (enTap) return; btn.setPointerCapture(e.pointerId); on(true); });
+  ['pointerup','pointercancel','lostpointercapture'].forEach(t => btn.addEventListener(t, () => { if (!enTap) off(); }));
+  btn.addEventListener('click', () => { if (enTap) on(!showEn); });
   btn.addEventListener('contextmenu', e => e.preventDefault());
-  btn.addEventListener('keydown', e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); on(true); } });
-  btn.addEventListener('keyup', off);
+  btn.addEventListener('keydown', e => { if (!enTap && (e.key === ' ' || e.key === 'Enter')) { e.preventDefault(); on(true); } });
+  btn.addEventListener('keyup', () => { if (!enTap) off(); });
 })();
 $('pauseBtn').addEventListener('change', () => { pauseOk = $('pauseBtn').checked; save(); });
+// After a tap the box loses focus, so its tip doesn't stay over the word on phones.
+document.querySelectorAll('.pausebox input').forEach(i => i.addEventListener('change', () => i.blur()));
+$('enTapBtn').addEventListener('change', () => { enTap = $('enTapBtn').checked; save(); $('hintBtn').title = enTap ? 'Tap to show or hide the English. The word then counts as missed.' : 'Hold to show the English. The word then counts as missed.'; });
 $('skipBtn').addEventListener('click', reveal);
 $('lenBtn').addEventListener('click', () => { showLen = !showLen; save(); applyAids(); });
 $('retryBtn').addEventListener('click', () => ex === 'gr' ? startGr(shuffle(grMisses), $('title').textContent, grBack) : ex === 'tones' ? startTones(misses) : ex === 'mw' ? startMw(mwMisses) : start(misses));
