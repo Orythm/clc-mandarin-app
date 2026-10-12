@@ -460,7 +460,7 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
     <div class="dpane" role="dialog" aria-label="Settings">
       <div class="dhead">Settings<button id="drawerX" type="button" aria-label="Close">✕</button></div>
       <label class="opt"><input type="checkbox" id="pauseBtn"><span><b>Pause after a right answer</b><small>See the word, pinyin and English, then tap anywhere to go on.</small></span></label>
-      <label class="opt"><input type="checkbox" id="enTapBtn"><span><b>Tap for English</b><small>Tap English to show it and tap again to hide it, instead of holding. It still counts the word as missed.</small></span></label>
+      <label class="opt"><input type="checkbox" id="enTapBtn"><span><b>Tap for English</b><small>Tap English to show it and tap again to hide it, instead of holding. It stays on for the next words; each word shown with it counts as missed.</small></span></label>
     </div>
   </div>
   <div class="sheet" id="sheet" hidden><div class="pane" id="sheetPane" role="dialog" aria-modal="true"></div></div>
@@ -655,7 +655,8 @@ function start(list){
 }
 function show(){
   const w = queue[idx]; answered = false; firstTry = true; paused = false;
-  if (enTap && showEn) { showEn = false; $('hintBtn').classList.remove('on'); }
+  // Tapped on, the English stays on for the next words until tapped off; each word shown with it counts as missed.
+  if (enTap && showEn) { misses.push(w); firstTry = false; rec('py:' + wid(w), false); }
   if (showEn && !$('hintBtn').classList.contains('on')) showEn = false;
   $('hint').className = 'hint'; $('skipBtn').textContent = 'Skip';
   $('py').textContent = mode === 'zh2py' ? w[0] : w[1];
@@ -755,7 +756,7 @@ function finish(){
     applyAids();
   };
   const off = () => { clearTimeout(offT); offT = setTimeout(() => on(false), 500); };
-  // With "Tap English" ticked, a tap shows it and another tap hides it; it hides again on the next word (milo, 2026-10-12).
+  // With "Tap for English" ticked, a tap shows it and another tap hides it; it stays on across words (milo, 2026-10-12).
   btn.addEventListener('pointerdown', e => { e.preventDefault(); if (enTap) return; btn.setPointerCapture(e.pointerId); on(true); });
   ['pointerup','pointercancel','lostpointercapture'].forEach(t => btn.addEventListener(t, () => { if (!enTap) off(); }));
   btn.addEventListener('click', () => { if (enTap) on(!showEn); });
@@ -796,7 +797,7 @@ if (window.ResizeObserver) new ResizeObserver(placeGear).observe($('promptBox'))
 $('drawerX').addEventListener('click', () => drawer(false));
 $('drawer').addEventListener('click', e => { if (e.target === $('drawer')) drawer(false); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') drawer(false); });
-$('enTapBtn').addEventListener('change', () => { enTap = $('enTapBtn').checked; save(); $('hintBtn').title = enTap ? 'Tap to show or hide the English. The word then counts as missed.' : 'Hold to show the English. The word then counts as missed.'; });
+$('enTapBtn').addEventListener('change', () => { enTap = $('enTapBtn').checked; save(); if (!enTap && showEn) { showEn = false; $('hintBtn').classList.remove('on'); applyAids(); } $('hintBtn').title = enTap ? 'Tap to show or hide the English. The word then counts as missed.' : 'Hold to show the English. The word then counts as missed.'; });
 $('skipBtn').addEventListener('click', reveal);
 $('lenBtn').addEventListener('click', () => { showLen = !showLen; save(); applyAids(); });
 $('retryBtn').addEventListener('click', () => ex === 'gr' ? startGr(shuffle(grMisses), $('title').textContent, grBack) : ex === 'tones' ? startTones(misses) : ex === 'mw' ? startMw(mwMisses) : start(misses));
