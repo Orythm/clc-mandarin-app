@@ -60,9 +60,11 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .miss .zh{font-family:var(--f-hand);font-size:1.7rem}
 .miss .en{color:var(--muted);font-style:italic}
 .prompt{position:sticky;top:env(safe-area-inset-top,0px);z-index:2;box-shadow:0 6px 16px -10px rgba(0,0,0,.35)}
-.gear{position:absolute;top:.4em;right:.4em;width:2.2em;height:2.2em;padding:.4em;border:0;background:none;color:var(--muted);cursor:pointer;border-radius:50%;line-height:0}
+.gear{position:fixed;top:40%;right:0;z-index:30;width:1.9em;height:2.6em;padding:.45em .35em .45em .45em;box-sizing:border-box;border:1px solid var(--line);border-right:0;border-radius:.7em 0 0 .7em;background:var(--paper);color:var(--muted);cursor:pointer;line-height:0;box-shadow:-.15em .1em .6em -.2em rgba(0,0,0,.3);transition:right .2s}
 .gear svg{width:100%;height:100%}
-.gear:hover,.gear:focus-visible{color:var(--fg);background:var(--bg)}
+.gear:hover,.gear:focus-visible,.gear.on{color:var(--fg)}
+/* While the drawer is open the tab rides on its left edge. */
+.gear.on{right:min(20em,85%)}
 /* Settings drawer: slides in from the right over a dimmed page (milo, 2026-10-12) */
 .drawer{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,0);transition:background .2s;visibility:hidden}
 .drawer.open{background:rgba(0,0,0,.35);visibility:visible}
@@ -453,6 +455,7 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
     </div>
   </section>
 
+  <button class="gear" hidden id="gearBtn" type="button" aria-label="Settings" title="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
   <div class="drawer" id="drawer" aria-hidden="true">
     <div class="dpane" role="dialog" aria-label="Settings">
       <div class="dhead">Settings<button id="drawerX" type="button" aria-label="Close">✕</button></div>
@@ -463,7 +466,6 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
   <div class="sheet" id="sheet" hidden><div class="pane" id="sheetPane" role="dialog" aria-modal="true"></div></div>
 
   <section class="prompt" id="promptBox" aria-live="polite" hidden>
-    <button class="gear" id="gearBtn" type="button" aria-label="Settings" title="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
     <div class="py" id="py"></div>
     <div class="hint" id="hint"></div>
     <div class="tools">
@@ -594,7 +596,7 @@ function hideAll(){
   stopAudio(); closeCard(); drawer(false);
   $('restartBtn').textContent = 'Start over (all words)';
   $('restartBtn').hidden = false;
-  ['home','clearWrap','menu','xmenu','tmenu','gmenu','mmenu','grBox','meta','rail','promptBox','results','board','dict','mwBox','fcBox'].forEach(id => $(id).hidden = true);
+  ['home','clearWrap','menu','xmenu','tmenu','gmenu','mmenu','grBox','meta','rail','promptBox','results','board','dict','mwBox','fcBox','gearBtn'].forEach(id => $(id).hidden = true);
   $('credit').hidden = false; // the credits footer shows on menus only; exercises hide it
 }
 function showHome(){
@@ -646,7 +648,7 @@ function start(list){
   $('title').textContent = setName(lesson);
   hideAll();
   $('modeBtn').textContent = lesson.n || (lesson.all && !lesson.extra) ? '← Lessons' : '← Vocabulary';
-  ['meta','rail','promptBox','board','modeBtn'].forEach(id => $(id).hidden = false); $('credit').hidden = true;
+  ['meta','rail','promptBox','board','modeBtn','gearBtn'].forEach(id => $(id).hidden = false); $('credit').hidden = true;
   $('qt').textContent = queue.length;
   $('py').className = mode === 'zh2py' ? 'py zhq' : 'py';
   buildBoard(); show(); window.scrollTo(0,0);
@@ -726,7 +728,7 @@ document.addEventListener('click', e => {
 }, true);
 function next(){ idx++; if (idx >= queue.length) return finish(); show(); }
 function finish(){
-  clearRun();
+  clearRun(); $('gearBtn').hidden = true; drawer(false);
   $('bar').style.width = '100%'; $('promptBox').hidden = true; $('board').hidden = true; $('results').hidden = false;
   $('final').textContent = score + ' / ' + (endless ? idx : queue.length);
   if (allRound()) $('restartBtn').textContent = 'New ' + ALL_ROUND + ' words';
@@ -763,8 +765,8 @@ function finish(){
 })();
 $('pauseBtn').addEventListener('change', () => { pauseOk = $('pauseBtn').checked; save(); });
 // Settings drawer (⚙ on the prompt): tap outside it, ✕ or Escape closes it.
-function drawer(open){ $('drawer').classList.toggle('open', open); $('drawer').setAttribute('aria-hidden', !open); }
-$('gearBtn').addEventListener('click', () => drawer(true));
+function drawer(open){ $('drawer').classList.toggle('open', open); $('gearBtn').classList.toggle('on', open); $('drawer').setAttribute('aria-hidden', !open); }
+$('gearBtn').addEventListener('click', () => drawer(!$('drawer').classList.contains('open')));
 $('drawerX').addEventListener('click', () => drawer(false));
 $('drawer').addEventListener('click', e => { if (e.target === $('drawer')) drawer(false); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') drawer(false); });
