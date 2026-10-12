@@ -60,7 +60,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .miss .zh{font-family:var(--f-hand);font-size:1.7rem}
 .miss .en{color:var(--muted);font-style:italic}
 .prompt{position:sticky;top:env(safe-area-inset-top,0px);z-index:2;box-shadow:0 6px 16px -10px rgba(0,0,0,.35)}
-.gear{position:fixed;top:40%;right:0;z-index:30;width:1.9em;height:2.6em;padding:.45em .35em .45em .45em;box-sizing:border-box;border:1px solid var(--line);border-right:0;border-radius:.7em 0 0 .7em;background:var(--paper);color:var(--muted);cursor:pointer;line-height:0;box-shadow:-.15em .1em .6em -.2em rgba(0,0,0,.3);transition:right .2s}
+.gear{position:fixed;top:40%;right:0;transform:translateY(-50%);z-index:30;width:1.9em;height:2.6em;padding:.45em .35em .45em .45em;box-sizing:border-box;border:1px solid var(--line);border-right:0;border-radius:.7em 0 0 .7em;background:var(--paper);color:var(--muted);cursor:pointer;line-height:0;box-shadow:-.15em .1em .6em -.2em rgba(0,0,0,.3);transition:right .2s}
 .gear svg{width:100%;height:100%}
 .gear:hover,.gear:focus-visible,.gear.on{color:var(--fg)}
 /* While the drawer is open the tab rides on its left edge. */
@@ -68,7 +68,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 /* Settings drawer: slides in from the right over a dimmed page (milo, 2026-10-12) */
 .drawer{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,0);transition:background .2s;visibility:hidden}
 .drawer.open{background:rgba(0,0,0,.35);visibility:visible}
-.drawer .dpane{position:absolute;top:0;right:0;bottom:0;width:min(20em,85%);background:var(--paper);color:var(--fg);box-sizing:border-box;padding:max(1em,env(safe-area-inset-top)) 1.2em 1.2em;display:flex;flex-direction:column;gap:1em;box-shadow:-.5em 0 2em -1em rgba(0,0,0,.5);transform:translateX(100%);transition:transform .2s;overflow:auto}
+.drawer .dpane{touch-action:pan-y;position:absolute;top:0;right:0;bottom:0;width:min(20em,85%);background:var(--paper);color:var(--fg);box-sizing:border-box;padding:max(1em,env(safe-area-inset-top)) 1.2em 1.2em;display:flex;flex-direction:column;gap:1em;box-shadow:-.5em 0 2em -1em rgba(0,0,0,.5);transform:translateX(100%);transition:transform .2s;overflow:auto}
 .drawer.open .dpane{transform:none}
 .dhead{display:flex;align-items:center;justify-content:space-between;font-weight:600;font-size:1.1em}
 .dhead button{border:0;background:none;color:var(--muted);font-size:1.3em;cursor:pointer;padding:.2em .4em}
@@ -662,7 +662,7 @@ function show(){
   $('qn').textContent = idx + 1; $('sc').textContent = score;
   $('bar').style.width = (idx / queue.length * 100) + '%';
   document.querySelectorAll('.tile').forEach(t => { t.classList.remove('ok', 'bad'); t.querySelectorAll('.tpy').forEach(x => x.remove()); });
-  applyAids(); saveRun(0);
+  applyAids(); saveRun(0); placeGear();
 }
 function applyAids(){
   const w = queue[idx]; if (!w) return;
@@ -767,6 +767,32 @@ $('pauseBtn').addEventListener('change', () => { pauseOk = $('pauseBtn').checked
 // Settings drawer (⚙ on the prompt): tap outside it, ✕ or Escape closes it.
 function drawer(open){ $('drawer').classList.toggle('open', open); $('gearBtn').classList.toggle('on', open); $('drawer').setAttribute('aria-hidden', !open); }
 $('gearBtn').addEventListener('click', () => drawer(!$('drawer').classList.contains('open')));
+// The tab sits at the middle height of the question box (milo, 2026-10-12).
+function placeGear(){
+  if ($('gearBtn').hidden || $('promptBox').hidden) return;
+  const r = $('promptBox').getBoundingClientRect();
+  $('gearBtn').style.top = (r.top + r.height / 2) + 'px';
+}
+['resize', 'scroll'].forEach(t => window.addEventListener(t, placeGear, { passive: true }));
+if (window.ResizeObserver) new ResizeObserver(placeGear).observe($('promptBox'));
+// Swipe the drawer to the right to close it; it follows the finger.
+(function(){
+  const pane = $('drawer').querySelector('.dpane'); let x0 = null, y0 = 0, dx = 0;
+  pane.addEventListener('pointerdown', e => { x0 = e.clientX; y0 = e.clientY; dx = 0; });
+  pane.addEventListener('pointermove', e => {
+    if (x0 === null) return;
+    dx = e.clientX - x0;
+    const dy = Math.abs(e.clientY - y0);
+    if (dy > 12 && dy > Math.abs(dx)) { x0 = null; pane.style.transition = ''; pane.style.transform = ''; return; }
+    if (dx > 0) { pane.style.transition = 'none'; pane.style.transform = 'translateX(' + dx + 'px)'; }
+  });
+  const up = () => {
+    if (x0 === null) return; x0 = null;
+    pane.style.transition = ''; pane.style.transform = '';
+    if (dx > pane.offsetWidth / 4) drawer(false);
+  };
+  ['pointerup', 'pointercancel'].forEach(t => pane.addEventListener(t, up));
+})();
 $('drawerX').addEventListener('click', () => drawer(false));
 $('drawer').addEventListener('click', e => { if (e.target === $('drawer')) drawer(false); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') drawer(false); });
