@@ -138,6 +138,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .lesson .mode .lbl{display:none}
 .lesson .mode .ex{justify-content:center;flex-wrap:wrap;row-gap:0}
 @media (max-width:560px){.lesson .modes{grid-template-columns:1fr 1fr;gap:8px} .lesson .mode{padding:.7em} .lesson .mode .ex{font-size:1.3rem} .lesson .mode .ex .h{font-size:1.6rem}}
+@media (max-width:560px){.lesson .mode:nth-child(3){grid-column:1/-1}}
 .lesson h2{font-family:var(--f-hand);font-size:1.4rem;margin:0 0 8px;display:flex;align-items:baseline;gap:10px}
 .lesson h2 small{font-family:var(--f-py);font-size:.9rem;color:var(--muted);font-weight:400}
 .mode{padding:14px}
@@ -589,7 +590,8 @@ function buildMenu(boxId, sets, pathOf){
     const pool = singles.length ? singles : L.words, picks = shuffle(pool);
     const shortEn = w => w[2].split(',')[0].replace(/\s*\(.*?\)/g, '').trim();
     const enPicks = shuffle(pool.filter(w => shortEn(w).length <= 7 && !/measure word|particle/.test(w[2])));
-    [['py2zh','Pinyin → Characters'],['zh2py','Characters → Pinyin'],['meaning','Meaning'],['write','Write it']].forEach(([m,label], i) => {
+    // No Meaning mode on the menus: milo found it irrelevant (2026-10-13); its URLs go back to the menu.
+    [['py2zh','Pinyin → Characters'],['zh2py','Characters → Pinyin'],['write','Write it']].forEach(([m,label], i) => {
       const en = m === 'meaning' || m === 'write', src = en && enPicks.length ? enPicks : picks;
       const w0 = src[i % src.length], ex = en ? [w0[0], w0[1], shortEn(w0)] : w0;
       const b = el('button','mode'); b.type = 'button';
@@ -1971,11 +1973,11 @@ function routeTo(){
   if (path === '/extra' && EXTRA.length) return showXMenu();
   if (path === '/mock' && LESSONS.length) return startMock();
   if (path === '/review' && LESSONS.length) return startReview();
-  const xa = path.match(/^\/extra\/all-(py-zh|zh-py|meaning|write)$/);
+  const xa = path.match(/^\/extra\/all-(py-zh|zh-py|write)$/);
   if (xa && EXTRA.length) return startAll(Object.keys(SLUG).find(k => SLUG[k] === xa[1]), true);
   const xr = path.match(/^\/extra\/([\w-]+)-(py-zh|zh-py|meaning|write)$/);
   const XL = xr && EXTRA.find(x => x.id === xr[1]);
-  if (XL && xr[2] === 'meaning') return startMeaning(XL);
+  if (XL && xr[2] === 'meaning') { history.replaceState(null, '', '/extra'); return showXMenu(); }
   if (XL && xr[2] === 'write') return startWrite(XL);
   if (XL) { lesson = XL; WORDS = XL.words; mode = xr[2] === 'zh-py' ? 'zh2py' : 'py2zh'; return start(WORDS); }
   if (!SOUND && (path === '/tones' || path.startsWith('/tones/'))) { history.replaceState(null, '', '/'); return showHome(); }
@@ -2002,11 +2004,11 @@ function routeTo(){
   const t = path.match(/^\/tones\/lesson-(\d+)$/);
   const TL = t && LESSONS.find(x => x.n === +t[1]);
   if (TL) { lesson = TL; WORDS = TL.words; return startTones(WORDS); }
-  const am = path.match(/^\/vocab\/all-(py-zh|zh-py|meaning|write)$/);
+  const am = path.match(/^\/vocab\/all-(py-zh|zh-py|write)$/);
   if (am && LESSONS.length) return startAll(Object.keys(SLUG).find(k => SLUG[k] === am[1]));
   const r = path.match(/^\/vocab\/lesson-(\d+)-(py-zh|zh-py|meaning|write)$/);
   const L = r && LESSONS.find(x => x.n === +r[1]);
-  if (L && r[2] === 'meaning') return startMeaning(L);
+  if (L && r[2] === 'meaning') { history.replaceState(null, '', '/vocab'); return showMenu(); }
   if (L && r[2] === 'write') return startWrite(L);
   if (!L) { if (location.pathname !== '/') history.replaceState(null, '', '/'); showHome(); return; }
   lesson = L; WORDS = L.words; mode = r[2] === 'zh-py' ? 'zh2py' : 'py2zh'; start(WORDS);
