@@ -236,7 +236,11 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
 .fgr .tip{margin:0;line-height:1.35}
 .fgr .lat{font-family:var(--f-py);font-size:.8em}
 .fgr .r-s,.fgr .r-v,.fgr .r-tw,.fgr .r-o{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}
-.fchint{color:var(--muted);font-size:.95rem;margin:0;text-align:center}
+.fchint{color:var(--muted);font-size:.95rem;margin:0;text-align:center;justify-self:center;width:100%;line-height:1.5}
+.fchint span{display:block}
+.fchint span+span{white-space:nowrap;font-size:min(1em,3.5vw)}
+.fchint b{font-weight:600}
+.fchint .e{color:var(--ok)} .fchint .m{color:#c98a1b} .fchint .h{color:var(--bad)}
 .gh{font-family:var(--f-py);font-size:1.05rem;margin:6px 0 0}
 .gh small{color:var(--muted);font-weight:400;font-size:.9rem}
 .gpt{display:flex;background:var(--bg);border:1px solid var(--line);border-radius:.75em}
@@ -511,7 +515,7 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
         <div class="face back"><div class="fzh" id="fcZh"></div><div class="fpy" id="fcPy"></div><div class="fen" id="fcEn"></div><div class="fex" id="fcEx"></div><div class="fgr" id="fcGr"></div></div>
       </div>
     </div></div>
-    <p class="fchint">Hold to flip · swipe right: I knew it · left: not yet · double tap: so-so</p>
+    <p class="fchint"><span>Hold to flip</span><span>swipe right <b class="e">easy</b> / double tap <b class="m">medium</b> / swipe left <b class="h">hard</b></span></p>
   </section>
 
   <section class="results" id="results" hidden>
