@@ -595,8 +595,8 @@ function buildMenu(boxId, sets, pathOf){
     const shortEn = w => w[2].split(',')[0].replace(/\s*\(.*?\)/g, '').trim();
     const enPicks = shuffle(pool.filter(w => shortEn(w).length <= 7 && !/measure word|particle/.test(w[2])));
     // No Meaning mode on the menus: milo found it irrelevant (2026-10-13); its URLs go back to the menu.
-    // The All row also has Flashcards of every word (milo, 2026-10-13).
-    [['py2zh','Pinyin → Characters'],['zh2py','Characters → Pinyin'],['write','Write it']].concat(L.all ? [['cards','Flashcards']] : []).forEach(([m,label], i) => {
+    // Every row also has Flashcards of its words (milo, 2026-10-13).
+    [['py2zh','Pinyin → Characters'],['zh2py','Characters → Pinyin'],['write','Write it']].concat([['cards','Flashcards']]).forEach(([m,label], i) => {
       const en = m === 'meaning' || m === 'write' || m === 'cards', src = en && enPicks.length ? enPicks : picks;
       const w0 = src[i % src.length], ex = en ? [w0[0], w0[1], shortEn(w0)] : w0;
       const b = el('button','mode'); b.type = 'button';
@@ -1225,10 +1225,11 @@ function startFc(gr){
   fcDeck = fcOrder(); fcI = 0; showFc(); window.scrollTo(0,0);
 }
 // Word flashcards (All lessons / all handout topics): characters on the front, pinyin and English on the back.
-function startWordFc(extra){
+// L: a lesson or handout topic (its words only); without it, every word. Card memory is shared with the All deck.
+function startWordFc(extra, L){
   hideAll(); $('modeBtn').hidden = false; $('modeBtn').textContent = extra ? '← Vocabulary' : '← Lessons';
-  $('title').textContent = '全部 · Flashcards'; $('fcBox').hidden = false; $('credit').hidden = true;
-  fcAll = (extra ? extraWords() : lessonWords()).map(w => ({ word: w }));
+  $('title').textContent = (L ? setName(L).split(' · ')[0] : '全部') + ' · Flashcards'; $('fcBox').hidden = false; $('credit').hidden = true;
+  fcAll = (L ? L.words : extra ? extraWords() : lessonWords()).map(w => ({ word: w }));
   $('fcCard').classList.remove('gr');
   fcSet = extra ? 'extra' : 'vocab';
   fcDeck = fcOrder(); fcI = 0; showFc(); window.scrollTo(0,0);
@@ -2002,10 +2003,11 @@ function routeTo(){
   if (path === '/extra/all-cards' && EXTRA.length) return startWordFc(true);
   const xa = path.match(/^\/extra\/all-(py-zh|zh-py|write)$/);
   if (xa && EXTRA.length) return startAll(Object.keys(SLUG).find(k => SLUG[k] === xa[1]), true);
-  const xr = path.match(/^\/extra\/([\w-]+)-(py-zh|zh-py|meaning|write)$/);
+  const xr = path.match(/^\/extra\/([\w-]+)-(py-zh|zh-py|meaning|write|cards)$/);
   const XL = xr && EXTRA.find(x => x.id === xr[1]);
   if (XL && xr[2] === 'meaning') { history.replaceState(null, '', '/extra'); return showXMenu(); }
   if (XL && xr[2] === 'write') return startWrite(XL);
+  if (XL && xr[2] === 'cards') return startWordFc(true, XL);
   if (XL) { lesson = XL; WORDS = XL.words; mode = xr[2] === 'zh-py' ? 'zh2py' : 'py2zh'; return start(WORDS); }
   if (!SOUND && (path === '/tones' || path.startsWith('/tones/'))) { history.replaceState(null, '', '/'); return showHome(); }
   if (path === '/tones') return showTonesMenu();
@@ -2034,10 +2036,11 @@ function routeTo(){
   if (path === '/vocab/all-cards' && LESSONS.length) return startWordFc(false);
   const am = path.match(/^\/vocab\/all-(py-zh|zh-py|write)$/);
   if (am && LESSONS.length) return startAll(Object.keys(SLUG).find(k => SLUG[k] === am[1]));
-  const r = path.match(/^\/vocab\/lesson-(\d+)-(py-zh|zh-py|meaning|write)$/);
+  const r = path.match(/^\/vocab\/lesson-(\d+)-(py-zh|zh-py|meaning|write|cards)$/);
   const L = r && LESSONS.find(x => x.n === +r[1]);
   if (L && r[2] === 'meaning') { history.replaceState(null, '', '/vocab'); return showMenu(); }
   if (L && r[2] === 'write') return startWrite(L);
+  if (L && r[2] === 'cards') return startWordFc(false, L);
   if (!L) { if (location.pathname !== '/') history.replaceState(null, '', '/'); showHome(); return; }
   lesson = L; WORDS = L.words; mode = r[2] === 'zh-py' ? 'zh2py' : 'py2zh'; start(WORDS);
 }
