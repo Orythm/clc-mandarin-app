@@ -87,6 +87,10 @@ Every answer is saved on the device in `localStorage` (`clc_progress_v1`, mock s
 
 Flashcards (measure words, grammar, question words) have their own memory, separate from right/wrong answers and from Review (milo, 2026-10-11): `clc_cards_v1` keeps a box per card (`fc:<set>:<front>`), swipe right +1 (up to 5), double tap stays (at least 1), swipe left back to 0. Decks start with the lowest boxes; a "not yet" card comes back 3 cards later, a so-so one 6 later. The count line shows ✓ / ~ / ✗ for the deck. "Clear my progress" clears it too.
 
+## Sound
+
+Sound is off app-wide (milo, 2026-10-13): `const SOUND = false` in `index.html` makes `playWord`/`speak` do nothing, hides 🔊, ▶ Play and the dictation card (`/tones` redirects home), turns the mock's listening section into pinyin questions and asks Review's listening misses as meaning/pinyin questions. Flip it to `true` to restore everything; the recordings and their licence notes stay in the repo.
+
 ## Other files
 
 - `index.html`: the quiz app. It fetches `/lessons.json` at startup. Chinese text uses TW-Kai (全字庫正楷體, Taiwan's MOE standard Kai, the free equivalent of 標楷體 DFKai-SB), self-hosted in `fonts/` as ~100 small slices covering 16k common characters, with Noto Serif TC from Google Fonts as fallback. Latin text uses Source Serif 4. LXGW WenKai TC was dropped because some characters (e.g. 教) don't match Taiwan forms, so any new character is covered automatically; don't embed font subsets.

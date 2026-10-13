@@ -296,6 +296,7 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
 }
 .gq .fb .zh{font-size:1.4rem}
 .gq #grPlay{justify-self:center}
+.mute #sayBtn,.mute .say,.mute #grPlay,.mute #tonesCard{display:none!important}
 .gq .q.big{font-size:2.2rem;text-align:center} .gq .q.en.big{font-size:1.6rem}
 .gq .pyhint{visibility:hidden;font-size:1.3rem;font-style:italic;color:var(--muted)}
 .gq.showpy .pyhint{visibility:visible}
@@ -381,7 +382,7 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
       <span class="ic">模擬考</span>
       <span class="wip">WIP</span>
       <span class="lbl">Mock midterm</span>
-      <span class="sub" id="mockSub">30 questions from every lesson: listening, meaning, writing, measure words, grammar</span>
+      <span class="sub" id="mockSub">30 questions from every lesson: pinyin, meaning, writing, measure words, grammar</span>
     </button>
     <div class="card soon">
       <span class="ic">更多</span>
@@ -874,7 +875,12 @@ function pickVoice(){
   zhVoice = find(/^(zh|cmn)-(TW|Hant)/i) || find(/^(zh|cmn)-(CN|Hans)/i) || find(/^cmn/i) || find(/^zh$/i) || null;
 }
 if (window.speechSynthesis) { pickVoice(); speechSynthesis.addEventListener('voiceschanged', pickVoice); }
+// Sound is switched off app-wide (milo, 2026-10-13): nothing plays, 🔊 / ▶ buttons and the dictation are hidden,
+// and listening questions become pinyin ones. Set to true to bring it all back.
+const SOUND = false;
+if (!SOUND) document.documentElement.classList.add('mute');
 function playWord(w, slow){
+  if (!SOUND) return;
   stopAudio();
   const c = recordingFor(w), id = playId;
   // No recording, or it can't be loaded (offline before it was ever played): speak it instead.
@@ -882,14 +888,14 @@ function playWord(w, slow){
   speak(w, slow);
 }
 function speak(w, slow){
-  if (!window.speechSynthesis) return;
+  if (!SOUND || !window.speechSynthesis) return;
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(w[0].replace(/[…。，、\s]/g, ''));
   u.lang = zhVoice ? zhVoice.lang : 'zh-TW'; if (zhVoice) u.voice = zhVoice;
   u.rate = slow ? 0.55 : 0.85;
   speechSynthesis.speak(u);
 }
-const canSpeak = () => !!window.speechSynthesis;
+const canSpeak = () => SOUND && !!window.speechSynthesis;
 
 // Pinyin as letters with tones: [{ch:'x',tone:0},{ch:'i',tone:0},{ch:'ǎ'...}] -> base letter + tone 0-4.
 const MARKS = { '\u0304':1, '\u0301':2, '\u030c':3, '\u0300':4 };
@@ -1835,12 +1841,12 @@ function startWrite(L){ startGr(asItems(shuffle(L.words).map(writeItem)), setNam
 function startMock(){
   const words = lessonWords(), take = (a, n, kf) => (kf ? freshFirst(a, kf) : shuffle(a)).slice(0, n);
   const heard = words.filter(w => recordingFor(w));
-  const listen = take(heard.length >= 4 ? heard : words, 4, wordKeys);
+  const listen = take(SOUND && heard.length >= 4 ? heard : words, 4, wordKeys);
   const rest = freshFirst(words.filter(w => !listen.includes(w)), wordKeys);
   const gp = grPoolOf('grammar'), qp = grPoolOf('questions');
   const sec = name => x => ({ p: x.p, it: { ...x.it, sec: name } });
   const items = [
-    ...asItems(listen.map((w, i) => i < 2 ? listenItem(w, words) : toneItem(w))),
+    ...asItems(listen.map((w, i) => !SOUND ? { ...pinyinItem(w, words, i < 2), sec: 'Pinyin' } : i < 2 ? listenItem(w, words) : toneItem(w))),
     ...asItems(rest.slice(0, 10).map((w, i) => meaningItem(w, words, i >= 6))),
     ...asItems(rest.slice(10, 13).map(writeItem)),
     ...asItems(take(MW_ITEMS, 3, x => 'mw:' + x.w[0]).map(mwItem)),
@@ -1869,7 +1875,7 @@ function itemFromKey(k){
   if (kind === 'mw') { const x = MW_ITEMS.find(x => x.w[0] === rest); return x ? { p: null, it: mwItem(x) } : null; }
   const f = wordById(rest); if (!f) return null;
   const it = kind === 'py' ? pinyinItem(f.w, f.pool, Math.random() < .5) : kind === 'mean' ? meaningItem(f.w, f.pool, Math.random() < .5)
-    : kind === 'write' ? writeItem(f.w) : kind === 'listen' ? listenItem(f.w, f.pool) : kind === 'dict' ? toneItem(f.w) : null;
+    : kind === 'write' ? writeItem(f.w) : kind === 'listen' ? (SOUND ? listenItem(f.w, f.pool) : meaningItem(f.w, f.pool, true)) : kind === 'dict' ? (SOUND ? toneItem(f.w) : pinyinItem(f.w, f.pool, false)) : null;
   return it ? { p: null, it } : null;
 }
 const weakItems = () => Object.keys(PROG).filter(k => PROG[k].w).map(itemFromKey).filter(Boolean);
@@ -1886,7 +1892,7 @@ function refreshProgress(){
   const last = MOCKS[MOCKS.length - 1];
   $('mockSub').textContent = last
     ? 'Last score ' + last.s + '/' + last.n + (MOCKS.length > 1 ? ' · best ' + Math.max(...MOCKS.map(m => Math.round(m.s / m.n * 100))) + '%' : '') + ' · new questions each time'
-    : '30 questions from every lesson: listening, meaning, writing, measure words, grammar';
+    : (SOUND ? '30 questions from every lesson: listening, meaning' : '30 questions from every lesson: pinyin, meaning') + ', writing, measure words, grammar';
 }
 $('clearProg').addEventListener('click', () => {
   if (!confirm('Clear everything this phone remembers: mistakes, what you have seen and mock scores?')) return;
@@ -1962,6 +1968,7 @@ function routeTo(){
   if (XL && xr[2] === 'meaning') return startMeaning(XL);
   if (XL && xr[2] === 'write') return startWrite(XL);
   if (XL) { lesson = XL; WORDS = XL.words; mode = xr[2] === 'zh-py' ? 'zh2py' : 'py2zh'; return start(WORDS); }
+  if (!SOUND && (path === '/tones' || path.startsWith('/tones/'))) { history.replaceState(null, '', '/'); return showHome(); }
   if (path === '/tones') return showTonesMenu();
   if (MW_ITEMS.length && (path === '/measure' || path.startsWith('/measure/'))) {
     if (path === '/measure') return showMwMenu();
