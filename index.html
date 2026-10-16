@@ -162,6 +162,40 @@ button.card:hover{border-color:var(--accent)}
 .card.gold{grid-column:1/-1;border:2px solid var(--gold);background:linear-gradient(135deg,var(--gold-soft),var(--paper) 70%);box-shadow:0 .2em .9em var(--gold-glow)}
 .card.gold .ic{color:var(--gold)}
 button.card.gold:hover{border-color:var(--gold)}
+.linkbtn{background:none;border:0;color:var(--muted);font:inherit;font-size:.85rem;text-decoration:underline;justify-self:center;padding:.3em}
+.fctop{display:flex;align-items:center;justify-content:center;gap:1em;width:100%}
+.fctop .btn{padding:.25em .8em;font-size:.95rem;border-color:var(--gold);color:var(--gold)}
+.fcard .fn{color:var(--muted);font-family:var(--f-hand);font-size:6cqw}
+.fcard .fhint{font-family:var(--f-hand);line-height:1.3;color:var(--fg);max-width:100%;overflow-wrap:anywhere}
+.fcard .fhint.none{font-family:var(--f-py);color:var(--muted);font-size:6cqw}
+.fcard .front .fzh:empty,.fcard .fn:empty,.fcard .fhint:empty{display:none}
+.fcard.bs1 .back .fzh{font-size:13cqw}
+.fcard.bs1 .back .fpy{font-size:6cqw}
+.fcard.bs1 .back .fen{font-size:5cqw;margin-bottom:0}
+.fcard.bs1 .back .fhint{margin:2cqw 0 5cqw}
+.fcard.bs2 .front .fhint{margin-top:1cqw}
+.hsheet{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center}
+.hpanel{background:var(--paper);color:var(--fg);width:100%;max-width:34em;max-height:88dvh;overflow:auto;border-radius:1em 1em 0 0;padding:1em 1em calc(1em + env(safe-area-inset-bottom,0px));box-sizing:border-box;display:grid;gap:.6em;user-select:text;-webkit-user-select:text}
+.hhead{display:flex;justify-content:space-between;align-items:center;gap:1em}
+.hzh{font-family:var(--f-hand);font-size:2em;color:var(--accent)}
+.hpy{font-style:italic;color:var(--muted)}
+.hen{margin:-.4em 0 0;color:var(--muted)}
+.hlist{list-style:none;margin:0;padding:0;display:grid;gap:.4em}
+.hlist li{display:grid;grid-template-columns:auto 1fr auto;gap:.6em;align-items:center;border:1px solid var(--line);border-radius:.6em;padding:.5em .6em}
+.hlist li.top{border-color:var(--gold);background:linear-gradient(135deg,var(--gold-soft),var(--paper) 80%)}
+.hlist .ht{font-family:var(--f-hand);font-size:1.35em;line-height:1.3}
+.hlist .hby{display:block;font-family:var(--f-py);font-size:.75em;color:var(--muted)}
+.hlist .hv{display:grid;justify-items:center;min-width:2.6em;border:1px solid var(--line);border-radius:.5em;background:none;color:var(--muted);font:inherit;padding:.15em .3em;line-height:1.1}
+.hlist .hv.on{border-color:var(--gold);color:var(--gold);font-weight:600}
+.hlist .hdel{background:none;border:0;color:var(--muted);font:inherit;padding:.3em}
+.hlist .hempty{display:block;border:0;color:var(--muted);text-align:center}
+.hform{display:grid;gap:.5em;margin:.2em 0 0}
+.hform input{font:inherit;font-size:1.05em;padding:.5em .6em;border:1px solid var(--line);border-radius:.5em;background:var(--bg);color:var(--fg);min-width:0}
+.hform .hin{font-family:var(--f-hand);font-size:1.25em}
+.hrow2{display:grid;grid-template-columns:1fr auto;gap:.5em}
+.hmsg{margin:0;font-size:.9em;color:var(--bad)}
+.hmsg.ok{color:var(--ok)}
+.hmsg:empty{display:none}
 .card.soon{background:none;border-style:dashed;color:var(--muted)}
 .card.soon .ic{color:var(--muted)}
 .credit{border-top:1px solid var(--line);color:var(--muted);font-size:.75rem;line-height:1.5;padding:12px 16px calc(14px + env(safe-area-inset-bottom))}
@@ -362,7 +396,7 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
     <button class="card gold" id="bsCard" type="button">
       <span class="ic">中文比賽</span>
       <span class="lbl">Competition</span>
-      <span class="sub">Coming soon</span>
+      <span class="sub" id="bsSub">Make your classmates guess the word: flashcards with the class's best hints</span>
     </button>
     <button class="card" id="vocabCard" type="button">
       <span class="ic">詞彙</span>
@@ -440,6 +474,13 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
       <button class="mode" id="gBrowse" type="button"><span class="ex"><span class="h">📖</span></span><span class="lbl">Browse the cards</span><span class="sub" id="gBrowseSub"></span></button>
     </div>
     <div class="gpoints" id="gList" hidden></div>
+  </section>
+
+  <section class="menu gtop" id="bsmenu" hidden>
+    <button class="mode" id="bsWord" type="button"><span class="lbl">Word → hint</span><span class="sub">See the word, say the hint that makes them guess it</span></button>
+    <button class="mode" id="bsHint" type="button"><span class="lbl">Hint → word</span><span class="sub">Hear the hint, find the word</span></button>
+    <p class="gstat" id="bsStat"></p>
+    <button class="linkbtn" id="bsMod" type="button">Moderator</button>
   </section>
 
   <section class="menu gtop" id="mmenu" hidden>
@@ -523,15 +564,28 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
   </section>
 
   <section class="fc" id="fcBox" hidden>
-    <div class="meta" id="fcCount"></div>
+    <div class="fctop"><div class="meta" id="fcCount"></div><button class="btn" id="fcHints" type="button" hidden>提示 Hints</button></div>
     <div class="fcstage"><div class="fcard" id="fcCard" role="button" tabindex="0" aria-label="Hold to flip the card. Swipe right if it was easy, left if hard, double tap or swipe down for medium">
       <div class="fcin">
-        <div class="face front"><div class="fzh" id="fcFront"></div><div class="fen" id="fcSub"></div></div>
-        <div class="face back"><div class="fzh" id="fcZh"></div><div class="fpy" id="fcPy"></div><div class="fen" id="fcEn"></div><div class="fex" id="fcEx"></div><div class="fgr" id="fcGr"></div></div>
+        <div class="face front"><div class="fn" id="fcN"></div><div class="fhint" id="fcFHint"></div><div class="fzh" id="fcFront"></div><div class="fen" id="fcSub"></div></div>
+        <div class="face back"><div class="fn" id="fcBn"></div><div class="fhint" id="fcHint"></div><div class="fzh" id="fcZh"></div><div class="fpy" id="fcPy"></div><div class="fen" id="fcEn"></div><div class="fex" id="fcEx"></div><div class="fgr" id="fcGr"></div></div>
       </div>
     </div></div>
     <p class="fchint"><span>Hold to flip</span><span>swipe right <b class="e">easy</b> / swipe down <b class="m">medium</b> / swipe left <b class="h">hard</b></span></p>
   </section>
+
+  <div class="hsheet" id="hSheet" hidden>
+    <div class="hpanel" role="dialog" aria-modal="true" aria-labelledby="hWord">
+      <div class="hhead"><div><span class="hzh" id="hWord"></span> <span class="hpy" id="hPy"></span></div><button class="btn" id="hClose" type="button" aria-label="Close">✕</button></div>
+      <p class="hen" id="hEn"></p>
+      <ol class="hlist" id="hList"></ol>
+      <form class="hform" id="hForm" autocomplete="off">
+        <input class="hname" id="hName" maxlength="20" placeholder="Your name (shown with your hints)">
+        <div class="hrow2"><input class="hin" id="hIn" maxlength="40" placeholder="Your hint, in Chinese" lang="zh-Hant"><button class="btn primary" type="submit">Add</button></div>
+        <p class="hmsg" id="hMsg"></p>
+      </form>
+    </div>
+  </div>
 
   <section class="results" id="results" hidden>
     <h2>結果</h2>
@@ -632,7 +686,7 @@ function hideAll(){
   stopAudio(); closeCard(); drawer(false);
   $('restartBtn').textContent = 'Start over (all words)';
   $('restartBtn').hidden = false;
-  ['home','clearWrap','menu','xmenu','tmenu','gmenu','mmenu','grBox','meta','rail','promptBox','results','board','dict','mwBox','fcBox','gearBtn'].forEach(id => $(id).hidden = true);
+  ['home','clearWrap','menu','xmenu','tmenu','gmenu','mmenu','grBox','meta','rail','promptBox','results','board','dict','mwBox','fcBox','gearBtn','bsmenu','fcHints','hSheet'].forEach(id => $(id).hidden = true);
   $('credit').hidden = false; // the credits footer shows on menus only; exercises hide it
 }
 function showHome(){
@@ -1237,7 +1291,7 @@ function startFc(gr){
   hideAll(); $('modeBtn').hidden = false; $('modeBtn').textContent = gr ? '← ' + GRS().en : '← Measure words';
   $('title').textContent = (gr ? GRS().zh : '量詞') + ' · Flashcards'; $('fcBox').hidden = false; $('credit').hidden = true;
   fcAll = gr ? fcSplit(GRS().data.points) : MW;
-  $('fcCard').classList.toggle('gr', !!gr);
+  $('fcCard').classList.toggle('gr', !!gr); $('fcCard').classList.remove('bs1', 'bs2');
   fcSet = gr ? GRS().base.slice(1) : 'measure';
   fcDeck = fcOrder(); fcI = 0; showFc(); window.scrollTo(0,0);
 }
@@ -1247,7 +1301,7 @@ function startWordFc(extra, L){
   hideAll(); $('modeBtn').hidden = false; $('modeBtn').textContent = extra ? '← Vocabulary' : '← Lessons';
   $('title').textContent = (L ? setName(L).split(' · ')[0] : '全部') + ' · Flashcards'; $('fcBox').hidden = false; $('credit').hidden = true;
   fcAll = (L ? L.words : extra ? extraWords() : lessonWords()).map(w => ({ word: w }));
-  $('fcCard').classList.remove('gr');
+  $('fcCard').classList.remove('gr', 'bs1', 'bs2');
   fcSet = extra ? 'extra' : 'vocab';
   fcDeck = fcOrder(); fcI = 0; showFc(); window.scrollTo(0,0);
 }
@@ -1255,7 +1309,9 @@ function showFc(){
   const card = $('fcCard'), inner = card.querySelector('.fcin');
   inner.style.transition = 'none'; card.classList.remove('flip');
   const m = fcDeck[fcI], ex = $('fcEx'), g = $('fcGr'); ex.textContent = ''; g.textContent = '';
-  if (m.word) {
+  ['fcN','fcFHint','fcBn','fcHint'].forEach(id => $(id).textContent = '');
+  if (m.bs) bsFill(m);
+  else if (m.word) {
     const w = m.word, n = [...w[0]].length;
     $('fcFront').textContent = w[0]; $('fcFront').style.fontSize = Math.min(45, 86 / n) + 'cqw'; $('fcSub').textContent = '';
     $('fcZh').textContent = w[0]; $('fcZh').style.fontSize = Math.min(26, 70 / n) + 'cqw';
@@ -1361,6 +1417,172 @@ function nextFc(r){
   });
   card.addEventListener('keyup', e => { if (e.key === ' ' || e.key === 'Enter') card.classList.remove('flip'); });
 })();
+// ---- 中文比賽 · Competition: word flashcards with the class's hints, shared through /api/hints ----
+// Word → hint (bs1): the word on the front; the back has how many characters, the top hint (big), then the word, pinyin, meaning.
+// Hint → word (bs2): how many characters and the top hint on the front; the word, pinyin and meaning on the back.
+// Classmates write and vote on the hints (Chinese only, learned characters only); a card shows the one with the
+// most votes, ties going to the older one. The last list seen is kept on the phone for offline use.
+const HINT_KEY = 'clc_hints_v1';
+let HINTS = [], bsAdmin = '', hWord = null, KNOWN = null;
+try { HINTS = JSON.parse(localStorage.getItem(HINT_KEY)) || []; bsAdmin = localStorage.getItem('clc_admin') || ''; } catch(e) {}
+// A random id per phone: one vote per hint per phone, and you can delete your own hints.
+const myDev = (() => {
+  try { let d = localStorage.getItem('clc_dev'); if (!d) { d = Date.now().toString(36) + Math.random().toString(36).slice(2, 10); localStorage.setItem('clc_dev', d); } return d; }
+  catch(e) { return 'x' + Math.random().toString(36).slice(2, 12); }
+})();
+const ZH_NUM = ['零','一','兩','三','四','五','六','七','八','九','十'];
+const zhCount = w => { const n = [...w].filter(c => /[㐀-鿿]/.test(c)).length; return (ZH_NUM[n] || n) + '個字'; };
+const hintsOf = w => HINTS.filter(h => h.w === w).sort((a, b) => b.v - a.v || a.at - b.at);
+const topHint = w => hintsOf(w)[0];
+// Every lesson word once; a word in two lessons (好, 要, 家, 可以) keeps both meanings.
+function bsWords(){
+  const by = new Map();
+  LESSONS.forEach(L => L.words.forEach(w => {
+    const o = by.get(w[0]);
+    by.set(w[0], !o ? w : o[2].split('; ').includes(w[2]) ? o : [o[0], o[1], o[2] + '; ' + w[2]]);
+  }));
+  return [...by.values()];
+}
+async function hintsApi(body){
+  let r;
+  try {
+    r = await fetch('/api/hints' + (body ? '' : '?dev=' + encodeURIComponent(myDev)), body
+      ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...body, dev: myDev }) }
+      : { cache: 'no-store' });
+  } catch(e) { throw new Error('No connection to the hints server. Try again when you are online.'); }
+  let d = {}; try { d = await r.json(); } catch(e) {}
+  if (Array.isArray(d.hints)) { HINTS = d.hints; try { localStorage.setItem(HINT_KEY, JSON.stringify(HINTS)); } catch(e) {} }
+  if (!r.ok) throw new Error(d.error || 'The hints server had a problem. Try again.');
+  return d;
+}
+const loadHints = () => hintsApi().catch(() => null);
+function showBsMenu(){
+  hideAll(); $('modeBtn').hidden = false; $('modeBtn').textContent = '← Home';
+  $('title').textContent = '中文比賽 · Competition'; $('bsmenu').hidden = false;
+  bsStat(); loadHints().then(() => { if (!$('bsmenu').hidden) bsStat(); });
+  window.scrollTo(0,0);
+}
+function bsStat(){
+  const words = bsWords(), n = words.filter(w => topHint(w[0])).length;
+  $('bsStat').textContent = n + ' of ' + words.length + ' words have a hint.' + (n < words.length ? ' Add yours on the cards with 提示 Hints.' : '');
+  $('bsHint').disabled = !n;
+  $('bsMod').textContent = bsAdmin ? 'Moderator on · tap to turn off' : 'Moderator';
+}
+function startBs(mode){
+  hideAll(); $('modeBtn').hidden = false; $('modeBtn').textContent = '← Competition';
+  fcAll = bsWords().filter(w => mode === 1 || topHint(w[0])).map(w => ({ word: w, bs: mode }));
+  if (!fcAll.length) { history.replaceState(null, '', '/bisai'); return showBsMenu(); }
+  $('title').textContent = '中文比賽 · ' + (mode === 1 ? 'Word → hint' : 'Hint → word');
+  $('fcBox').hidden = false; $('credit').hidden = true; $('fcHints').hidden = false;
+  const card = $('fcCard'); card.classList.remove('gr'); card.classList.toggle('bs1', mode === 1); card.classList.toggle('bs2', mode === 2);
+  fcSet = 'bs' + mode;
+  fcDeck = fcOrder(); fcI = 0; showFc(); window.scrollTo(0,0);
+  // Show the newest top hints as soon as they arrive.
+  loadHints().then(() => { if (!$('fcBox').hidden && fcSet === 'bs' + mode && fcDeck[fcI]) bsFill(fcDeck[fcI]); });
+}
+// Hint size: as big as fits, from its length (about 88cqw of text per line), then shrunk until the face fits.
+const hintSize = (t, h, max) => Math.min(max, Math.sqrt(h * 88 / 1.3 / Math.max(1, [...t].length))).toFixed(1) + 'cqw';
+function bsFill(m){
+  const w = m.word, h = topHint(w[0]), n = [...w[0]].length, card = $('fcCard');
+  ['fcN','fcFHint','fcBn','fcHint'].forEach(id => { $(id).textContent = ''; $(id).style.fontSize = ''; $(id).classList.remove('none'); });
+  $('fcSub').textContent = ''; $('fcPy').textContent = w[1]; $('fcEn').textContent = w[2]; $('fcZh').textContent = w[0];
+  if (m.bs === 1) {
+    $('fcFront').textContent = w[0]; $('fcFront').style.fontSize = Math.min(45, 86 / n) + 'cqw';
+    $('fcBn').textContent = zhCount(w[0]); $('fcZh').style.fontSize = '';
+    const e = $('fcHint'); e.classList.toggle('none', !h);
+    e.textContent = h ? h.t : 'No hint yet. Add one with 提示 Hints.'; if (h) e.style.fontSize = hintSize(h.t, 55, 18);
+  } else {
+    $('fcFront').textContent = ''; $('fcN').textContent = zhCount(w[0]);
+    $('fcZh').style.fontSize = Math.min(26, 70 / n) + 'cqw';
+    const e = $('fcFHint'); e.classList.toggle('none', !h);
+    e.textContent = h ? h.t : 'This hint was deleted.'; if (h) e.style.fontSize = hintSize(h.t, 85, 22);
+  }
+  card.querySelectorAll('.face').forEach(f => {
+    const e = f.querySelector('.fhint:not(.none):not(:empty)');
+    for (let k = 0; e && k < 25 && f.scrollHeight > f.clientHeight + 1; k++) e.style.fontSize = (parseFloat(e.style.fontSize) * .92).toFixed(1) + 'cqw';
+  });
+}
+// Characters a hint may use: anything in the lessons, the handout words and pinyin.json.
+function knownChars(){
+  if (!KNOWN) KNOWN = new Set(Object.keys(PY).concat(extraWords().map(w => w[0])).join(''));
+  return KNOWN;
+}
+function hintProblem(t, w){
+  if (/[A-Za-z0-9]/.test(t)) return 'Chinese characters only, no pinyin, English or digits.';
+  if (!/^[㐀-鿿，。？！、…：；「」『』（）《》～—\s]+$/.test(t)) return 'Chinese characters and Chinese punctuation only.';
+  if (t.includes(w.replace(/…/g, ''))) return 'The hint can’t contain the word itself.';
+  const known = knownChars(), unk = [...new Set([...t].filter(c => /[㐀-鿿]/.test(c) && !known.has(c)))];
+  if (unk.length) return 'Not in our lessons: ' + unk.join(' ') + '. Use words we have learned.';
+  return '';
+}
+function openHints(w){
+  hWord = w; $('hSheet').hidden = false;
+  $('hWord').textContent = w[0]; $('hPy').textContent = w[1]; $('hEn').textContent = w[2];
+  let name = ''; try { name = localStorage.getItem('clc_name') || ''; } catch(e) {}
+  $('hName').value = name; $('hName').hidden = !!name;
+  $('hIn').value = ''; $('hMsg').textContent = ''; $('hMsg').className = 'hmsg';
+  renderHints(); loadHints().then(renderHints);
+}
+function closeHints(){
+  $('hSheet').hidden = true; hWord = null;
+  if (!$('fcBox').hidden && fcDeck[fcI] && fcDeck[fcI].bs) bsFill(fcDeck[fcI]);
+}
+function renderHints(){
+  if (!hWord) return;
+  const list = $('hList'), hs = hintsOf(hWord[0]); list.textContent = '';
+  if (!hs.length) list.append(el('li','hempty','No hints yet. Be the first!'));
+  hs.forEach((h, i) => {
+    const li = el('li', i ? '' : 'top');
+    const v = el('button', 'hv' + (h.me ? ' on' : '')); v.type = 'button';
+    v.append(el('span', null, '▲'), el('span', null, String(h.v)));
+    v.setAttribute('aria-label', (h.me ? 'Take back your vote' : 'Vote for this hint') + ', ' + h.v + ' votes');
+    v.addEventListener('click', () => hAct({ a: 'vote', id: h.id, on: !h.me }));
+    const t = el('div', 'ht', h.t); t.append(el('span', 'hby', h.by + (i ? '' : ' · on the card')));
+    li.append(v, t);
+    if (h.mine || bsAdmin) {
+      const d = el('button', 'hdel', '🗑'); d.type = 'button'; d.setAttribute('aria-label', 'Delete this hint');
+      d.addEventListener('click', () => { if (confirm('Delete this hint?')) hAct({ a: 'del', id: h.id, admin: bsAdmin }); });
+      li.append(d);
+    } else li.append(el('span'));
+    list.append(li);
+  });
+}
+async function hAct(body, okMsg){
+  const msg = $('hMsg'); msg.className = 'hmsg'; msg.textContent = '';
+  try { await hintsApi(body); if (okMsg) { msg.className = 'hmsg ok'; msg.textContent = okMsg; } return true; }
+  catch(e) { msg.textContent = e.message; return false; }
+  finally { renderHints(); }
+}
+$('hForm').addEventListener('submit', async e => {
+  e.preventDefault(); if (!hWord) return;
+  const msg = $('hMsg'); msg.className = 'hmsg'; msg.textContent = '';
+  const name = $('hName').value.trim();
+  // Western punctuation typed by habit becomes the Chinese one.
+  const t = $('hIn').value.trim().replace(/\s+/g, ' ').replace(/,/g, '，').replace(/\?/g, '？').replace(/!/g, '！').replace(/\.$/, '。');
+  if (!name) { $('hName').hidden = false; $('hName').focus(); msg.textContent = 'Add your name first.'; return; }
+  if (!t) return;
+  const bad = hintProblem(t, hWord[0]); if (bad) { msg.textContent = bad; return; }
+  try { localStorage.setItem('clc_name', name); } catch(e) {}
+  if (await hAct({ a: 'add', w: hWord[0], t, by: name }, 'Added. Thanks!')) { $('hIn').value = ''; $('hName').hidden = true; }
+});
+$('hClose').addEventListener('click', closeHints);
+$('hSheet').addEventListener('click', e => { if (e.target === $('hSheet')) closeHints(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('hSheet').hidden) closeHints(); });
+$('fcHints').addEventListener('click', () => { const m = fcDeck[fcI]; if (m && m.word) openHints(m.word); });
+$('bsCard').addEventListener('click', () => go('/bisai'));
+$('bsWord').addEventListener('click', () => go('/bisai/word'));
+$('bsHint').addEventListener('click', () => go('/bisai/hint'));
+$('bsMod').addEventListener('click', async () => {
+  if (bsAdmin) { bsAdmin = ''; try { localStorage.removeItem('clc_admin'); } catch(e) {} return bsStat(); }
+  const p = prompt('Moderator passcode'); if (!p) return;
+  try {
+    const d = await hintsApi({ a: 'admin', admin: p });
+    if (!d.ok) return alert('Wrong passcode.');
+    bsAdmin = p; try { localStorage.setItem('clc_admin', p); } catch(e) {}
+    bsStat();
+  } catch(e) { alert(e.message); }
+});
+
 function finishMw(){
   // The results screen lists misses as [characters, pinyin, english]: show the phrase with 一.
   misses = mwMisses.map(({ m, w }) => [ '一' + m.mw + w[0], numPy(NUMS[0], m) + ' ' + m.py + ' ' + w[1], m.en ]);
@@ -1997,7 +2219,8 @@ const SLUG = { py2zh: 'py-zh', zh2py: 'zh-py', meaning: 'meaning', write: 'write
 function lessonPath(n, m){ return '/vocab/lesson-' + n + '-' + SLUG[m]; }
 const extraPath = (L, m) => '/extra/' + (L.all ? 'all' : L.id) + '-' + SLUG[m];
 function parentOf(path){
-  if (path === '/vocab' || path === '/extra' || path === '/mock' || path === '/review' || path === '/tones' || path === '/measure' || path === '/grammar' || path === '/questions') return '/';
+  if (path === '/vocab' || path === '/extra' || path === '/mock' || path === '/review' || path === '/tones' || path === '/measure' || path === '/grammar' || path === '/questions' || path === '/bisai') return '/';
+  if (path.startsWith('/bisai/')) return '/bisai';
   // Grammar and question pages nest: /grammar/cards/<id> → /grammar/cards → /grammar
   if (/^\/(grammar|questions)\/cards\/./.test(path)) return path.replace(/\/[^/]+$/, '');
   if (path.startsWith('/measure/')) return '/measure';
@@ -2013,6 +2236,8 @@ function route(fresh){
 }
 function routeTo(){
   const path = location.pathname.replace(/\/+$/, '') || '/';
+  if (path === '/bisai') return showBsMenu();
+  if (path === '/bisai/word' || path === '/bisai/hint') return startBs(path.endsWith('word') ? 1 : 2);
   if (path === '/vocab') return showMenu();
   if (path === '/extra' && EXTRA.length) return showXMenu();
   if (path === '/mock' && LESSONS.length) return startMock();
