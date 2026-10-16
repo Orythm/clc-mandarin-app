@@ -164,7 +164,10 @@ button.card:hover{border-color:var(--accent)}
 button.card.gold:hover{border-color:var(--gold)}
 .linkbtn{background:none;border:0;color:var(--muted);font:inherit;font-size:.85rem;text-decoration:underline;justify-self:center;padding:.3em}
 .fctop{display:flex;align-items:center;justify-content:center;gap:1em;width:100%}
-.fctop .btn{padding:.25em .8em;font-size:.95rem;border-color:var(--gold);color:var(--gold)}
+/* 中文比賽: the 提示 tab sticks out of the right edge at the card's middle height and opens the hints drawer (milo, 2026-10-16). */
+.htab{z-index:51;width:2.1em;height:auto;padding:.6em .3em;line-height:1.15;font-family:var(--f-hand);font-size:1.05rem;writing-mode:vertical-rl;letter-spacing:.15em;color:var(--gold);border-color:var(--gold)}
+.htab:hover,.htab:focus-visible,.htab.on{color:var(--gold)}
+.htab.on{right:min(24em,88%)}
 .fcard .fn{color:var(--muted);font-family:var(--f-hand);font-size:6cqw}
 .fcard .fhint{font-family:var(--f-hand);line-height:1.3;color:var(--fg);max-width:100%;overflow-wrap:anywhere}
 .fcard .fhint.none{font-family:var(--f-py);color:var(--muted);font-size:6cqw}
@@ -174,8 +177,8 @@ button.card.gold:hover{border-color:var(--gold)}
 .fcard.bs1 .back .fen{font-size:5cqw;margin-bottom:0}
 .fcard.bs1 .back .fhint{margin:2cqw 0 5cqw}
 .fcard.bs2 .front .fhint{margin-top:1cqw}
-.hsheet{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center}
-.hpanel{background:var(--paper);color:var(--fg);width:100%;max-width:34em;max-height:88dvh;overflow:auto;border-radius:1em 1em 0 0;padding:1em 1em calc(1em + env(safe-area-inset-bottom,0px));box-sizing:border-box;display:grid;gap:.6em;user-select:text;-webkit-user-select:text}
+.drawer.hdrawer{z-index:50}
+.drawer .hpanel{width:min(24em,88%);gap:.6em;padding-bottom:calc(1.2em + env(safe-area-inset-bottom,0px));user-select:text;-webkit-user-select:text}
 .hhead{display:flex;justify-content:space-between;align-items:center;gap:1em}
 .hzh{font-family:var(--f-hand);font-size:2em;color:var(--accent)}
 .hpy{font-style:italic;color:var(--muted)}
@@ -564,7 +567,7 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
   </section>
 
   <section class="fc" id="fcBox" hidden>
-    <div class="fctop"><div class="meta" id="fcCount"></div><button class="btn" id="fcHints" type="button" hidden>提示 Hints</button></div>
+    <div class="fctop"><div class="meta" id="fcCount"></div></div>
     <div class="fcstage"><div class="fcard" id="fcCard" role="button" tabindex="0" aria-label="Hold to flip the card. Swipe right if it was easy, left if hard, double tap or swipe down for medium">
       <div class="fcin">
         <div class="face front"><div class="fn" id="fcN"></div><div class="fhint" id="fcFHint"></div><div class="fzh" id="fcFront"></div><div class="fen" id="fcSub"></div></div>
@@ -574,8 +577,9 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
     <p class="fchint"><span>Hold to flip</span><span>swipe right <b class="e">easy</b> / swipe down <b class="m">medium</b> / swipe left <b class="h">hard</b></span></p>
   </section>
 
-  <div class="hsheet" id="hSheet" hidden>
-    <div class="hpanel" role="dialog" aria-modal="true" aria-labelledby="hWord">
+  <button class="gear htab" id="fcHints" type="button" hidden aria-label="Hints for this word">提示</button>
+  <div class="drawer hdrawer" id="hSheet" aria-hidden="true">
+    <div class="dpane hpanel" role="dialog" aria-labelledby="hWord">
       <div class="hhead"><div><span class="hzh" id="hWord"></span> <span class="hpy" id="hPy"></span></div><button class="btn" id="hClose" type="button" aria-label="Close">✕</button></div>
       <p class="hen" id="hEn"></p>
       <ol class="hlist" id="hList"></ol>
@@ -685,7 +689,8 @@ function hideAll(){
   stopAudio(); closeCard(); drawer(false);
   $('restartBtn').textContent = 'Start over (all words)';
   $('restartBtn').hidden = false;
-  ['home','clearWrap','menu','xmenu','tmenu','gmenu','mmenu','grBox','meta','rail','promptBox','results','board','dict','mwBox','fcBox','gearBtn','bsmenu','fcHints','hSheet'].forEach(id => $(id).hidden = true);
+  ['home','clearWrap','menu','xmenu','tmenu','gmenu','mmenu','grBox','meta','rail','promptBox','results','board','dict','mwBox','fcBox','gearBtn','bsmenu','fcHints'].forEach(id => $(id).hidden = true);
+  hintsDrawer(false); hWord = null;
   $('credit').hidden = false; // the credits footer shows on menus only; exercises hide it
 }
 function showHome(){
@@ -865,9 +870,9 @@ function placeGear(){
 }
 ['resize', 'scroll'].forEach(t => window.addEventListener(t, placeGear, { passive: true }));
 if (window.ResizeObserver) new ResizeObserver(placeGear).observe($('promptBox'));
-// Swipe the drawer to the right to close it; it follows the finger.
-(function(){
-  const pane = $('drawer').querySelector('.dpane'); let x0 = null, y0 = 0, dx = 0;
+// Swipe a drawer to the right to close it; it follows the finger.
+function swipeShut(pane, close){
+  let x0 = null, y0 = 0, dx = 0;
   pane.addEventListener('pointerdown', e => { x0 = e.clientX; y0 = e.clientY; dx = 0; });
   pane.addEventListener('pointermove', e => {
     if (x0 === null) return;
@@ -879,10 +884,11 @@ if (window.ResizeObserver) new ResizeObserver(placeGear).observe($('promptBox'))
   const up = () => {
     if (x0 === null) return; x0 = null;
     pane.style.transition = ''; pane.style.transform = '';
-    if (dx > pane.offsetWidth / 4) drawer(false);
+    if (dx > pane.offsetWidth / 4) close();
   };
   ['pointerup', 'pointercancel'].forEach(t => pane.addEventListener(t, up));
-})();
+}
+swipeShut($('drawer').querySelector('.dpane'), () => drawer(false));
 $('drawerX').addEventListener('click', () => drawer(false));
 $('drawer').addEventListener('click', e => { if (e.target === $('drawer')) drawer(false); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') drawer(false); });
@@ -1472,7 +1478,7 @@ function startBs(mode){
   fcAll = bsWords().filter(w => mode === 1 || topHint(w[0])).map(w => ({ word: w, bs: mode }));
   if (!fcAll.length) { history.replaceState(null, '', '/bisai'); return showBsMenu(); }
   $('title').textContent = '中文比賽 · ' + (mode === 1 ? 'Word → hint' : 'Hint → word');
-  $('fcBox').hidden = false; $('credit').hidden = true; $('fcHints').hidden = false;
+  $('fcBox').hidden = false; $('credit').hidden = true; $('fcHints').hidden = false; requestAnimationFrame(placeHtab);
   const card = $('fcCard'); card.classList.remove('gr'); card.classList.toggle('bs1', mode === 1); card.classList.toggle('bs2', mode === 2);
   fcSet = 'bs' + mode;
   fcDeck = fcOrder(); fcI = 0; showFc(); window.scrollTo(0,0);
@@ -1514,14 +1520,15 @@ function hintProblem(t, w){
   if (unk.length) return 'Not in our lessons: ' + unk.join(' ') + '. Use words we have learned.';
   return '';
 }
+function hintsDrawer(open){ $('hSheet').classList.toggle('open', open); $('fcHints').classList.toggle('on', open); $('hSheet').setAttribute('aria-hidden', !open); }
 function openHints(w){
-  hWord = w; $('hSheet').hidden = false;
+  hWord = w; hintsDrawer(true);
   $('hWord').textContent = w[0]; $('hPy').textContent = w[1]; $('hEn').textContent = w[2];
   $('hIn').value = ''; $('hMsg').textContent = ''; $('hMsg').className = 'hmsg';
   renderHints(); loadHints().then(renderHints);
 }
 function closeHints(){
-  $('hSheet').hidden = true; hWord = null;
+  hintsDrawer(false); hWord = null;
   if (!$('fcBox').hidden && fcDeck[fcI] && fcDeck[fcI].bs) bsFill(fcDeck[fcI]);
 }
 function renderHints(){
@@ -1561,8 +1568,17 @@ $('hForm').addEventListener('submit', async e => {
 });
 $('hClose').addEventListener('click', closeHints);
 $('hSheet').addEventListener('click', e => { if (e.target === $('hSheet')) closeHints(); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('hSheet').hidden) closeHints(); });
-$('fcHints').addEventListener('click', () => { const m = fcDeck[fcI]; if (m && m.word) openHints(m.word); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && hWord) closeHints(); });
+$('fcHints').addEventListener('click', () => { if (hWord) return closeHints(); const m = fcDeck[fcI]; if (m && m.word) openHints(m.word); });
+swipeShut($('hSheet').querySelector('.dpane'), closeHints);
+// The 提示 tab sits at the middle height of the card.
+function placeHtab(){
+  if ($('fcHints').hidden) return;
+  const r = $('fcCard').getBoundingClientRect();
+  $('fcHints').style.top = (r.top + r.height / 2) + 'px';
+}
+['resize', 'scroll'].forEach(t => window.addEventListener(t, placeHtab, { passive: true }));
+if (window.ResizeObserver) new ResizeObserver(placeHtab).observe($('fcCard'));
 $('bsCard').addEventListener('click', () => go('/bisai'));
 $('bsWord').addEventListener('click', () => go('/bisai/word'));
 $('bsHint').addEventListener('click', () => go('/bisai/hint'));
