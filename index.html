@@ -9,15 +9,18 @@
   --accent:#a3322a; --ok:#2f7a4a; --ok-soft:#e3f1e8; --bad:#b3362c; --bad-soft:#f7e3e0;
   --f-hand:"Source Serif 4","DFKai-SB","BiauKai","TW-Kai","Noto Serif TC","PMingLiU",serif;
   --f-py:"Source Serif 4",Georgia,serif;
+  --gold:#b8860b; --gold-soft:#fbefc8; --gold-glow:rgba(184,134,11,.25);
   --r-s:#2a5db0; --r-v:#2f7a4a; --r-tw:#b06a00; --r-o:#7b3fa0; --r-k:#c0392b;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#141816; --paper:#1d2320; --fg:#e7ece8; --muted:#9ba59f; --line:#2f3733;
   --accent:#e0776c; --ok:#6cc48d; --ok-soft:#1e3327; --bad:#ec7b70; --bad-soft:#3b2220; color-scheme:dark;
+  --gold:#e6b84a; --gold-soft:#3a3018; --gold-glow:rgba(230,184,74,.18);
   --r-s:#7fa8ef; --r-v:#6cc48d; --r-tw:#e8a94a; --r-o:#c493e3; --r-k:#f0837a}}
 :root[data-theme="dark"]{
   --bg:#141816; --paper:#1d2320; --fg:#e7ece8; --muted:#9ba59f; --line:#2f3733;
   --accent:#e0776c; --ok:#6cc48d; --ok-soft:#1e3327; --bad:#ec7b70; --bad-soft:#3b2220; color-scheme:dark;
+  --gold:#e6b84a; --gold-soft:#3a3018; --gold-glow:rgba(230,184,74,.18);
   --r-s:#7fa8ef; --r-v:#6cc48d; --r-tw:#e8a94a; --r-o:#c493e3; --r-k:#f0837a}
 body{background:var(--bg);color:var(--fg);font-family:var(--f-py);min-height:100dvh;display:flex;flex-direction:column}
 .wrap{flex:1 0 auto;width:100%;box-sizing:border-box;max-width:932px;margin:0 auto;padding-inline:16px;padding-block:20px 40px;display:grid;align-content:start;gap:16px}
@@ -156,6 +159,9 @@ button.card:hover{border-color:var(--accent)}
 .card .ic{font-family:var(--f-hand);font-size:2.2rem;color:var(--accent);line-height:1.1}
 .card .lbl{font-weight:600;font-size:1.2rem}
 .card .sub{color:var(--muted);font-size:.95rem}
+.card.gold{grid-column:1/-1;border:2px solid var(--gold);background:linear-gradient(135deg,var(--gold-soft),var(--paper) 70%);box-shadow:0 .2em .9em var(--gold-glow)}
+.card.gold .ic{color:var(--gold)}
+button.card.gold:hover{border-color:var(--gold)}
 .card.soon{background:none;border-style:dashed;color:var(--muted)}
 .card.soon .ic{color:var(--muted)}
 .credit{border-top:1px solid var(--line);color:var(--muted);font-size:.75rem;line-height:1.5;padding:12px 16px calc(14px + env(safe-area-inset-bottom))}
@@ -353,6 +359,11 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
   </header>
 
   <section class="home" id="home" hidden>
+    <button class="card gold" id="bsCard" type="button">
+      <span class="ic">中文比賽</span>
+      <span class="lbl">Competition</span>
+      <span class="sub">Coming soon</span>
+    </button>
     <button class="card" id="vocabCard" type="button">
       <span class="ic">詞彙</span>
       <span class="lbl">Vocab quiz</span>
