@@ -580,7 +580,6 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
       <p class="hen" id="hEn"></p>
       <ol class="hlist" id="hList"></ol>
       <form class="hform" id="hForm" autocomplete="off">
-        <input class="hname" id="hName" maxlength="20" placeholder="Your name (shown with your hints)">
         <div class="hrow2"><input class="hin" id="hIn" maxlength="40" placeholder="Your hint, in Chinese" lang="zh-Hant"><button class="btn primary" type="submit">Add</button></div>
         <p class="hmsg" id="hMsg"></p>
       </form>
@@ -1518,8 +1517,6 @@ function hintProblem(t, w){
 function openHints(w){
   hWord = w; $('hSheet').hidden = false;
   $('hWord').textContent = w[0]; $('hPy').textContent = w[1]; $('hEn').textContent = w[2];
-  let name = ''; try { name = localStorage.getItem('clc_name') || ''; } catch(e) {}
-  $('hName').value = name; $('hName').hidden = !!name;
   $('hIn').value = ''; $('hMsg').textContent = ''; $('hMsg').className = 'hmsg';
   renderHints(); loadHints().then(renderHints);
 }
@@ -1537,7 +1534,7 @@ function renderHints(){
     v.append(el('span', null, '▲'), el('span', null, String(h.v)));
     v.setAttribute('aria-label', (h.me ? 'Take back your vote' : 'Vote for this hint') + ', ' + h.v + ' votes');
     v.addEventListener('click', () => hAct({ a: 'vote', id: h.id, on: !h.me }));
-    const t = el('div', 'ht', h.t); t.append(el('span', 'hby', h.by + (i ? '' : ' · on the card')));
+    const t = el('div', 'ht', h.t); if (!i) t.append(el('span', 'hby', 'on the card'));
     li.append(v, t);
     if (h.mine || bsAdmin) {
       const d = el('button', 'hdel', '🗑'); d.type = 'button'; d.setAttribute('aria-label', 'Delete this hint');
@@ -1556,14 +1553,11 @@ async function hAct(body, okMsg){
 $('hForm').addEventListener('submit', async e => {
   e.preventDefault(); if (!hWord) return;
   const msg = $('hMsg'); msg.className = 'hmsg'; msg.textContent = '';
-  const name = $('hName').value.trim();
   // Western punctuation typed by habit becomes the Chinese one.
   const t = $('hIn').value.trim().replace(/\s+/g, ' ').replace(/,/g, '，').replace(/\?/g, '？').replace(/!/g, '！').replace(/\.$/, '。');
-  if (!name) { $('hName').hidden = false; $('hName').focus(); msg.textContent = 'Add your name first.'; return; }
   if (!t) return;
   const bad = hintProblem(t, hWord[0]); if (bad) { msg.textContent = bad; return; }
-  try { localStorage.setItem('clc_name', name); } catch(e) {}
-  if (await hAct({ a: 'add', w: hWord[0], t, by: name }, 'Added. Thanks!')) { $('hIn').value = ''; $('hName').hidden = true; }
+  if (await hAct({ a: 'add', w: hWord[0], t }, 'Added. Thanks!')) $('hIn').value = '';
 });
 $('hClose').addEventListener('click', closeHints);
 $('hSheet').addEventListener('click', e => { if (e.target === $('hSheet')) closeHints(); });

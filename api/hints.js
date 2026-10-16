@@ -1,9 +1,10 @@
 // 中文比賽 hints: classmates submit a Chinese hint for a lesson word and vote; each card shows the top one.
 // Storage is the Upstash Redis database connected to the Vercel project (its env vars are added on connect):
-//   hash "hints"   id -> {"id","w","t","by","dev","at"}   (w the word, t the hint, dev the phone that sent it)
+//   hash "hints"   id -> {"id","w","t","dev","at"}   (w the word, t the hint, dev the phone that sent it)
 //   set  "v:<id>"  the phones that voted for it
-// GET  /api/hints?dev=<phone id>          -> {hints:[{id,w,t,by,at,v,me,mine}]}  (no phone ids are sent back)
-// POST /api/hints {a:"add", w, t, by, dev} | {a:"vote", id, dev, on} | {a:"del", id, dev, admin} | {a:"admin", admin}
+// Hints are anonymous (milo, 2026-10-16); "by" is only on hints added before that.
+// GET  /api/hints?dev=<phone id>          -> {hints:[{id,w,t,at,v,me,mine}]}  (no phone ids are sent back)
+// POST /api/hints {a:"add", w, t, dev} | {a:"vote", id, dev, on} | {a:"del", id, dev, admin} | {a:"admin", admin}
 const URL_ = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
 const TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
 const ADMIN = process.env.HINTS_ADMIN || '';
@@ -29,7 +30,7 @@ async function list(dev){
   if (!hints.length) return [];
   const cmds = hints.flatMap(h => [['SCARD', 'v:' + h.id], ['SISMEMBER', 'v:' + h.id, dev || '-']]);
   const res = await redis(cmds);
-  return hints.map((h, i) => ({ id: h.id, w: h.w, t: h.t, by: h.by, at: h.at, v: res[2 * i], me: res[2 * i + 1] === 1, mine: !!dev && h.dev === dev }));
+  return hints.map((h, i) => ({ id: h.id, w: h.w, t: h.t, at: h.at, v: res[2 * i], me: res[2 * i + 1] === 1, mine: !!dev && h.dev === dev }));
 }
 
 module.exports = async (req, res) => {
@@ -44,10 +45,9 @@ module.exports = async (req, res) => {
     if (!dev) return res.status(400).json({ error: 'Missing phone id.' });
 
     if (b.a === 'add') {
-      const w = str(b.w, 8), t = str(b.t, 40), by = str(b.by, 20);
+      const w = str(b.w, 8), t = str(b.t, 40);
       if (!w || !WORD_RE.test(w)) return res.status(400).json({ error: 'Unknown word.' });
       if (!t || !HINT_RE.test(t)) return res.status(400).json({ error: 'Hints are Chinese characters only, up to 40.' });
-      if (!by) return res.status(400).json({ error: 'Add your name first.' });
       const text = t.replace(/\s+/g, ' ');
       if (text.includes(w.replace(/…/g, ''))) return res.status(400).json({ error: 'The hint can’t contain the word itself.' });
       const existing = await list(dev);
@@ -56,7 +56,7 @@ module.exports = async (req, res) => {
       if (existing.filter(h => h.mine && h.w === w).length >= 3) return res.status(400).json({ error: 'You already have 3 hints for this word. Delete one to add another.' });
       const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
       // The author's own vote comes with the hint.
-      await redis([['HSET', 'hints', id, JSON.stringify({ id, w, t: text, by, dev, at: Date.now() })], ['SADD', 'v:' + id, dev]]);
+      await redis([['HSET', 'hints', id, JSON.stringify({ id, w, t: text, dev, at: Date.now() })], ['SADD', 'v:' + id, dev]]);
       return res.json({ hints: await list(dev), id });
     }
     const id = str(b.id, 40);
