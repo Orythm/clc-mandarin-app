@@ -1469,7 +1469,7 @@ function showBsMenu(){
 }
 function bsStat(){
   const words = bsWords(), n = words.filter(w => topHint(w[0])).length;
-  $('bsStat').textContent = n + ' of ' + words.length + ' words have a hint.' + (n < words.length ? ' Add yours on the cards with 提示 Hints.' : '');
+  $('bsStat').textContent = n + ' of ' + words.length + ' words have a hint.' + (n < words.length ? ' Add yours on the cards with 提示.' : '');
   $('bsHint').disabled = !n;
   $('bsMod').textContent = bsAdmin ? 'Moderator on · tap to turn off' : 'Moderator';
 }
@@ -1495,7 +1495,7 @@ function bsFill(m){
     $('fcFront').textContent = w[0]; $('fcFront').style.fontSize = Math.min(45, 86 / n) + 'cqw';
     $('fcBn').textContent = zhCount(w[0]); $('fcZh').style.fontSize = '';
     const e = $('fcHint'); e.classList.toggle('none', !h);
-    e.textContent = h ? h.t : 'No hint yet. Add one with 提示 Hints.'; if (h) e.style.fontSize = hintSize(h.t, 55, 18);
+    e.textContent = h ? h.t : 'No hint yet. Add one with 提示.'; if (h) e.style.fontSize = hintSize(h.t, 55, 18);
   } else {
     $('fcFront').textContent = ''; $('fcN').textContent = zhCount(w[0]);
     $('fcZh').style.fontSize = Math.min(26, 70 / n) + 'cqw';
@@ -1534,7 +1534,7 @@ function closeHints(){
 function renderHints(){
   if (!hWord) return;
   const list = $('hList'), hs = hintsOf(hWord[0]); list.textContent = '';
-  if (!hs.length) list.append(el('li','hempty','No hints yet. Be the first!'));
+  if (!hs.length) list.append(el('li','hempty','No hints yet.'));
   hs.forEach((h, i) => {
     const li = el('li', i ? '' : 'top');
     const v = el('button', 'hv' + (h.me ? ' on' : '')); v.type = 'button';
