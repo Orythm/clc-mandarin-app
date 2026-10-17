@@ -354,7 +354,7 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
 .rb{display:inline-flex;flex-direction:column;align-items:center;padding:0 .08em}
 .nw{white-space:nowrap}
 .rt{visibility:hidden;font-family:var(--f-py);font-size:max(.58rem,.36em);font-weight:400;color:var(--muted);letter-spacing:-.02em;line-height:1.2;font-style:normal;white-space:nowrap;width:0;display:flex;justify-content:center}
-.showpy .rt{visibility:visible}
+.showpy .rt,.hpy .rt{visibility:visible}
 .mwq .part{display:inline-flex;flex-direction:column;align-items:center}
 .mwq .part>span:first-child:not(.gap){border-bottom:3px solid transparent}
 .mwq .mpy{font-family:var(--f-py);font-size:1.05rem;font-weight:400;font-style:italic;color:var(--muted);margin-top:4px;white-space:nowrap}
@@ -1526,7 +1526,7 @@ function renderBsList(){
     if (bsF === 'missing' && (hs.length || fl) || bsF === 'has' && !hs.length || bsF === 'skip' && !fl) return;
     const b = el('button', fl ? 'skip' : hs.length ? null : 'miss'); b.type = 'button';
     const wd = el('span', 'bw', w[0]); wd.append(el('span', 'bwp', w[1]));
-    const bt = el('span', 'bt' + (hs.length ? '' : ' none'), hs.length ? hs[0].t : fl ? 'No hint yet' : 'No hint yet · add one');
+    const bt = hs.length ? hintPy(el('span', 'bt'), hs[0].t) : el('span', 'bt none', fl ? 'No hint yet' : 'No hint yet · add one');
     if (fl) bt.append(el('span', 'bsk', 'Probably won’t come up · ' + fl.n));
     b.append(wd, bt, el('span', 'bn' + (hs.length || fl ? '' : ' add'), hs.length ? String(hs.length) : '+'));
     b.setAttribute('aria-label', w[0] + ', ' + (hs.length ? hs.length + ' hints' : 'no hint yet, add one'));
@@ -1557,12 +1557,12 @@ function bsFill(m){
     $('fcFront').textContent = w[0]; $('fcFront').style.fontSize = Math.min(45, 86 / n) + 'cqw';
     $('fcBn').textContent = zhCount(w[0]); $('fcZh').style.fontSize = '';
     const e = $('fcHint'); e.classList.toggle('none', !h);
-    e.textContent = h ? h.t : 'No hint yet. Add one with 提示.'; if (h) e.style.fontSize = hintSize(h.t, 55, 18);
+    if (h) { hintPy(e, h.t); e.style.fontSize = hintSize(h.t, 55, 18); } else e.textContent = 'No hint yet. Add one with 提示.';
   } else {
     $('fcFront').textContent = ''; $('fcN').textContent = zhCount(w[0]);
     $('fcZh').style.fontSize = Math.min(26, 70 / n) + 'cqw';
     const e = $('fcFHint'); e.classList.toggle('none', !h);
-    e.textContent = h ? h.t : 'This hint was deleted.'; if (h) e.style.fontSize = hintSize(h.t, 85, 22);
+    if (h) { hintPy(e, h.t); e.style.fontSize = hintSize(h.t, 85, 22); } else e.textContent = 'This hint was deleted.';
   }
   card.querySelectorAll('.face').forEach(f => {
     const e = f.querySelector('.fhint:not(.none):not(:empty)');
@@ -1608,7 +1608,7 @@ function renderHints(){
     v.append(el('span', null, '▲'), el('span', null, String(h.v)));
     v.setAttribute('aria-label', (h.me ? 'Take back your vote' : 'Vote for this hint') + ', ' + h.v + ' votes');
     v.addEventListener('click', () => hAct({ a: 'vote', id: h.id, on: !h.me }));
-    const t = el('div', 'ht', h.t); if (!i) t.append(el('span', 'hby', 'on the card'));
+    const t = hintPy(el('div', 'ht'), h.t); if (!i) t.append(el('span', 'hby', 'on the card'));
     li.append(v, t);
     if (h.mine || bsAdmin) {
       const d = el('button', 'hdel', '🗑'); d.type = 'button'; d.setAttribute('aria-label', 'Delete this hint');
@@ -1840,6 +1840,8 @@ function rubyText(text){
   });
   return f;
 }
+// Hints always show their pinyin under the characters (milo, 2026-10-17).
+function hintPy(e, t){ e.textContent = ''; e.classList.add('hpy'); e.append(rubyText(t)); return e; }
 function withPy(e, text){ if (isZh(text)) { e.textContent = ''; e.append(rubyText(text)); } return e; }
 function grGapQ(q, fill){
   const box = $('grQ'); box.textContent = '';
