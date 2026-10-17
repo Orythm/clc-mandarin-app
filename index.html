@@ -584,7 +584,7 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
       <p class="hen" id="hEn"></p>
       <ol class="hlist" id="hList"></ol>
       <form class="hform" id="hForm" autocomplete="off">
-        <div class="hrow2"><input class="hin" id="hIn" maxlength="40" placeholder="Your hint, in Chinese" lang="zh-Hant"><button class="btn primary" type="submit">Add</button></div>
+        <div class="hrow2"><input class="hin" id="hIn" maxlength="40" placeholder="Your hint" lang="zh-Hant"><button class="btn primary" type="submit">Add</button></div>
         <p class="hmsg" id="hMsg"></p>
       </form>
     </div>
@@ -1513,8 +1513,8 @@ function knownChars(){
   return KNOWN;
 }
 function hintProblem(t, w){
-  if (/[A-Za-z0-9]/.test(t)) return 'Chinese characters only, no pinyin, English or digits.';
-  if (!/^[㐀-鿿，。？！、…：；「」『』（）《》～—\s]+$/.test(t)) return 'Chinese characters and Chinese punctuation only.';
+  // Latin letters are allowed for names written in pinyin (milo, 2026-10-17); no digits.
+  if (!/^[㐀-鿿，。？！、…：；「」『』（）《》～—A-Za-zÀ-ɏ'’.,?!\-\s]+$/.test(t)) return 'Chinese characters, letters (for names) and punctuation only.';
   if (t.includes(w.replace(/…/g, ''))) return 'The hint can’t contain the word itself.';
   const known = knownChars(), unk = [...new Set([...t].filter(c => /[㐀-鿿]/.test(c) && !known.has(c)))];
   if (unk.length) return 'Not in our lessons: ' + unk.join(' ') + '. Use words we have learned.';

@@ -18,8 +18,8 @@ async function redis(cmds){
   return out.map(x => { if (x.error) throw new Error(x.error); return x.result; });
 }
 
-// Chinese characters plus Chinese punctuation only; the app checks the characters are ones the class has learned.
-const HINT_RE = /^[㐀-鿿，。？！、…：；「」『』（）《》～—\s]+$/;
+// Chinese characters, Latin letters (names in pinyin, milo 2026-10-17) and punctuation; the app checks the characters are ones the class has learned.
+const HINT_RE = /^[㐀-鿿，。？！、…：；「」『』（）《》～—A-Za-zÀ-ɏ'’.,?!\-\s]+$/;
 const WORD_RE = /^[㐀-鿿…]{1,8}$/;
 const str = (x, max) => typeof x === 'string' && x.trim().length > 0 && x.trim().length <= max ? x.trim() : null;
 
@@ -47,7 +47,7 @@ module.exports = async (req, res) => {
     if (b.a === 'add') {
       const w = str(b.w, 8), t = str(b.t, 40);
       if (!w || !WORD_RE.test(w)) return res.status(400).json({ error: 'Unknown word.' });
-      if (!t || !HINT_RE.test(t)) return res.status(400).json({ error: 'Hints are Chinese characters only, up to 40.' });
+      if (!t || !HINT_RE.test(t)) return res.status(400).json({ error: 'Hints are Chinese characters, letters for names and punctuation, up to 40.' });
       const text = t.replace(/\s+/g, ' ');
       if (text.includes(w.replace(/…/g, ''))) return res.status(400).json({ error: 'The hint can’t contain the word itself.' });
       const existing = await list(dev);
