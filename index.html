@@ -217,7 +217,7 @@ button.card.gold:hover{border-color:var(--gold)}
 /* Flagged "probably won't come up" by classmates: faded, with a small note (milo, 2026-10-17). */
 .bsrows button.skip{opacity:.55;border-style:solid;border-width:1px;background:var(--bg)}
 .bsrows .bsk{display:block;font-family:var(--f-py);font-size:.75rem;color:var(--muted);font-style:italic;font-weight:400}
-.hflag{align-self:flex-start;font-size:.9rem;padding:.3em .8em}
+.hflag{align-self:center;font-size:.8rem;padding:.25em .8em;margin-top:.4em;color:var(--muted)}
 .hflag.on{background:var(--muted);border-color:var(--muted);color:var(--paper)}
 .card.soon{background:none;border-style:dashed;color:var(--muted)}
 .card.soon .ic{color:var(--muted)}
@@ -608,12 +608,12 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
     <div class="dpane hpanel" role="dialog" aria-labelledby="hWord">
       <div class="hhead"><div><span class="hzh" id="hWord"></span> <span class="hpy" id="hPy"></span></div><button class="btn" id="hClose" type="button" aria-label="Close">✕</button></div>
       <p class="hen" id="hEn"></p>
-      <button class="btn hflag" id="hFlag" type="button"></button>
       <ol class="hlist" id="hList"></ol>
       <form class="hform" id="hForm" autocomplete="off">
         <div class="hrow2"><input class="hin" id="hIn" maxlength="40" placeholder="Your hint" lang="zh-Hant"><button class="btn primary" type="submit">Add</button></div>
         <p class="hmsg" id="hMsg"></p>
       </form>
+      <button class="btn hflag" id="hFlag" type="button"></button>
     </div>
   </div>
 
