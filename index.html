@@ -199,6 +199,18 @@ button.card.gold:hover{border-color:var(--gold)}
 .hmsg{margin:0;font-size:.9em;color:var(--bad)}
 .hmsg.ok{color:var(--ok)}
 .hmsg:empty{display:none}
+/* 中文比賽 · All hints: every word with its top hint or none yet; tap a row to see, vote, add (milo, 2026-10-17) */
+.bsfilter{display:flex;gap:.5em;justify-content:center;flex-wrap:wrap}
+.bsfilter button{border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:2em;padding:.35em .9em;font:inherit;font-size:.95rem}
+.bsfilter button.on{background:var(--gold);border-color:var(--gold);color:var(--paper)}
+.bsrows{list-style:none;margin:0;padding:0;display:grid;gap:.4em}
+.bsrows button{width:100%;display:grid;grid-template-columns:minmax(4.5em,auto) 1fr auto;gap:.2em .8em;align-items:center;text-align:left;border:1px solid var(--line);border-radius:.6em;background:var(--bg);color:var(--fg);font:inherit;padding:.5em .7em}
+.bsrows .bw{font-family:var(--f-hand);font-size:1.5em;color:var(--accent);line-height:1.2}
+.bsrows .bwp{display:block;font-family:var(--f-py);font-style:italic;font-size:.55em;color:var(--muted)}
+.bsrows .bt{font-family:var(--f-hand);font-size:1.2em;line-height:1.3;overflow-wrap:anywhere}
+.bsrows .bt.none{font-family:var(--f-py);font-size:.95em;color:var(--muted);font-style:italic}
+.bsrows .bn{min-width:1.8em;text-align:center;font-size:.85em;color:var(--muted);border:1px solid var(--line);border-radius:1em;padding:.1em .4em}
+.bsrows .bn.add{border-color:var(--gold);color:var(--gold);font-weight:600}
 .card.soon{background:none;border-style:dashed;color:var(--muted)}
 .card.soon .ic{color:var(--muted)}
 .credit{border-top:1px solid var(--line);color:var(--muted);font-size:.75rem;line-height:1.5;padding:12px 16px calc(14px + env(safe-area-inset-bottom))}
@@ -482,8 +494,14 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
   <section class="menu gtop" id="bsmenu" hidden>
     <button class="mode" id="bsWord" type="button"><span class="lbl">Word → hint</span><span class="sub">See the word, say the hint that makes them guess it</span></button>
     <button class="mode" id="bsHint" type="button"><span class="lbl">Hint → word</span><span class="sub">Hear the hint, find the word</span></button>
+    <button class="mode" id="bsList" type="button"><span class="lbl">All hints</span><span class="sub">Every word with its hints. Add the missing ones</span></button>
     <p class="gstat" id="bsStat"></p>
     <button class="linkbtn" id="bsMod" type="button">Moderator</button>
+  </section>
+
+  <section class="menu gtop" id="bslist" hidden>
+    <div class="bsfilter" id="bsFilter"><button type="button" data-f="all">All</button><button type="button" data-f="missing"></button><button type="button" data-f="has"></button></div>
+    <ol class="bsrows" id="bsRows"></ol>
   </section>
 
   <section class="menu gtop" id="mmenu" hidden>
@@ -689,7 +707,7 @@ function hideAll(){
   stopAudio(); closeCard(); drawer(false);
   $('restartBtn').textContent = 'Start over (all words)';
   $('restartBtn').hidden = false;
-  ['home','clearWrap','menu','xmenu','tmenu','gmenu','mmenu','grBox','meta','rail','promptBox','results','board','dict','mwBox','fcBox','gearBtn','bsmenu','fcHints'].forEach(id => $(id).hidden = true);
+  ['home','clearWrap','menu','xmenu','tmenu','gmenu','mmenu','grBox','meta','rail','promptBox','results','board','dict','mwBox','fcBox','gearBtn','bsmenu','bslist','fcHints'].forEach(id => $(id).hidden = true);
   hintsDrawer(false); hWord = null;
   $('credit').hidden = false; // the credits footer shows on menus only; exercises hide it
 }
@@ -1469,10 +1487,36 @@ function showBsMenu(){
 }
 function bsStat(){
   const words = bsWords(), n = words.filter(w => topHint(w[0])).length;
-  $('bsStat').textContent = n + ' of ' + words.length + ' words have a hint.' + (n < words.length ? ' Add yours on the cards with 提示.' : '');
+  $('bsStat').textContent = n + ' of ' + words.length + ' words have a hint.' + (n < words.length ? ' Add yours in All hints or on the cards with 提示.' : '');
   $('bsHint').disabled = !n;
   $('bsMod').textContent = bsAdmin ? 'Moderator on · tap to turn off' : 'Moderator';
 }
+// All hints (/bisai/list): one row per word with its top hint (or none yet) and how many; a row opens the hints drawer.
+let bsF = 'all';
+function showBsList(){
+  hideAll(); $('modeBtn').hidden = false; $('modeBtn').textContent = '← Competition';
+  $('title').textContent = '中文比賽 · All hints'; $('bslist').hidden = false;
+  renderBsList(); loadHints().then(() => { if (!$('bslist').hidden) renderBsList(); });
+  window.scrollTo(0,0);
+}
+function renderBsList(){
+  const words = bsWords(), miss = words.filter(w => !topHint(w[0])).length;
+  const f = $('bsFilter').children;
+  f[1].textContent = 'Missing · ' + miss; f[2].textContent = 'With hints · ' + (words.length - miss);
+  [...f].forEach(b => b.classList.toggle('on', b.dataset.f === bsF));
+  const rows = $('bsRows'); rows.textContent = '';
+  words.forEach(w => {
+    const hs = hintsOf(w[0]);
+    if (bsF === 'missing' && hs.length || bsF === 'has' && !hs.length) return;
+    const b = el('button'); b.type = 'button';
+    const wd = el('span', 'bw', w[0]); wd.append(el('span', 'bwp', w[1]));
+    b.append(wd, el('span', 'bt' + (hs.length ? '' : ' none'), hs.length ? hs[0].t : 'No hint yet'), el('span', 'bn' + (hs.length ? '' : ' add'), hs.length ? String(hs.length) : '+'));
+    b.setAttribute('aria-label', w[0] + ', ' + (hs.length ? hs.length + ' hints' : 'no hint yet, add one'));
+    b.addEventListener('click', () => openHints(w));
+    const li = el('li'); li.append(b); rows.append(li);
+  });
+}
+$('bsFilter').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { bsF = b.dataset.f; renderBsList(); } });
 function startBs(mode){
   hideAll(); $('modeBtn').hidden = false; $('modeBtn').textContent = '← Competition';
   fcAll = bsWords().filter(w => mode === 1 || topHint(w[0])).map(w => ({ word: w, bs: mode }));
@@ -1530,6 +1574,7 @@ function openHints(w){
 function closeHints(){
   hintsDrawer(false); hWord = null;
   if (!$('fcBox').hidden && fcDeck[fcI] && fcDeck[fcI].bs) bsFill(fcDeck[fcI]);
+  if (!$('bslist').hidden) renderBsList();
 }
 function renderHints(){
   if (!hWord) return;
@@ -1582,6 +1627,7 @@ if (window.ResizeObserver) new ResizeObserver(placeHtab).observe($('fcCard'));
 $('bsCard').addEventListener('click', () => go('/bisai'));
 $('bsWord').addEventListener('click', () => go('/bisai/word'));
 $('bsHint').addEventListener('click', () => go('/bisai/hint'));
+$('bsList').addEventListener('click', () => go('/bisai/list'));
 $('bsMod').addEventListener('click', async () => {
   if (bsAdmin) { bsAdmin = ''; try { localStorage.removeItem('clc_admin'); } catch(e) {} return bsStat(); }
   const p = prompt('Moderator passcode'); if (!p) return;
@@ -2247,6 +2293,7 @@ function route(fresh){
 function routeTo(){
   const path = location.pathname.replace(/\/+$/, '') || '/';
   if (path === '/bisai') return showBsMenu();
+  if (path === '/bisai/list') return showBsList();
   if (path === '/bisai/word' || path === '/bisai/hint') return startBs(path.endsWith('word') ? 1 : 2);
   if (path === '/vocab') return showMenu();
   if (path === '/extra' && EXTRA.length) return showXMenu();
