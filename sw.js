@@ -1,4 +1,4 @@
-const VERSION = 'v116';
+const VERSION = 'v117';
 const CACHE = `clc-vocab-${VERSION}`;
 // Recordings get their own cache that survives version bumps: each file is downloaded the
 // first time it is played and then kept for offline use. Bump AUDIO_CACHE only if files change.
@@ -43,6 +43,8 @@ self.addEventListener('fetch', (event) => {
   if (req.method !== 'GET') return;
   // The 比賽 hints server: always live, never cached here (the app keeps its own copy for offline).
   if (new URL(req.url).pathname.startsWith('/api/')) return;
+  // Vercel Web Analytics: let its script and beacons go straight to the network.
+  if (new URL(req.url).pathname.startsWith('/_vercel/')) return;
 
   // Navigations and lesson / measure-word data: network-first so updates show up right away,
   // keep the latest copy in the cache, fall back to it offline.
