@@ -1466,6 +1466,8 @@ let FLAGS = [];
 try { FLAGS = JSON.parse(localStorage.getItem('clc_flags_v1')) || []; } catch(e) {}
 // Words classmates flagged as "probably won't come up": shared, one flag per phone.
 const flagOf = w => FLAGS.find(f => f.w === w);
+// Flagged by 3 phones or more: left out of both flashcard decks (still in All hints, so it can be unflagged; milo, 2026-10-17).
+const bsOut = w => { const f = flagOf(w); return !!(f && f.n >= 3); };
 try { HINTS = JSON.parse(localStorage.getItem(HINT_KEY)) || []; bsAdmin = localStorage.getItem('clc_admin') || ''; } catch(e) {}
 // A random id per phone: one vote per hint per phone, and you can delete your own hints.
 const myDev = (() => {
@@ -1533,7 +1535,7 @@ function renderBsList(){
     const b = el('button', fl ? 'skip' : hs.length ? null : 'miss'); b.type = 'button';
     const wd = el('span', 'bw', w[0]); wd.append(el('span', 'bwp', w[1]));
     const bt = hs.length ? hintPy(el('span', 'bt'), hs[0].t) : el('span', 'bt none', fl ? 'No hint yet' : 'No hint yet · add one');
-    if (fl) bt.append(el('span', 'bsk', 'Probably won’t come up · ' + fl.n));
+    if (fl) bt.append(el('span', 'bsk', 'Probably won’t come up · ' + fl.n + (fl.n >= 3 ? ' · out of the cards' : '')));
     b.append(wd, bt, el('span', 'bn' + (hs.length || fl ? '' : ' add'), hs.length ? String(hs.length) : '+'));
     b.setAttribute('aria-label', w[0] + ', ' + (hs.length ? hs.length + ' hints' : 'no hint yet, add one'));
     b.addEventListener('click', () => openHints(w));
@@ -1543,7 +1545,7 @@ function renderBsList(){
 $('bsFilter').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { bsF = b.dataset.f; renderBsList(); } });
 function startBs(mode){
   hideAll(); $('modeBtn').hidden = false; $('modeBtn').textContent = '← Competition';
-  fcAll = bsWords().filter(w => mode === 1 || topHint(w[0])).map(w => ({ word: w, bs: mode }));
+  fcAll = bsWords().filter(w => !bsOut(w[0]) && (mode === 1 || topHint(w[0]))).map(w => ({ word: w, bs: mode }));
   if (!fcAll.length) { history.replaceState(null, '', '/bisai'); return showBsMenu(); }
   $('title').textContent = '中文比賽 · ' + (mode === 1 ? 'Word → hint' : 'Hint → word');
   $('fcBox').hidden = false; $('credit').hidden = true; $('fcHints').hidden = false; requestAnimationFrame(placeHtab);
