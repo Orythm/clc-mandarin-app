@@ -355,6 +355,12 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
 .nw{white-space:nowrap}
 .rt{visibility:hidden;font-family:var(--f-py);font-size:max(.58rem,.36em);font-weight:400;color:var(--muted);letter-spacing:-.02em;line-height:1.2;font-style:normal;white-space:nowrap;width:0;display:flex;justify-content:center}
 .showpy .rt,.pyon .rt{visibility:visible}
+/* Hints on the cards: one line per part (split after punctuation), characters close together */
+.fhint.pyon{line-height:1}
+.fhint.pyon .hl{display:block;white-space:nowrap}
+.fhint.pyon .hl+.hl{margin-top:.15em}
+.fhint.pyon .rb{padding:0}
+.fhint.pyon .rt{font-size:.3em;line-height:1.1}
 .mwq .part{display:inline-flex;flex-direction:column;align-items:center}
 .mwq .part>span:first-child:not(.gap){border-bottom:3px solid transparent}
 .mwq .mpy{font-family:var(--f-py);font-size:1.05rem;font-weight:400;font-style:italic;color:var(--muted);margin-top:4px;white-space:nowrap}
@@ -1548,7 +1554,18 @@ function startBs(mode){
   loadHints().then(() => { if (!$('fcBox').hidden && fcSet === 'bs' + mode && fcDeck[fcI]) bsFill(fcDeck[fcI]); });
 }
 // Hint size: as big as fits, from its length (about 88cqw of text per line), then shrunk until the face fits.
-const hintSize = (t, h, max) => Math.min(max, Math.sqrt(h * 88 / 1.3 / Math.max(1, [...t].length))).toFixed(1) + 'cqw';
+// A name in letters gets its own line too.
+const hintParts = t => t.split(/(?<=[，。？！、；：…])|(?<=[A-Za-zÀ-ɏ'’.])\s*(?=[㐀-鿿])|(?<=[㐀-鿿])\s*(?=[A-Za-zÀ-ɏ])/).map(x => x.trim()).filter(Boolean);
+// One line per part, each as big as fits: about 78cqw wide (letters count about half a character), and all lines with their pinyin fit the height h.
+const hintW = p => Math.max(1, [...p].reduce((n, c) => n + (/[A-Za-zÀ-ɏ'’. ]/.test(c) ? .55 : 1), 0));
+const hintSize = (t, h, max) => { const ps = hintParts(t); return Math.min(max, h / ps.length / 1.5, Math.max(...ps.map(p => 78 / hintW(p)))); };
+// The card's size is the biggest line's; a longer line shrinks to fit.
+function hintLines(e, t, h, max){
+  const ps = hintParts(t), size = hintSize(t, h, max);
+  e.textContent = ''; e.classList.add('pyon'); e.style.fontSize = size.toFixed(1) + 'cqw';
+  ps.forEach(p => { const l = el('span', 'hl'); l.style.fontSize = Math.min(1, 78 / hintW(p) / size).toFixed(3) + 'em'; l.append(rubyText(p)); e.append(l); });
+  return e;
+}
 function bsFill(m){
   const w = m.word, h = topHint(w[0]), n = [...w[0]].length, card = $('fcCard');
   ['fcN','fcFHint','fcBn','fcHint'].forEach(id => { $(id).textContent = ''; $(id).style.fontSize = ''; $(id).classList.remove('none'); });
@@ -1557,12 +1574,12 @@ function bsFill(m){
     $('fcFront').textContent = w[0]; $('fcFront').style.fontSize = Math.min(45, 86 / n) + 'cqw';
     $('fcBn').textContent = zhCount(w[0]); $('fcZh').style.fontSize = '';
     const e = $('fcHint'); e.classList.toggle('none', !h);
-    if (h) { hintPy(e, h.t); e.style.fontSize = hintSize(h.t, 55, 18); } else e.textContent = 'No hint yet. Add one with 提示.';
+    if (h) hintLines(e, h.t, 55, 18); else e.textContent = 'No hint yet. Add one with 提示.';
   } else {
     $('fcFront').textContent = ''; $('fcN').textContent = zhCount(w[0]);
     $('fcZh').style.fontSize = Math.min(26, 70 / n) + 'cqw';
     const e = $('fcFHint'); e.classList.toggle('none', !h);
-    if (h) { hintPy(e, h.t); e.style.fontSize = hintSize(h.t, 85, 22); } else e.textContent = 'This hint was deleted.';
+    if (h) hintLines(e, h.t, 85, 22); else e.textContent = 'This hint was deleted.';
   }
   card.querySelectorAll('.face').forEach(f => {
     const e = f.querySelector('.fhint:not(.none):not(:empty)');
