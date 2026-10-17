@@ -3,8 +3,9 @@
 //   hash "hints"   id -> {"id","w","t","dev","at"}   (w the word, t the hint, dev the phone that sent it)
 //   set  "v:<id>"  the phones that voted for it
 // Hints are anonymous (milo, 2026-10-16); "by" is only on hints added before that.
-// GET  /api/hints?dev=<phone id>          -> {hints:[{id,w,t,at,v,me,mine}]}  (no phone ids are sent back)
-// POST /api/hints {a:"add", w, t, dev} | {a:"vote", id, dev, on} | {a:"del", id, dev, admin} | {a:"admin", admin}
+//   set  "skip:<w>" the phones that flagged word w as "probably won't come up"; set "skipw" the words with a flag (milo, 2026-10-17)
+// GET  /api/hints?dev=<phone id>          -> {hints:[{id,w,t,at,v,me,mine}], flags:[{w,n,me}]}  (no phone ids are sent back)
+// POST /api/hints {a:"add", w, t, dev} | {a:"vote", id, dev, on} | {a:"del", id, dev, admin} | {a:"flag", w, dev, on} | {a:"admin", admin}
 const URL_ = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
 const TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
 const ADMIN = process.env.HINTS_ADMIN || '';
@@ -33,11 +34,19 @@ async function list(dev){
   return hints.map((h, i) => ({ id: h.id, w: h.w, t: h.t, at: h.at, v: res[2 * i], me: res[2 * i + 1] === 1, mine: !!dev && h.dev === dev }));
 }
 
+async function flags(dev){
+  const ws = (await redis([['SMEMBERS', 'skipw']]))[0] || [];
+  if (!ws.length) return [];
+  const res = await redis(ws.flatMap(w => [['SCARD', 'skip:' + w], ['SISMEMBER', 'skip:' + w, dev || '-']]));
+  return ws.map((w, i) => ({ w, n: res[2 * i], me: res[2 * i + 1] === 1 })).filter(f => f.n > 0);
+}
+const state = async dev => ({ hints: await list(dev), flags: await flags(dev) });
+
 module.exports = async (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   if (!URL_ || !TOKEN) return res.status(503).json({ error: 'The hints database is not connected yet.' });
   try {
-    if (req.method === 'GET') return res.json({ hints: await list(str(req.query.dev, 64)) });
+    if (req.method === 'GET') return res.json(await state(str(req.query.dev, 64)));
     if (req.method !== 'POST') return res.status(405).json({ error: 'GET or POST' });
     const b = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
     const dev = str(b.dev, 64);
@@ -52,26 +61,36 @@ module.exports = async (req, res) => {
       if (text.includes(w.replace(/…/g, ''))) return res.status(400).json({ error: 'The hint can’t contain the word itself.' });
       const existing = await list(dev);
       const same = existing.find(h => h.w === w && h.t === text);
-      if (same) { await redis([['SADD', 'v:' + same.id, dev]]); return res.json({ hints: await list(dev), id: same.id }); }
+      if (same) { await redis([['SADD', 'v:' + same.id, dev]]); return res.json({ ...(await state(dev)), id: same.id }); }
       if (existing.filter(h => h.mine && h.w === w).length >= 3) return res.status(400).json({ error: 'You already have 3 hints for this word. Delete one to add another.' });
       const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
       // The author's own vote comes with the hint.
       await redis([['HSET', 'hints', id, JSON.stringify({ id, w, t: text, dev, at: Date.now() })], ['SADD', 'v:' + id, dev]]);
-      return res.json({ hints: await list(dev), id });
+      return res.json({ ...(await state(dev)), id });
+    }
+    if (b.a === 'flag') {
+      const w = str(b.w, 8);
+      if (!w || !WORD_RE.test(w)) return res.status(400).json({ error: 'Unknown word.' });
+      if (b.on) await redis([['SADD', 'skip:' + w, dev], ['SADD', 'skipw', w]]);
+      else {
+        const left = (await redis([['SREM', 'skip:' + w, dev], ['SCARD', 'skip:' + w]]))[1];
+        if (!left) await redis([['SREM', 'skipw', w]]);
+      }
+      return res.json(await state(dev));
     }
     const id = str(b.id, 40);
     if (!id) return res.status(400).json({ error: 'Missing hint.' });
     const raw = (await redis([['HGET', 'hints', id]]))[0];
-    if (!raw) return res.status(404).json({ error: 'That hint was deleted.', hints: await list(dev) });
+    if (!raw) return res.status(404).json({ error: 'That hint was deleted.', ...(await state(dev)) });
     if (b.a === 'vote') {
       await redis([[b.on ? 'SADD' : 'SREM', 'v:' + id, dev]]);
-      return res.json({ hints: await list(dev) });
+      return res.json(await state(dev));
     }
     if (b.a === 'del') {
       const h = JSON.parse(raw);
       if (h.dev !== dev && !(ADMIN && b.admin === ADMIN)) return res.status(403).json({ error: 'Only its author or the moderator can delete a hint.' });
       await redis([['HDEL', 'hints', id], ['DEL', 'v:' + id]]);
-      return res.json({ hints: await list(dev) });
+      return res.json(await state(dev));
     }
     return res.status(400).json({ error: 'Unknown action.' });
   } catch (e) {

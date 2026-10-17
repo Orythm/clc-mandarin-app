@@ -214,6 +214,11 @@ button.card.gold:hover{border-color:var(--gold)}
 /* A word with no hint yet: dashed gold frame on a gold tint, so the gaps jump out while scrolling. */
 .bsrows button.miss{border:2px dashed var(--gold);background:var(--gold-soft)}
 .bsrows button.miss .bt.none{color:var(--gold);font-style:normal;font-weight:600}
+/* Flagged "probably won't come up" by classmates: faded, with a small note (milo, 2026-10-17). */
+.bsrows button.skip{opacity:.55;border-style:solid;border-width:1px;background:var(--bg)}
+.bsrows .bsk{display:block;font-family:var(--f-py);font-size:.75rem;color:var(--muted);font-style:italic;font-weight:400}
+.hflag{align-self:flex-start;font-size:.9rem;padding:.3em .8em}
+.hflag.on{background:var(--muted);border-color:var(--muted);color:var(--paper)}
 .card.soon{background:none;border-style:dashed;color:var(--muted)}
 .card.soon .ic{color:var(--muted)}
 .credit{border-top:1px solid var(--line);color:var(--muted);font-size:.75rem;line-height:1.5;padding:12px 16px calc(14px + env(safe-area-inset-bottom))}
@@ -503,7 +508,7 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
   </section>
 
   <section class="menu gtop" id="bslist" hidden>
-    <div class="bsfilter" id="bsFilter"><button type="button" data-f="all">All</button><button type="button" data-f="missing"></button><button type="button" data-f="has"></button></div>
+    <div class="bsfilter" id="bsFilter"><button type="button" data-f="all">All</button><button type="button" data-f="missing"></button><button type="button" data-f="has"></button><button type="button" data-f="skip"></button></div>
     <ol class="bsrows" id="bsRows"></ol>
   </section>
 
@@ -603,6 +608,7 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
     <div class="dpane hpanel" role="dialog" aria-labelledby="hWord">
       <div class="hhead"><div><span class="hzh" id="hWord"></span> <span class="hpy" id="hPy"></span></div><button class="btn" id="hClose" type="button" aria-label="Close">✕</button></div>
       <p class="hen" id="hEn"></p>
+      <button class="btn hflag" id="hFlag" type="button"></button>
       <ol class="hlist" id="hList"></ol>
       <form class="hform" id="hForm" autocomplete="off">
         <div class="hrow2"><input class="hin" id="hIn" maxlength="40" placeholder="Your hint" lang="zh-Hant"><button class="btn primary" type="submit">Add</button></div>
@@ -1450,6 +1456,10 @@ function nextFc(r){
 // most votes, ties going to the older one. The last list seen is kept on the phone for offline use.
 const HINT_KEY = 'clc_hints_v1';
 let HINTS = [], bsAdmin = '', hWord = null, KNOWN = null;
+let FLAGS = [];
+try { FLAGS = JSON.parse(localStorage.getItem('clc_flags_v1')) || []; } catch(e) {}
+// Words classmates flagged as "probably won't come up": shared, one flag per phone.
+const flagOf = w => FLAGS.find(f => f.w === w);
 try { HINTS = JSON.parse(localStorage.getItem(HINT_KEY)) || []; bsAdmin = localStorage.getItem('clc_admin') || ''; } catch(e) {}
 // A random id per phone: one vote per hint per phone, and you can delete your own hints.
 const myDev = (() => {
@@ -1478,6 +1488,7 @@ async function hintsApi(body){
   } catch(e) { throw new Error('No connection to the hints server. Try again when you are online.'); }
   let d = {}; try { d = await r.json(); } catch(e) {}
   if (Array.isArray(d.hints)) { HINTS = d.hints; try { localStorage.setItem(HINT_KEY, JSON.stringify(HINTS)); } catch(e) {} }
+  if (Array.isArray(d.flags)) { FLAGS = d.flags; try { localStorage.setItem('clc_flags_v1', JSON.stringify(FLAGS)); } catch(e) {} }
   if (!r.ok) throw new Error(d.error || 'The hints server had a problem. Try again.');
   return d;
 }
@@ -1503,17 +1514,21 @@ function showBsList(){
   window.scrollTo(0,0);
 }
 function renderBsList(){
-  const words = bsWords(), miss = words.filter(w => !topHint(w[0])).length;
+  const words = bsWords(), skip = words.filter(w => flagOf(w[0])).length;
+  const miss = words.filter(w => !topHint(w[0]) && !flagOf(w[0])).length, has = words.filter(w => topHint(w[0])).length;
   const f = $('bsFilter').children;
-  f[1].textContent = 'Missing · ' + miss; f[2].textContent = 'With hints · ' + (words.length - miss);
+  f[1].textContent = 'Missing · ' + miss; f[2].textContent = 'With hints · ' + has;
+  f[3].textContent = 'Won’t come up · ' + skip; f[3].hidden = !skip; if (!skip && bsF === 'skip') bsF = 'all';
   [...f].forEach(b => b.classList.toggle('on', b.dataset.f === bsF));
   const rows = $('bsRows'); rows.textContent = '';
   words.forEach(w => {
-    const hs = hintsOf(w[0]);
-    if (bsF === 'missing' && hs.length || bsF === 'has' && !hs.length) return;
-    const b = el('button', hs.length ? null : 'miss'); b.type = 'button';
+    const hs = hintsOf(w[0]), fl = flagOf(w[0]);
+    if (bsF === 'missing' && (hs.length || fl) || bsF === 'has' && !hs.length || bsF === 'skip' && !fl) return;
+    const b = el('button', fl ? 'skip' : hs.length ? null : 'miss'); b.type = 'button';
     const wd = el('span', 'bw', w[0]); wd.append(el('span', 'bwp', w[1]));
-    b.append(wd, el('span', 'bt' + (hs.length ? '' : ' none'), hs.length ? hs[0].t : 'No hint yet · add one'), el('span', 'bn' + (hs.length ? '' : ' add'), hs.length ? String(hs.length) : '+'));
+    const bt = el('span', 'bt' + (hs.length ? '' : ' none'), hs.length ? hs[0].t : fl ? 'No hint yet' : 'No hint yet · add one');
+    if (fl) bt.append(el('span', 'bsk', 'Probably won’t come up · ' + fl.n));
+    b.append(wd, bt, el('span', 'bn' + (hs.length || fl ? '' : ' add'), hs.length ? String(hs.length) : '+'));
     b.setAttribute('aria-label', w[0] + ', ' + (hs.length ? hs.length + ' hints' : 'no hint yet, add one'));
     b.addEventListener('click', () => openHints(w));
     const li = el('li'); li.append(b); rows.append(li);
@@ -1581,6 +1596,10 @@ function closeHints(){
 }
 function renderHints(){
   if (!hWord) return;
+  const fl = flagOf(hWord[0]), fb = $('hFlag');
+  fb.classList.toggle('on', !!(fl && fl.me));
+  fb.textContent = (fl && fl.me ? '✓ ' : '') + 'Probably won’t come up' + (fl ? ' · ' + fl.n : '');
+  fb.setAttribute('aria-label', fl && fl.me ? 'Take back your flag' : 'Flag this word as probably not coming up');
   const list = $('hList'), hs = hintsOf(hWord[0]); list.textContent = '';
   if (!hs.length) list.append(el('li','hempty','No hints yet.'));
   hs.forEach((h, i) => {
@@ -1615,6 +1634,7 @@ $('hForm').addEventListener('submit', async e => {
   if (await hAct({ a: 'add', w: hWord[0], t }, 'Added. Thanks!')) $('hIn').value = '';
 });
 $('hClose').addEventListener('click', closeHints);
+$('hFlag').addEventListener('click', () => { if (!hWord) return; const fl = flagOf(hWord[0]); hAct({ a: 'flag', w: hWord[0], on: !(fl && fl.me) }); });
 $('hSheet').addEventListener('click', e => { if (e.target === $('hSheet')) closeHints(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && hWord) closeHints(); });
 $('fcHints').addEventListener('click', () => { if (hWord) return closeHints(); const m = fcDeck[fcI]; if (m && m.word) openHints(m.word); });
