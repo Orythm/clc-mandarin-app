@@ -303,5 +303,46 @@
       ["有事","yǒu shì","to be busy, to have something on"],
       ["有意思","yǒu yì si","interesting"]
     ]
+  },
+  {
+    "n": 8,
+    "zh": "第八課",
+    "words": [
+      ["坐","zuò","to take, to travel by"],
+      ["火車","huǒ chē","train"],
+      ["跟","gēn","with"],
+      ["玩","wán","to have fun"],
+      ["怎麼","zěn me","how"],
+      ["慢","màn","slow"],
+      ["鐘頭","zhōng tóu","hour"],
+      ["比較","bǐ jiào","comparatively, more"],
+      ["快","kuài","fast"],
+      ["車票","chē piào","ticket (train, bus)"],
+      ["非常","fēi cháng","very"],
+      ["但是","dàn shì","but, however"],
+      ["又","yòu","both … and …"],
+      ["舒服","shū fú","comfortable"],
+      ["站","zhàn","station"],
+      ["或是","huò shì","or"],
+      ["臺南","tái nán","Tainan"],
+      ["高鐵","gāo tiě","high-speed rail"],
+      ["網路上","wǎng lù shàng","on the internet"],
+      ["便利商店","biàn lì shāng diàn","convenience store"],
+      ["同學","tóng xué","classmate"],
+      ["參觀","cān guān","to visit (a place)"],
+      ["古代","gǔ dài","ancient times"],
+      ["騎","qí","to ride"],
+      ["機車","jī chē","motorbike"],
+      ["載","zài","to give someone a ride"],
+      ["捷運","jié yùn","MRT"],
+      ["比","bǐ","than (more … than)"],
+      ["故宮","gù gōng","National Palace Museum"],
+      ["中國","zhōng guó","China"],
+      ["公共汽車","gōng gòng qì chē","bus"],
+      ["不行","bù xíng","won't do, not OK"],
+      ["計程車","jì chéng chē","taxi"],
+      ["差不多","chā bù duō","about the same"],
+      ["飛機","fēi jī","airplane"]
+    ]
   }
 ]
