@@ -344,5 +344,41 @@
       ["差不多","chā bù duō","about the same"],
       ["飛機","fēi jī","airplane"]
     ]
+  },
+  {
+    "n": 9,
+    "zh": "第九課",
+    "words": [
+      ["星期","xīng qí","week"],
+      ["回國","huí guó","to return to one's country"],
+      ["打算","dǎ suàn","to plan to"],
+      ["電視","diàn shì","TV"],
+      ["影片","yǐng piàn","film, video"],
+      ["旅行","lǚ xíng","to travel"],
+      ["功課","gōng kè","homework"],
+      ["出去","chū qù","to go out"],
+      ["大概","dà gài","probably, approximately"],
+      ["放假","fàng jià","to have a holiday"],
+      ["下個星期","xià ge xīng qí","next week"],
+      ["有時候","yǒu shí hòu","sometimes"],
+      ["多久","duō jiǔ","how long"],
+      ["臺東","tái dōng","Taitung (city)"],
+      ["女","nǚ","woman, female"],
+      ["月","yuè","month"],
+      ["號","hào","day of the month"],
+      ["帶","dài","to take, to bring"],
+      ["她","tā","she, her"],
+      ["還","hái","still, yet"],
+      ["建議","jiàn yì","to suggest, suggestion"],
+      ["夜市","yè shì","night market"],
+      ["應該","yīng gāi","should, ought to"],
+      ["逛","guàng","to stroll, to look around"],
+      ["特別","tè bié","special"],
+      ["茶館","chá guǎn","teahouse"],
+      ["決定","jué dìng","to decide"],
+      ["要是","yào shì","if"],
+      ["就","jiù","then"],
+      ["貓空","māo kōng","Maokong (place)"]
+    ]
   }
 ]
