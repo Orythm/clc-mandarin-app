@@ -91,6 +91,10 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .pk .d{display:flex;flex-direction:column;min-width:0;line-height:1.25}
 .pk .d small{color:var(--muted);font-size:.8em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pk.off .zh,.pk.off .d{opacity:.45}
+.pmodes{display:flex;flex-direction:column;gap:.35em}
+.pm{display:flex;gap:.6em;align-items:center;cursor:pointer;user-select:none;-webkit-user-select:none}
+.pm input{margin:0;width:1.1em;height:1.1em;flex:none;accent-color:var(--accent);cursor:pointer}
+.pm small{color:var(--muted)}
 @media (max-width:560px){
   .wrap{gap:10px;padding-block:12px 32px}
   h1{font-size:1.4rem}
@@ -575,6 +579,7 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
       <label class="opt"><input type="checkbox" id="enTapBtn"><span><b>Tap for English</b><small>Tap English to show it and tap again to hide it, instead of holding. It stays on for the next words; each word shown with it counts as missed.</small></span></label>
       <div class="pick" id="pickSec" hidden>
         <div><div class="ph">Choose words</div><div class="pnote">Untick the words you don't want to be asked. A new round starts when you close this.</div></div>
+        <div class="pmodes" id="pickModes"></div>
         <div class="pbtns"><button class="btn" id="pickClear" type="button">Clear selection</button><button class="btn" id="pickNone" type="button">None</button></div>
         <div class="pnote" id="pickCount"></div>
         <div id="pickList"></div>
@@ -951,19 +956,35 @@ let PICK = {}, pickDirty = false;
 try { PICK = JSON.parse(localStorage.getItem(PICK_KEY)) || {}; } catch(e) {}
 const pickKey = L => !L || L.all || L.endless ? null : L.n ? 'L' + L.n : L.id ? 'X' + L.id : null;
 const pickOff = L => new Set(PICK[pickKey(L)] || []);
-// The words a quiz on this set asks; with nothing ticked it asks them all.
-function pickWords(L){ const off = pickOff(L), ws = L.words.filter(w => !off.has(w[0])); return ws.length ? ws : L.words; }
+// "Which words" (milo, 2026-11-16, lessons only): New = none of the word's characters is in an earlier lesson;
+// Known = every character is in an earlier lesson. Words mixing both are in neither. Kept as PICK['@L<n>'] = 'new' | 'known'.
+const isHan = c => /[㐀-鿿豈-﫿]/.test(c);
+function seenBefore(L){ const s = new Set(); LESSONS.forEach(x => { if (x.n < L.n) x.words.forEach(w => [...w[0]].forEach(c => s.add(c))); }); return s; }
+function wordAge(w, seen){ const cs = [...w[0]].filter(isHan); if (!cs.length) return 'mix'; const k = cs.filter(c => seen.has(c)).length; return k === 0 ? 'new' : k === cs.length ? 'known' : 'mix'; }
+const pickMode = L => (L && L.n && PICK['@' + pickKey(L)]) || 'all';
+function modeWords(L, m){ m = m || pickMode(L); if (m === 'all') return L.words; const seen = seenBefore(L); return L.words.filter(w => wordAge(w, seen) === m); }
+// The words a quiz on this set asks: the chosen kind, then the ticked ones among them; with nothing ticked it asks the
+// whole kind, and with an empty kind every word.
+function pickWords(L){ const base = modeWords(L); if (!base.length) return L.words; const off = pickOff(L), ws = base.filter(w => !off.has(w[0])); return ws.length ? ws : base; }
 function savePick(){ try { localStorage.setItem(PICK_KEY, JSON.stringify(PICK)); } catch(e) {} }
 function setPick(L, offList){ const k = pickKey(L); if (offList.length) PICK[k] = offList; else delete PICK[k]; savePick(); pickDirty = true; }
+function setMode(L, m){ const k = '@' + pickKey(L); if (m === 'all') delete PICK[k]; else PICK[k] = m; savePick(); pickDirty = true; }
 function pickNote(){
-  const L = lesson, on = ex === 'vocab' && pickKey(L) && PICK[pickKey(L)];
+  const L = lesson, on = ex === 'vocab' && pickKey(L) && (PICK[pickKey(L)] || pickMode(L) !== 'all');
   $('pickNote').textContent = on ? ' · ' + pickWords(L).length + ' of ' + L.words.length + ' words' : '';
 }
 function buildPick(){
   const L = lesson, ok = ex === 'vocab' && !!pickKey(L) && !$('promptBox').hidden;
   $('pickSec').hidden = !ok; if (!ok) return;
+  // Which words: lessons after the first only (handout topics and lesson 1 have no earlier lesson to compare with).
+  const mb = $('pickModes'); mb.textContent = ''; mb.hidden = !(L.n && LESSONS.some(x => x.n < L.n));
+  if (!mb.hidden) [['all', 'All words'], ['new', 'Only new characters'], ['known', 'Only known characters']].forEach(([m, label]) => {
+    const r = el('label', 'pm'), inp = el('input'); inp.type = 'radio'; inp.name = 'pickMode'; inp.checked = pickMode(L) === m;
+    inp.addEventListener('change', () => { setMode(L, m); buildPick(); });
+    r.append(inp, el('span', null, label + ' '), el('small', null, '(' + modeWords(L, m).length + ')')); mb.append(r);
+  });
   const off = pickOff(L), box = $('pickList'); box.textContent = '';
-  L.words.forEach(w => {
+  modeWords(L).forEach(w => {
     const row = el('label', 'pk' + (off.has(w[0]) ? ' off' : '')), cb = el('input');
     cb.type = 'checkbox'; cb.checked = !off.has(w[0]);
     cb.addEventListener('change', () => {
@@ -976,11 +997,12 @@ function buildPick(){
   pickCount();
 }
 function pickCount(){
-  const L = lesson, n = L.words.length - pickOff(L).size;
-  $('pickCount').textContent = n ? n + ' of ' + L.words.length + ' words ticked' : 'Nothing ticked: the quiz asks every word.';
+  const L = lesson, base = modeWords(L), off = pickOff(L), n = base.filter(w => !off.has(w[0])).length;
+  $('pickCount').textContent = !base.length ? 'No words of this kind: the quiz asks every word.' : n ? n + ' of ' + base.length + ' words ticked' : 'Nothing ticked: the quiz asks all ' + base.length + '.';
 }
 $('pickClear').addEventListener('click', () => { setPick(lesson, []); buildPick(); });
-$('pickNone').addEventListener('click', () => { setPick(lesson, lesson.words.map(w => w[0])); buildPick(); });
+// None unticks the words in the list; ticks on words of the other kinds are kept.
+$('pickNone').addEventListener('click', () => { const o = pickOff(lesson); modeWords(lesson).forEach(w => o.add(w[0])); setPick(lesson, lesson.words.map(w => w[0]).filter(c => o.has(c))); buildPick(); });
 // Closing the drawer after a change deals a new round with the ticked words.
 function closeSettings(){
   drawer(false);
