@@ -79,6 +79,18 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .opt input{margin:.2em 0 0;width:1.2em;height:1.2em;flex:none;accent-color:var(--accent);cursor:pointer}
 .opt b{display:block;font-weight:600}
 .opt small{display:block;color:var(--muted);font-size:.85em;line-height:1.35;margin-top:.15em}
+/* Choose words: the lesson's words with a checkbox each; unticked ones leave the quiz and the board (milo, 2026-11-16) */
+.pick{border-top:1px solid var(--line);padding-top:1em;display:flex;flex-direction:column;gap:.6em}
+.pick .ph{font-weight:600}
+.pick .pnote{color:var(--muted);font-size:.85em;line-height:1.35}
+.pick .pbtns{display:flex;gap:.5em;flex-wrap:wrap}
+.pick .pbtns .btn{font-size:.9em;padding:.35em .8em}
+.pk{display:flex;gap:.7em;align-items:center;cursor:pointer;user-select:none;-webkit-user-select:none;padding:.2em 0}
+.pk input{margin:0;width:1.2em;height:1.2em;flex:none;accent-color:var(--accent);cursor:pointer}
+.pk .zh{font-family:var(--f-hand);font-size:1.35em;flex:none}
+.pk .d{display:flex;flex-direction:column;min-width:0;line-height:1.25}
+.pk .d small{color:var(--muted);font-size:.8em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pk.off .zh,.pk.off .d{opacity:.45}
 @media (max-width:560px){
   .wrap{gap:10px;padding-block:12px 32px}
   h1{font-size:1.4rem}
@@ -418,7 +430,7 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
 <div class="wrap">
   <header>
     <div class="hrow"><button class="btn homebtn" id="modeBtn" type="button" hidden>← Home</button><h1 id="title">華語練習 · CLC Mandarin</h1></div>
-    <div class="meta" id="meta" hidden>Question <b id="qn">1</b>/<span id="qt">40</span> · Score <b id="sc">0</b></div>
+    <div class="meta" id="meta" hidden>Question <b id="qn">1</b>/<span id="qt">40</span> · Score <b id="sc">0</b><span id="pickNote"></span></div>
   </header>
 
   <section class="home" id="home" hidden>
@@ -561,6 +573,12 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
       <div class="dhead">Settings<button id="drawerX" type="button" aria-label="Close">✕</button></div>
       <label class="opt"><input type="checkbox" id="pauseBtn"><span><b>Pause after a right answer</b><small>See the word, pinyin and English, then tap anywhere to go on.</small></span></label>
       <label class="opt"><input type="checkbox" id="enTapBtn"><span><b>Tap for English</b><small>Tap English to show it and tap again to hide it, instead of holding. It stays on for the next words; each word shown with it counts as missed.</small></span></label>
+      <div class="pick" id="pickSec" hidden>
+        <div><div class="ph">Choose words</div><div class="pnote">Untick the words you don't want to be asked. A new round starts when you close this.</div></div>
+        <div class="pbtns"><button class="btn" id="pickClear" type="button">Clear selection</button><button class="btn" id="pickNone" type="button">None</button></div>
+        <div class="pnote" id="pickCount"></div>
+        <div id="pickList"></div>
+      </div>
     </div>
   </div>
   <div class="sheet" id="sheet" hidden><div class="pane" id="sheetPane" role="dialog" aria-modal="true"></div></div>
@@ -719,7 +737,7 @@ function buildMenu(boxId, sets, pathOf){
   });
 }
 function hideAll(){
-  stopAudio(); closeCard(); drawer(false);
+  stopAudio(); closeCard(); drawer(false); pickDirty = false; $('pickNote').textContent = '';
   $('restartBtn').textContent = 'Start over (all words)';
   $('restartBtn').hidden = false;
   ['home','clearWrap','menu','xmenu','tmenu','gmenu','mmenu','grBox','meta','rail','promptBox','results','board','dict','mwBox','fcBox','gearBtn','bsmenu','bslist','fcHints'].forEach(id => $(id).hidden = true);
@@ -776,7 +794,7 @@ function start(list){
   hideAll();
   $('modeBtn').textContent = lesson.n || (lesson.all && !lesson.extra) ? '← Lessons' : '← Vocabulary';
   ['meta','rail','promptBox','board','modeBtn','gearBtn'].forEach(id => $(id).hidden = false); $('credit').hidden = true;
-  $('qt').textContent = queue.length;
+  $('qt').textContent = queue.length; pickNote();
   $('py').className = mode === 'zh2py' ? 'py zhq' : 'py';
   buildBoard(); show(); window.scrollTo(0,0);
 }
@@ -894,7 +912,7 @@ function finish(){
 $('pauseBtn').addEventListener('change', () => { pauseOk = $('pauseBtn').checked; save(); });
 // Settings drawer (⚙ on the prompt): tap outside it, ✕ or Escape closes it.
 function drawer(open){ $('drawer').classList.toggle('open', open); $('gearBtn').classList.toggle('on', open); $('drawer').setAttribute('aria-hidden', !open); }
-$('gearBtn').addEventListener('click', () => drawer(!$('drawer').classList.contains('open')));
+$('gearBtn').addEventListener('click', () => $('drawer').classList.contains('open') ? closeSettings() : (buildPick(), drawer(true)));
 // The tab sits at the middle height of the question box (milo, 2026-10-12).
 function placeGear(){
   if ($('gearBtn').hidden || $('promptBox').hidden) return;
@@ -921,10 +939,54 @@ function swipeShut(pane, close){
   };
   ['pointerup', 'pointercancel'].forEach(t => pane.addEventListener(t, up));
 }
-swipeShut($('drawer').querySelector('.dpane'), () => drawer(false));
-$('drawerX').addEventListener('click', () => drawer(false));
-$('drawer').addEventListener('click', e => { if (e.target === $('drawer')) drawer(false); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') drawer(false); });
+swipeShut($('drawer').querySelector('.dpane'), closeSettings);
+$('drawerX').addEventListener('click', closeSettings);
+$('drawer').addEventListener('click', e => { if (e.target === $('drawer')) closeSettings(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('drawer').classList.contains('open')) closeSettings(); });
+// ---- Choose words (milo, 2026-11-16): on a lesson's (or handout topic's) tile quizzes, the ⚙ drawer lists the set's words;
+// unticked ones are left out of the round and off the board. Kept per set on the phone in clc_pick_v1 as the list of
+// unticked characters, shared by Pinyin → Characters and Characters → Pinyin. Flashcards, Write it, All lessons and Review ignore it.
+const PICK_KEY = 'clc_pick_v1';
+let PICK = {}, pickDirty = false;
+try { PICK = JSON.parse(localStorage.getItem(PICK_KEY)) || {}; } catch(e) {}
+const pickKey = L => !L || L.all || L.endless ? null : L.n ? 'L' + L.n : L.id ? 'X' + L.id : null;
+const pickOff = L => new Set(PICK[pickKey(L)] || []);
+// The words a quiz on this set asks; with nothing ticked it asks them all.
+function pickWords(L){ const off = pickOff(L), ws = L.words.filter(w => !off.has(w[0])); return ws.length ? ws : L.words; }
+function savePick(){ try { localStorage.setItem(PICK_KEY, JSON.stringify(PICK)); } catch(e) {} }
+function setPick(L, offList){ const k = pickKey(L); if (offList.length) PICK[k] = offList; else delete PICK[k]; savePick(); pickDirty = true; }
+function pickNote(){
+  const L = lesson, on = ex === 'vocab' && pickKey(L) && PICK[pickKey(L)];
+  $('pickNote').textContent = on ? ' · ' + pickWords(L).length + ' of ' + L.words.length + ' words' : '';
+}
+function buildPick(){
+  const L = lesson, ok = ex === 'vocab' && !!pickKey(L) && !$('promptBox').hidden;
+  $('pickSec').hidden = !ok; if (!ok) return;
+  const off = pickOff(L), box = $('pickList'); box.textContent = '';
+  L.words.forEach(w => {
+    const row = el('label', 'pk' + (off.has(w[0]) ? ' off' : '')), cb = el('input');
+    cb.type = 'checkbox'; cb.checked = !off.has(w[0]);
+    cb.addEventListener('change', () => {
+      const o = pickOff(L); if (cb.checked) o.delete(w[0]); else o.add(w[0]);
+      row.classList.toggle('off', !cb.checked); setPick(L, L.words.map(x => x[0]).filter(c => o.has(c))); pickCount();
+    });
+    const d = el('span', 'd'); d.append(el('span', null, w[1]), el('small', null, w[2]));
+    row.append(cb, el('span', 'zh', w[0]), d); box.append(row);
+  });
+  pickCount();
+}
+function pickCount(){
+  const L = lesson, n = L.words.length - pickOff(L).size;
+  $('pickCount').textContent = n ? n + ' of ' + L.words.length + ' words ticked' : 'Nothing ticked: the quiz asks every word.';
+}
+$('pickClear').addEventListener('click', () => { setPick(lesson, []); buildPick(); });
+$('pickNone').addEventListener('click', () => { setPick(lesson, lesson.words.map(w => w[0])); buildPick(); });
+// Closing the drawer after a change deals a new round with the ticked words.
+function closeSettings(){
+  drawer(false);
+  if (!pickDirty) return; pickDirty = false;
+  if (ex === 'vocab' && pickKey(lesson) && !$('promptBox').hidden) { clearRun(); WORDS = pickWords(lesson); start(WORDS); }
+}
 $('enTapBtn').addEventListener('change', () => { enTap = $('enTapBtn').checked; save(); if (!enTap && showEn) { showEn = false; $('hintBtn').classList.remove('on'); applyAids(); } $('hintBtn').title = enTap ? 'Tap to show or hide the English. The word then counts as missed.' : 'Hold to show the English. The word then counts as missed.'; });
 $('skipBtn').addEventListener('click', reveal);
 $('lenBtn').addEventListener('click', () => { showLen = !showLen; save(); applyAids(); });
@@ -2351,7 +2413,7 @@ function routeTo(){
   if (XL && xr[2] === 'meaning') { history.replaceState(null, '', '/extra'); return showXMenu(); }
   if (XL && xr[2] === 'write') return startWrite(XL);
   if (XL && xr[2] === 'cards') return startWordFc(true, XL);
-  if (XL) { lesson = XL; WORDS = XL.words; mode = xr[2] === 'zh-py' ? 'zh2py' : 'py2zh'; return start(WORDS); }
+  if (XL) { lesson = XL; WORDS = pickWords(XL); mode = xr[2] === 'zh-py' ? 'zh2py' : 'py2zh'; return start(WORDS); }
   if (!SOUND && (path === '/tones' || path.startsWith('/tones/'))) { history.replaceState(null, '', '/'); return showHome(); }
   if (path === '/tones') return showTonesMenu();
   if (MW_ITEMS.length && (path === '/measure' || path.startsWith('/measure/'))) {
@@ -2385,7 +2447,7 @@ function routeTo(){
   if (L && r[2] === 'write') return startWrite(L);
   if (L && r[2] === 'cards') return startWordFc(false, L);
   if (!L) { if (location.pathname !== '/') history.replaceState(null, '', '/'); showHome(); return; }
-  lesson = L; WORDS = L.words; mode = r[2] === 'zh-py' ? 'zh2py' : 'py2zh'; start(WORDS);
+  lesson = L; WORDS = pickWords(L); mode = r[2] === 'zh-py' ? 'zh2py' : 'py2zh'; start(WORDS);
 }
 function go(path){ history.pushState({ parent: location.pathname }, '', path); route(true); }
 function goUp(){
