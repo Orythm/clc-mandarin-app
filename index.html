@@ -123,6 +123,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 @media (max-width:380px){.lesson .modes .mode{padding:.5em} .lesson .modes .mode .ex{font-size:1.1rem;gap:.3em} .lesson .modes .mode .ex .h{font-size:1.35rem}}
 .mode .lbl{font-weight:600;font-size:1.1rem}
 .mode .sub{color:var(--muted);font-size:.95rem}
+.py .seen{color:var(--ok)}
 .btn.toggle[aria-pressed="true"]{background:var(--fg);border-color:var(--fg);color:var(--paper)}
 .tile.match{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
 .tile.dim{opacity:.35}
@@ -594,6 +595,7 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
     <div class="tools">
       <button class="btn" id="hintBtn" type="button" aria-label="Hold to show the English (counts as missed)" title="Hold to show the English. The word then counts as missed.">English</button>
       <button class="btn toggle" id="lenBtn" type="button" aria-pressed="false">Same length</button>
+      <button class="btn toggle" id="seenBtn" type="button" aria-pressed="false" hidden title="Show in green the characters already seen in earlier lessons">Seen</button>
       <button class="btn" id="sayBtn" type="button" aria-label="Hear the word">🔊</button>
       <button class="btn" id="skipBtn" type="button">Skip</button>
     </div>
@@ -809,7 +811,7 @@ function show(){
   if (enTap && showEn) { misses.push(w); firstTry = false; rec('py:' + wid(w), false); }
   if (showEn && !$('hintBtn').classList.contains('on')) showEn = false;
   $('hint').className = 'hint'; $('skipBtn').textContent = 'Skip';
-  $('py').textContent = mode === 'zh2py' ? w[0] : w[1];
+  paintPrompt(w);
   $('qn').textContent = idx + 1; $('sc').textContent = score;
   $('bar').style.width = (idx / queue.length * 100) + '%';
   document.querySelectorAll('.tile').forEach(t => { t.classList.remove('ok', 'bad'); t.querySelectorAll('.tpy').forEach(x => x.remove()); });
@@ -1012,6 +1014,21 @@ function closeSettings(){
 $('enTapBtn').addEventListener('change', () => { enTap = $('enTapBtn').checked; save(); if (!enTap && showEn) { showEn = false; $('hintBtn').classList.remove('on'); applyAids(); } $('hintBtn').title = enTap ? 'Tap to show or hide the English. The word then counts as missed.' : 'Hold to show the English. The word then counts as missed.'; });
 $('skipBtn').addEventListener('click', reveal);
 $('lenBtn').addEventListener('click', () => { showLen = !showLen; save(); applyAids(); });
+// Seen (milo, 2026-11-16): in Known or mixed characters mode, a toggle that shows in green the characters (or, on the
+// pinyin prompt, their syllables) that are already in an earlier lesson. Remembered in q_seen.
+let showSeen = false, seenSet = null, seenFor = null;
+try { showSeen = localStorage.getItem('q_seen') === '1'; } catch(e) {}
+const seenMode = () => ex === 'vocab' && !!pickKey(lesson) && pickMode(lesson) === 'known';
+function paintPrompt(w){
+  const box = $('py'), zh = mode === 'zh2py', on = seenMode();
+  $('seenBtn').hidden = !on; $('seenBtn').setAttribute('aria-pressed', showSeen);
+  box.textContent = '';
+  const cs = [...w[0]], sy = w[1].split(' ');
+  if (!on || !showSeen || (!zh && cs.length !== sy.length)) { box.textContent = zh ? w[0] : w[1]; return; }
+  if (seenFor !== lesson) { seenSet = seenBefore(lesson); seenFor = lesson; }
+  (zh ? cs : sy).forEach((t, i) => { if (!zh && i) box.append(' '); box.append(el('span', seenSet.has(cs[i]) ? 'seen' : null, t)); });
+}
+$('seenBtn').addEventListener('click', () => { showSeen = !showSeen; try { localStorage.setItem('q_seen', showSeen ? '1' : '0'); } catch(e) {} const w = queue[idx]; if (w) paintPrompt(w); });
 $('retryBtn').addEventListener('click', () => ex === 'gr' ? startGr(shuffle(grMisses), $('title').textContent, grBack) : ex === 'tones' ? startTones(misses) : ex === 'mw' ? startMw(mwMisses) : start(misses));
 $('restartBtn').addEventListener('click', () => ex === 'gr' && grRedraw ? grRedraw() : allRound() ? startAll(lesson.m, lesson.extra) : ex === 'gr' ? (grKindOf === 'exam' ? startMock() : grKindOf === 'review' ? startReview() : startGr(shuffle(grItems), $('title').textContent, grBack)) : ex === 'tones' ? startTones(WORDS) : ex === 'mw' ? startMw(mwList) : start(WORDS));
 
