@@ -957,10 +957,10 @@ try { PICK = JSON.parse(localStorage.getItem(PICK_KEY)) || {}; } catch(e) {}
 const pickKey = L => !L || L.all || L.endless ? null : L.n ? 'L' + L.n : L.id ? 'X' + L.id : null;
 const pickOff = L => new Set(PICK[pickKey(L)] || []);
 // "Which words" (milo, 2026-11-16, lessons only): New = none of the word's characters is in an earlier lesson;
-// Known = every character is in an earlier lesson. Words mixing both are in neither. Kept as PICK['@L<n>'] = 'new' | 'known'.
+// Known = at least one character is in an earlier lesson (words mixing new and known characters count as known, milo 2026-11-16). Kept as PICK['@L<n>'] = 'new' | 'known'.
 const isHan = c => /[㐀-鿿豈-﫿]/.test(c);
 function seenBefore(L){ const s = new Set(); LESSONS.forEach(x => { if (x.n < L.n) x.words.forEach(w => [...w[0]].forEach(c => s.add(c))); }); return s; }
-function wordAge(w, seen){ const cs = [...w[0]].filter(isHan); if (!cs.length) return 'mix'; const k = cs.filter(c => seen.has(c)).length; return k === 0 ? 'new' : k === cs.length ? 'known' : 'mix'; }
+function wordAge(w, seen){ const cs = [...w[0]].filter(isHan); if (!cs.length) return 'mix'; return cs.some(c => seen.has(c)) ? 'known' : 'new'; }
 const pickMode = L => (L && L.n && PICK['@' + pickKey(L)]) || 'all';
 function modeWords(L, m){ m = m || pickMode(L); if (m === 'all') return L.words; const seen = seenBefore(L); return L.words.filter(w => wordAge(w, seen) === m); }
 // The words a quiz on this set asks: the chosen kind, then the ticked ones among them; with nothing ticked it asks the
@@ -978,7 +978,7 @@ function buildPick(){
   $('pickSec').hidden = !ok; if (!ok) return;
   // Which words: lessons after the first only (handout topics and lesson 1 have no earlier lesson to compare with).
   const mb = $('pickModes'); mb.textContent = ''; mb.hidden = !(L.n && LESSONS.some(x => x.n < L.n));
-  if (!mb.hidden) [['all', 'All words'], ['new', 'Only new characters'], ['known', 'Only known characters']].forEach(([m, label]) => {
+  if (!mb.hidden) [['all', 'All words'], ['new', 'Only new characters'], ['known', 'Known or mixed characters']].forEach(([m, label]) => {
     const r = el('label', 'pm'), inp = el('input'); inp.type = 'radio'; inp.name = 'pickMode'; inp.checked = pickMode(L) === m;
     inp.addEventListener('change', () => { setMode(L, m); buildPick(); });
     r.append(inp, el('span', null, label + ' '), el('small', null, '(' + modeWords(L, m).length + ')')); mb.append(r);
