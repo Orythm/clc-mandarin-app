@@ -384,8 +384,8 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
 .mwq .mpy,.board.mwb .tile small{visibility:hidden}
 .mwpy .mwq .mpy,.mwpy .board.mwb .tile small,#mwBox.done .mwq .mpy{visibility:visible}
 #grPy,#mwPy,#cardPy{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:none}
-#grPy.on,#mwPy.on,#cardPy.on,#hintBtn.on{background:var(--fg);border-color:var(--fg);color:var(--paper)}
-#hintBtn{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:none}
+#grPy.on,#mwPy.on,#cardPy.on,#hintBtn.on,#seenBtn.on{background:var(--fg);border-color:var(--fg);color:var(--paper)}
+#hintBtn,#seenBtn{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:none}
 /* Phones: 拼音 floats at the bottom right, within thumb reach */
 @media (max-width:560px){
   #grPy,#mwPy{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:20;min-width:64px;min-height:64px;padding:0 14px;border-radius:32px;font-size:1.3rem;background:var(--paper);box-shadow:0 6px 18px -6px rgba(0,0,0,.45)}
@@ -595,7 +595,7 @@ body:has(#fcBox:not([hidden])) .wrap{display:flex;flex-direction:column;min-heig
     <div class="tools">
       <button class="btn" id="hintBtn" type="button" aria-label="Hold to show the English (counts as missed)" title="Hold to show the English. The word then counts as missed.">English</button>
       <button class="btn toggle" id="lenBtn" type="button" aria-pressed="false">Same length</button>
-      <button class="btn toggle" id="seenBtn" type="button" aria-pressed="false" hidden title="Show in green the characters already seen in earlier lessons">Hint</button>
+      <button class="btn" id="seenBtn" type="button" hidden aria-label="Hold to show in green the characters already seen in earlier lessons" title="Hold to show in green the characters already seen in earlier lessons">Hint</button>
       <button class="btn" id="sayBtn" type="button" aria-label="Hear the word">🔊</button>
       <button class="btn" id="skipBtn" type="button">Skip</button>
     </div>
@@ -873,7 +873,7 @@ function showAnswer(w){
 document.addEventListener('click', e => {
   if (!paused) return;
   if ($('promptBox').hidden) { paused = false; return; }
-  if (e.target.closest('#sayBtn, #hintBtn, #gearBtn, #drawer')) return;
+  if (e.target.closest('#sayBtn, #hintBtn, #seenBtn, #gearBtn, #drawer')) return;
   paused = false;
   if (e.target.closest('#modeBtn')) return;
   e.stopPropagation(); e.preventDefault();
@@ -1015,20 +1015,26 @@ $('enTapBtn').addEventListener('change', () => { enTap = $('enTapBtn').checked; 
 $('skipBtn').addEventListener('click', reveal);
 $('lenBtn').addEventListener('click', () => { showLen = !showLen; save(); applyAids(); });
 // Seen (milo, 2026-11-16): in Known or mixed characters mode, a toggle that shows in green the characters (or, on the
-// pinyin prompt, their syllables) that are already in an earlier lesson. Remembered in q_seen.
+// pinyin prompt, their syllables) that are already in an earlier lesson, while the Hint button is held.
 let showSeen = false, seenSet = null, seenFor = null;
-try { showSeen = localStorage.getItem('q_seen') === '1'; } catch(e) {}
 const seenMode = () => ex === 'vocab' && !!pickKey(lesson) && pickMode(lesson) === 'known';
 function paintPrompt(w){
   const box = $('py'), zh = mode === 'zh2py', on = seenMode();
-  $('seenBtn').hidden = !on; $('seenBtn').setAttribute('aria-pressed', showSeen);
+  $('seenBtn').hidden = !on;
   box.textContent = '';
   const cs = [...w[0]], sy = w[1].split(' ');
   if (!on || !showSeen || (!zh && cs.length !== sy.length)) { box.textContent = zh ? w[0] : w[1]; return; }
   if (seenFor !== lesson) { seenSet = seenBefore(lesson); seenFor = lesson; }
   (zh ? cs : sy).forEach((t, i) => { if (!zh && i) box.append(' '); box.append(el('span', seenSet.has(cs[i]) ? 'seen' : null, t)); });
 }
-$('seenBtn').addEventListener('click', () => { showSeen = !showSeen; try { localStorage.setItem('q_seen', showSeen ? '1' : '0'); } catch(e) {} const w = queue[idx]; if (w) paintPrompt(w); });
+(function(){
+  const btn = $('seenBtn'), set = v => { if (showSeen === v) return; showSeen = v; btn.classList.toggle('on', v); const w = queue[idx]; if (w) paintPrompt(w); };
+  btn.addEventListener('pointerdown', e => { e.preventDefault(); btn.setPointerCapture(e.pointerId); set(true); });
+  ['pointerup','pointercancel','lostpointercapture'].forEach(t => btn.addEventListener(t, () => set(false)));
+  btn.addEventListener('contextmenu', e => e.preventDefault());
+  btn.addEventListener('keydown', e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); set(true); } });
+  btn.addEventListener('keyup', () => set(false));
+})();
 $('retryBtn').addEventListener('click', () => ex === 'gr' ? startGr(shuffle(grMisses), $('title').textContent, grBack) : ex === 'tones' ? startTones(misses) : ex === 'mw' ? startMw(mwMisses) : start(misses));
 $('restartBtn').addEventListener('click', () => ex === 'gr' && grRedraw ? grRedraw() : allRound() ? startAll(lesson.m, lesson.extra) : ex === 'gr' ? (grKindOf === 'exam' ? startMock() : grKindOf === 'review' ? startReview() : startGr(shuffle(grItems), $('title').textContent, grBack)) : ex === 'tones' ? startTones(WORDS) : ex === 'mw' ? startMw(mwList) : start(WORDS));
 
